@@ -1,0 +1,285 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{FFB640A9-8F7E-4A16-97C2-3D794ABC4F56}</ProjectGuid>
+    <RootNamespace>ARGSS</RootNamespace>
+    <Keyword>Win32Proj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration" Condition="'$(Configuration)|$(Platform)'=='Debug-sdl1.3|Win32'">
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.21006.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\..\bin\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\..\bin\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\..\dependencies;..\..\..\dependencies\win32\ruby1.8.6-p287\include;..\..\..\dependencies\win32\soil\include;..\..\..\dependencies\win32\freetype\include;..\..\..\dependencies\win32\sdl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;WIN32;_WINDOWS;MSVC;UNICODE</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <CompileAsManaged>false</CompileAsManaged>
+      <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
+      <PrecompiledHeaderFile>
+      </PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile>
+      </PrecompiledHeaderOutputFile>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>opengl32.lib;soil.lib;freetype2312MT.lib;msvcrt-ruby18.lib;SDL.lib;SDLmain.lib;SDL_mixer.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\dependencies\win32\ruby1.8.6-p287\lib\msvc;..\..\..\dependencies\win32\soil\lib\msvc;..\..\..\dependencies\win32\freetype\lib\msvc;..\..\..\dependencies\win32\sdl\lib\msvc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <IgnoreSpecificDefaultLibraries>msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <TargetMachine>MachineX86</TargetMachine>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
+      <ForceSymbolReferences>
+      </ForceSymbolReferences>
+      <ProgramDatabaseFile>$(IntDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <ProfileGuidedDatabase>$(TargetDir)$(TargetName).pgd</ProfileGuidedDatabase>
+    </Link>
+    <PostBuildEvent>
+      <Command>copy "..\..\..\dependencies\win32\ruby1.8.6-p287\bin\msvcrt-ruby18-msvc.dll" "..\..\..\bin\msvcrt-ruby18.dll"
+copy "..\..\..\dependencies\win32\sdl\bin\SDL-msvc.dll" "..\..\..\bin\SDL.dll"
+copy "..\..\..\dependencies\win32\sdl\bin\SDL_mixer.dll" "..\..\..\bin\SDL_mixer.dll"
+copy "..\..\..\dependencies\win32\sdl\bin\libogg-0.dll" "..\..\..\bin\libogg-0.dll"
+copy "..\..\..\dependencies\win32\sdl\bin\libvorbis-0.dll" "..\..\..\bin\libvorbis-0.dll"
+copy "..\..\..\dependencies\win32\sdl\bin\libvorbisfile-3.dll" "..\..\..\bin\libvorbisfile-3.dll"
+copy "..\..\..\dependencies\win32\sdl\bin\mikmod.dll" "..\..\..\bin\mikmod.dll"
+copy "..\..\..\dependencies\win32\sdl\bin\smpeg.dll" "..\..\..\bin\smpeg.dll"
+del "..\..\..\bin\libgcc_s_dw2-1.dll"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <IntrinsicFunctions>false</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>..\..\..\dependencies;..\..\..\dependencies\win32\ruby1.8.6-p287\include;..\..\..\dependencies\win32\soil\include;..\..\..\dependencies\win32\freetype\include;..\..\..\dependencies\win32\sdl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;MSVC;UNICODE</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FunctionLevelLinking>
+      </FunctionLevelLinking>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <CompileAsManaged>false</CompileAsManaged>
+      <WholeProgramOptimization>false</WholeProgramOptimization>
+    </ClCompile>
+    <Link>
+      <AdditionalDependencies>opengl32.lib;soil.lib;freetype2312MT.lib; msvcrt-ruby18.lib;SDL.lib;SDLmain.lib;SDL_mixer.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\..\..\dependencies\win32\ruby1.8.6-p287\lib\msvc;..\..\..\dependencies\win32\soil\lib\msvc;..\..\..\dependencies\win32\freetype\lib\msvc;..\..\..\dependencies\win32\sdl\lib\msvc;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>
+      </EnableCOMDATFolding>
+      <TargetMachine>MachineX86</TargetMachine>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
+    </Link>
+    <Manifest>
+      <OutputManifestFile>$(IntDir)$(TargetName)$(TargetExt).embed.manifest</OutputManifestFile>
+    </Manifest>
+    <Manifest>
+      <OutputResourceManifests>
+      </OutputResourceManifests>
+    </Manifest>
+    <PostBuildEvent>
+      <Command>copy "..\..\..\dependencies\win32\ruby1.8.6-p287\bin\msvcrt-ruby18-msvc.dll" "..\..\..\bin\msvcrt-ruby18.dll"
+copy "..\..\..\dependencies\win32\sdl\bin\SDL-msvc.dll" "..\..\..\bin\SDL.dll"
+copy "..\..\..\dependencies\win32\sdl\bin\SDL_mixer.dll" "..\..\..\bin\SDL_mixer.dll"
+copy "..\..\..\dependencies\win32\sdl\bin\libogg-0.dll" "..\..\..\bin\libogg-0.dll"
+copy "..\..\..\dependencies\win32\sdl\bin\libvorbis-0.dll" "..\..\..\bin\libvorbis-0.dll"
+copy "..\..\..\dependencies\win32\sdl\bin\libvorbisfile-3.dll" "..\..\..\bin\libvorbisfile-3.dll"
+copy "..\..\..\dependencies\win32\sdl\bin\mikmod.dll" "..\..\..\bin\mikmod.dll"
+copy "..\..\..\dependencies\win32\sdl\bin\smpeg.dll" "..\..\..\bin\smpeg.dll"
+del "..\..\..\bin\libgcc_s_dw2-1.dll"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-sdl1.3|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\..\dependencies\msvc\sdl\include;..\..\..\dependencies\msvc\ruby1.8.6\include;..\..\..\dependencies;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>MSVC;WIN32;_UNICODE;UNICODE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>..\..\..\dependencies\msvc\ruby1.8.6\lib;..\..\..\dependencies\msvc\sdl\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL.lib;SDLmain.lib;SDL_image.lib;SDL_mixer.lib;SDL_ttf.lib;msvcrt-ruby18.lib</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\src\buffer.h" />
+    <ClInclude Include="..\..\..\src\defines.h" />
+    <ClInclude Include="..\..\..\src\event.h" />
+    <ClInclude Include="..\..\..\src\socket.h" />
+    <ClInclude Include="..\..\..\src\options.h" />
+    <ClInclude Include="..\..\..\src\output.h" />
+    <ClInclude Include="..\..\..\src\player.h" />
+    <ClInclude Include="..\..\..\src\system.h" />
+    <ClInclude Include="..\..\..\src\argss.h" />
+    <ClInclude Include="..\..\..\src\argss_ruby.h" />
+    <ClInclude Include="..\..\..\src\argss_bitmap.h" />
+    <ClInclude Include="..\..\..\src\argss_color.h" />
+    <ClInclude Include="..\..\..\src\argss_error.h" />
+    <ClInclude Include="..\..\..\src\argss_font.h" />
+    <ClInclude Include="..\..\..\src\argss_plane.h" />
+    <ClInclude Include="..\..\..\src\argss_rect.h" />
+    <ClInclude Include="..\..\..\src\argss_sprite.h" />
+    <ClInclude Include="..\..\..\src\argss_table.h" />
+    <ClInclude Include="..\..\..\src\argss_tilemap.h" />
+    <ClInclude Include="..\..\..\src\argss_tilemap_xp.h" />
+    <ClInclude Include="..\..\..\src\argss_tilemapautotiles_xp.h" />
+    <ClInclude Include="..\..\..\src\argss_tone.h" />
+    <ClInclude Include="..\..\..\src\argss_viewport.h" />
+    <ClInclude Include="..\..\..\src\argss_window.h" />
+    <ClInclude Include="..\..\..\src\argss_window_xp.h" />
+    <ClInclude Include="..\..\..\src\argss_audio.h" />
+    <ClInclude Include="..\..\..\src\argss_graphics.h" />
+    <ClInclude Include="..\..\..\src\argss_input.h" />
+    <ClInclude Include="..\..\..\src\argss_keys.h" />
+    <ClInclude Include="..\..\..\src\argss_output.h" />
+    <ClInclude Include="..\..\..\src\argss_rpg.h" />
+    <ClInclude Include="..\..\..\src\argss_rpg_cache.h" />
+    <ClInclude Include="..\..\..\src\argss_rpg_sprite.h" />
+    <ClInclude Include="..\..\..\src\argss_rpg_weather.h" />
+    <ClInclude Include="..\..\..\src\input.h" />
+    <ClInclude Include="..\..\..\src\inputbuttons.h" />
+    <ClInclude Include="..\..\..\src\inputkeys.h" />
+    <ClInclude Include="..\..\..\src\inputbuttons_win32.h" />
+    <ClInclude Include="..\..\..\src\bitmap.h" />
+    <ClInclude Include="..\..\..\src\color.h" />
+    <ClInclude Include="..\..\..\src\drawable.h" />
+    <ClInclude Include="..\..\..\src\graphics.h" />
+    <ClInclude Include="..\..\..\src\hslrgb.h" />
+    <ClInclude Include="..\..\..\src\plane.h" />
+    <ClInclude Include="..\..\..\src\rect.h" />
+    <ClInclude Include="..\..\..\src\sprite.h" />
+    <ClInclude Include="..\..\..\src\text.h" />
+    <ClInclude Include="..\..\..\src\tilemap.h" />
+    <ClInclude Include="..\..\..\src\tilemap_xp.h" />
+    <ClInclude Include="..\..\..\src\time.h" />
+    <ClInclude Include="..\..\..\src\time_win32.h" />
+    <ClInclude Include="..\..\..\src\tone.h" />
+    <ClInclude Include="..\..\..\src\viewport.h" />
+    <ClInclude Include="..\..\..\src\window.h" />
+    <ClInclude Include="..\..\..\src\windowui.h" />
+    <ClInclude Include="..\..\..\src\windowui_win32.h" />
+    <ClInclude Include="..\..\..\src\window_xp.h" />
+    <ClInclude Include="..\..\..\src\zobj.h" />
+    <ClInclude Include="..\..\..\src\audio.h" />
+    <ClInclude Include="..\..\..\src\console.h" />
+    <ClInclude Include="..\..\..\src\filefinder.h" />
+    <ClInclude Include="..\..\..\src\msgbox.h" />
+    <ClInclude Include="..\..\..\src\console_win32.h" />
+    <ClInclude Include="..\..\..\src\filefinder_win32.h" />
+    <ClInclude Include="..\..\..\src\msgbox_win32.h" />
+    <ClInclude Include="..\..\..\src\registry.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\buffer.cpp" />
+    <ClCompile Include="..\..\..\src\main.cpp" />
+    <ClCompile Include="..\..\..\src\socket.cpp" />
+    <ClCompile Include="..\..\..\src\output.cpp" />
+    <ClCompile Include="..\..\..\src\player.cpp" />
+    <ClCompile Include="..\..\..\src\system.cpp" />
+    <ClCompile Include="..\..\..\src\argss.cpp" />
+    <ClCompile Include="..\..\..\src\argss_ruby.cpp" />
+    <ClCompile Include="..\..\..\src\argss_bitmap.cpp" />
+    <ClCompile Include="..\..\..\src\argss_color.cpp" />
+    <ClCompile Include="..\..\..\src\argss_error.cpp" />
+    <ClCompile Include="..\..\..\src\argss_font.cpp" />
+    <ClCompile Include="..\..\..\src\argss_plane.cpp" />
+    <ClCompile Include="..\..\..\src\argss_rect.cpp" />
+    <ClCompile Include="..\..\..\src\argss_sprite.cpp" />
+    <ClCompile Include="..\..\..\src\argss_table.cpp" />
+    <ClCompile Include="..\..\..\src\argss_tilemap_xp.cpp" />
+    <ClCompile Include="..\..\..\src\argss_tilemapautotiles_xp.cpp" />
+    <ClCompile Include="..\..\..\src\argss_tone.cpp" />
+    <ClCompile Include="..\..\..\src\argss_viewport.cpp" />
+    <ClCompile Include="..\..\..\src\argss_window_xp.cpp" />
+    <ClCompile Include="..\..\..\src\argss_audio.cpp" />
+    <ClCompile Include="..\..\..\src\argss_graphics.cpp" />
+    <ClCompile Include="..\..\..\src\argss_input.cpp" />
+    <ClCompile Include="..\..\..\src\argss_keys.cpp" />
+    <ClCompile Include="..\..\..\src\argss_output.cpp" />
+    <ClCompile Include="..\..\..\src\argss_rpg.cpp" />
+    <ClCompile Include="..\..\..\src\argss_rpg_cache.cpp" />
+    <ClCompile Include="..\..\..\src\argss_rpg_sprite.cpp" />
+    <ClCompile Include="..\..\..\src\argss_rpg_weather.cpp" />
+    <ClCompile Include="..\..\..\src\input.cpp" />
+    <ClCompile Include="..\..\..\src\inputkeys.cpp" />
+    <ClCompile Include="..\..\..\src\inputbuttons_win32.cpp" />
+    <ClCompile Include="..\..\..\src\bitmap.cpp" />
+    <ClCompile Include="..\..\..\src\color.cpp" />
+    <ClCompile Include="..\..\..\src\graphics.cpp" />
+    <ClCompile Include="..\..\..\src\hslrgb.cpp" />
+    <ClCompile Include="..\..\..\src\plane.cpp" />
+    <ClCompile Include="..\..\..\src\rect.cpp" />
+    <ClCompile Include="..\..\..\src\sprite.cpp" />
+    <ClCompile Include="..\..\..\src\text.cpp" />
+    <ClCompile Include="..\..\..\src\tilemap_xp.cpp" />
+    <ClCompile Include="..\..\..\src\time_win32.cpp" />
+    <ClCompile Include="..\..\..\src\tone.cpp" />
+    <ClCompile Include="..\..\..\src\viewport.cpp" />
+    <ClCompile Include="..\..\..\src\windowui_win32.cpp" />
+    <ClCompile Include="..\..\..\src\window_xp.cpp" />
+    <ClCompile Include="..\..\..\src\zobj.cpp" />
+    <ClCompile Include="..\..\..\src\audio.cpp" />
+    <ClCompile Include="..\..\..\src\console_win32.cpp" />
+    <ClCompile Include="..\..\..\src\filefinder_win32.cpp" />
+    <ClCompile Include="..\..\..\src\msgbox_win32.cpp" />
+    <ClCompile Include="..\..\..\src\registry.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\..\resources\Windows\icon.rc" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
