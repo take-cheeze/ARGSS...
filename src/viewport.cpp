@@ -66,30 +66,30 @@ Viewport::~Viewport() {
 /// Class Is Viewport Disposed?
 ////////////////////////////////////////////////////////////
 bool Viewport::IsDisposed(VALUE id) {
-	return Graphics::drawable_map.count(id) == 0;
+	return Graphics::drawableMap().count(id) == 0;
 }
 
 ////////////////////////////////////////////////////////////
 /// Class New Viewport
 ////////////////////////////////////////////////////////////
 void Viewport::New(VALUE id) {
-	Graphics::drawable_map[id] = new Viewport(id);
+	Graphics::drawableMap()[id] = new Viewport(id);
 }
 
 ////////////////////////////////////////////////////////////
 /// Class Get Viewport
 ////////////////////////////////////////////////////////////
 Viewport* Viewport::Get(VALUE id) {
-	return (Viewport*)Graphics::drawable_map[id];
+	return (Viewport*)Graphics::drawableMap()[id];
 }
 
 ////////////////////////////////////////////////////////////
 /// Class Dispose Viewport
 ////////////////////////////////////////////////////////////
 void Viewport::Dispose(unsigned long id) {
-	delete Graphics::drawable_map[id];
-	std::map<unsigned long, Drawable*>::iterator it = Graphics::drawable_map.find(id);
-	Graphics::drawable_map.erase(it);
+	delete Graphics::drawableMap()[id];
+	std::map<unsigned long, Drawable*>::iterator it = Graphics::drawableMap().find(id);
+	Graphics::drawableMap().erase(it);
 
 	Graphics::RemoveZObj(id);
 }
@@ -112,7 +112,7 @@ void Viewport::Draw(long z) {
 	if (dst_rect.x < -dst_rect.width || dst_rect.x > Player::GetWidth() || dst_rect.y < -dst_rect.height || dst_rect.y > Player::GetHeight()) return;
 
 	for(it_zlist = zlist.begin(); it_zlist != zlist.end(); it_zlist++) {
-		Graphics::drawable_map[it_zlist->GetId()]->Draw(it_zlist->GetZ());
+		Graphics::drawableMap()[it_zlist->GetId()]->Draw(it_zlist->GetZ());
 	}
 }
 
@@ -192,9 +192,10 @@ void Viewport::SetTone(VALUE ntone) {
 ////////////////////////////////////////////////////////////
 /// Register ZObj
 ////////////////////////////////////////////////////////////
-void Viewport::RegisterZObj(long z, unsigned long id) {
-	Graphics::creation += 1;
-	ZObj zobj(z, Graphics::creation, id);
+void Viewport::RegisterZObj(long z, unsigned long id)
+{
+	Graphics::incrementCreation(); // creation += 1;
+	ZObj zobj(z, Graphics::getCreation(), id);
 	zlist.push_back(zobj);
 	zlist.sort(Graphics::SortZObj);
 }

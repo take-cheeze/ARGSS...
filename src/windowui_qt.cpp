@@ -1,6 +1,8 @@
 #include "windowui_qt.h"
 #include "graphics.h"
 
+#include <QtGui/QApplication>
+#include <QtGui/QDesktopWidget>
 #include <QtGui/QMouseEvent>
 
 
@@ -17,18 +19,23 @@ WindowUi::WindowUi(long iwidth, long iheight, std::string const& title, bool cen
 	// setIcon();
 
 	if(fs_flag) ToggleFullscreen();
-/*
 	else if(center) {
+		QSize centerPos = ( QApplication::desktop()->screenGeometry().size() - frameSize() ) / 2;
+		move( QPoint( centerPos.width(), centerPos.height() ) );
 	}
- */
 
-	// setAutoFillBackground(true);
-	// setAutoBufferSwap(true);
+	setAutoFillBackground(true);
+	setAutoBufferSwap(true);
 	makeCurrent();
 	setVisible(true);
 }
 WindowUi::~WindowUi()
 {
+}
+
+void WindowUi::SwapBuffers()
+{
+	if( !autoBufferSwap() ) swapBuffers();
 }
 
 void WindowUi::Dispose()

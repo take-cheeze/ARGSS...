@@ -26,6 +26,7 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #include <algorithm>
+
 #include "SOIL.h"
 #include "text.h"
 #include "bitmap.h"
@@ -40,12 +41,6 @@
 /// Static Variables
 ////////////////////////////////////////////////////////////
 std::map<unsigned long, Bitmap*> Bitmap::bitmaps;
-
-////////////////////////////////////////////////////////////
-/// Defines
-////////////////////////////////////////////////////////////
-#define min(a, b)  (((a) < (b)) ? (a) : (b))
-#define max(a, b)  (((a) > (b)) ? (a) : (b))
 
 ////////////////////////////////////////////////////////////
 /// Constructors
@@ -66,7 +61,7 @@ Bitmap::Bitmap(unsigned long iid, std::string const& filename) {
 
 	int rwidth, rheight, channels;
 	unsigned char* load_pixels = SOIL_load_image(path.c_str(), &rwidth, &rheight, &channels, SOIL_LOAD_RGBA);
-	
+
 	if (!load_pixels) {
 		rb_raise(ARGSS::AError::id, "couldn't load %s image.\n%s\n", filename.c_str(), SOIL_last_result());
 	}
@@ -423,7 +418,7 @@ void Bitmap::SatChange(double saturation) {
 }
 
 ////////////////////////////////////////////////////////////
-/// Luminance change
+/// Lustd::minance change
 ////////////////////////////////////////////////////////////
 void Bitmap::LumChange(double luminance) {
 	for(int i = 0; i < height; i++) {
@@ -556,9 +551,9 @@ void Bitmap::ToneChange(Tone tone) {
 		for (int i = 0; i < GetHeight(); i++) {
 			for (int j = 0; j < GetWidth(); j++) {
 				Uint8 *pixel = dst_pixels;
-				pixel[0] = (Uint8)max(min(pixel[0] + tone.red, 255), 0);
-				pixel[1] = (Uint8)max(min(pixel[1] + tone.green, 255), 0);
-				pixel[2] = (Uint8)max(min(pixel[2] + tone.blue, 255), 0);
+				pixel[0] = (Uint8)std::max(std::min( int(pixel[0] + tone.red  ), 255), 0);
+				pixel[1] = (Uint8)std::max(std::min( int(pixel[1] + tone.green), 255), 0);
+				pixel[2] = (Uint8)std::max(std::min( int(pixel[2] + tone.blue ), 255), 0);
 				dst_pixels += 4;
 			}
 		}
@@ -571,9 +566,9 @@ void Bitmap::ToneChange(Tone tone) {
 				Uint8 *pixel = dst_pixels;
 				
 				gray = pixel[0] * 0.299 + pixel[1] * 0.587 + pixel[2] * 0.114;
-				pixel[0] = (Uint8)max(min((pixel[0] - gray) * factor + gray + tone.red + 0.5, 255), 0);
-				pixel[1] = (Uint8)max(min((pixel[1] - gray) * factor + gray + tone.green + 0.5, 255), 0);
-				pixel[2] = (Uint8)max(min((pixel[2] - gray) * factor + gray + tone.blue + 0.5, 255), 0);
+				pixel[0] = (Uint8)std::max( std::min( int( ( pixel[0] - gray) * factor + gray + tone.red   + 0.5 ), 255 ), 0 );
+				pixel[1] = (Uint8)std::max( std::min( int( ( pixel[1] - gray) * factor + gray + tone.green + 0.5 ), 255 ), 0 );
+				pixel[2] = (Uint8)std::max( std::min( int( ( pixel[2] - gray) * factor + gray + tone.blue  + 0.5 ), 255 ), 0 );
 				dst_pixels += 4;
 			}
 		}
@@ -592,7 +587,7 @@ void Bitmap::OpacityChange(int opacity, int bush_depth) {
 	
 	Uint8 *pixels = (Uint8 *)bitmap->pixels;
 	
-	int start_bush = max(GetHeight() - bush_depth, 0);
+	int start_bush = std::max(GetHeight() - bush_depth, 0);
 
 	const int abyte = MaskGetByte(bitmap->format->Amask);
 	
@@ -787,13 +782,13 @@ void Bitmap::Rotate(float angle) {
 	float p2y = GetHeight() * cosine + GetWidth() * sine;
 	float p3x = GetWidth() * cosine;
 	float p3y = GetWidth() * sine;
-	float minx = min(0, min(p1x, min(p2x, p3x))); 
-	float miny = min(0, min(p1y, min(p2y, p3y))); 
-	float maxx = max(p1x, max(p2x, p3x)); 
-	float maxy = max(p1y, max(p2y, p3y)); 
+	float std::minx = std::min(0, std::min(p1x, std::min(p2x, p3x))); 
+	float std::miny = std::min(0, std::min(p1y, std::min(p2y, p3y))); 
+	float std::maxx = std::max(p1x, std::max(p2x, p3x)); 
+	float std::maxy = std::max(p1y, std::max(p2y, p3y)); 
 
-	int nwidth = (int)ceil(fabs(maxx)-minx); 
-	int nheight = (int)ceil(fabs(maxy)-miny);
+	int nwidth = (int)ceil(fabs(std::maxx)-std::minx); 
+	int nheight = (int)ceil(fabs(std::maxy)-std::miny);
 	
 	SDL_Surface* nbitmap = SDL_CreateRGBSurface(SDL_SWSURFACE | SDL_SRCALPHA, nwidth, nheight, 32, rmask, gmask, bmask, amask);
 	
@@ -804,8 +799,8 @@ void Bitmap::Rotate(float angle) {
 
 	for(int i = 0; i < nbitmap->h; i++) {
 		for(int j = 0; j < nbitmap->w; j++) {
-			int sx = (int)((j + minx) * cosine + (i + miny) * sine); 
-			int sy = (int)((i + miny) * cosine - (j + minx) * sine); 
+			int sx = (int)((j + std::minx) * cosine + (i + std::miny) * sine); 
+			int sy = (int)((i + std::miny) * cosine - (j + std::minx) * sine); 
 			if (sx >= 0 && sx < bitmap->w && sy >= 0 && sy < bitmap->h) {
 				dstpixels[0] = srcpixels[sy * bitmap->w + sx];
 			}

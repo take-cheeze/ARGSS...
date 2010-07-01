@@ -74,7 +74,8 @@ namespace ARGSS
 		////////////////////////////////////////////////////////////
 		/// ARGSS RPG ruby functions
 		////////////////////////////////////////////////////////////
-		VALUE rmap_initialize(VALUE self, VALUE width, VALUE height) {
+		VALUE rmap_initialize(VALUE self, VALUE width, VALUE height)
+		{
 			rb_iv_set(self, "@tileset_id", INT2NUM(1));
 			rb_iv_set(self, "@width", width);
 			rb_iv_set(self, "@height", height);
@@ -89,7 +90,8 @@ namespace ARGSS
 			rb_iv_set(self, "@events", rb_hash_new());
 			return self;
 		}
-		VALUE rmapinfo_initialize(VALUE self) {
+		VALUE rmapinfo_initialize(VALUE self)
+		{
 			rb_iv_set(self, "@name", rb_str_new2(""));
 			rb_iv_set(self, "@parent_id", INT2NUM(0));
 			rb_iv_set(self, "@order", INT2NUM(0));
@@ -98,7 +100,8 @@ namespace ARGSS
 			rb_iv_set(self, "@scroll_y", INT2NUM(0));
 			return self;
 		}
-		VALUE revent_initialize(VALUE self, VALUE x, VALUE y) {
+		VALUE revent_initialize(VALUE self, VALUE x, VALUE y)
+		{
 			rb_iv_set(self, "@id", INT2NUM(0));
 			rb_iv_set(self, "@name", rb_str_new2(""));
 			rb_iv_set(self, "@x", x);
@@ -106,7 +109,8 @@ namespace ARGSS
 			rb_iv_set(self, "@pages", rb_ary_new3(1, rb_class_new_instance(0, 0, EventPage_id)));
 			return self;
 		}
-		VALUE reventpage_initialize(VALUE self) {
+		VALUE reventpage_initialize(VALUE self)
+		{
 			rb_iv_set(self, "@condition", rb_class_new_instance(0, 0, EventPageCondition_id));
 			rb_iv_set(self, "@graphic", rb_class_new_instance(0, 0, EventPageGraphic_id));
 			rb_iv_set(self, "@move_type", INT2NUM(0));
@@ -122,7 +126,8 @@ namespace ARGSS
 			rb_iv_set(self, "@list", rb_ary_new3(1, rb_class_new_instance(0, 0, EventCommand_id)));
 			return self;
 		}
-		VALUE reventpagecondition_initialize(VALUE self) {
+		VALUE reventpagecondition_initialize(VALUE self)
+		{
 			rb_iv_set(self, "@switch1_valid", Qfalse);
 			rb_iv_set(self, "@switch2_valid", Qfalse);
 			rb_iv_set(self, "@variable_valid", Qfalse);
@@ -134,7 +139,8 @@ namespace ARGSS
 			rb_iv_set(self, "@self_switch_ch", rb_str_new("A", 1));
 			return self;
 		}
-		VALUE reventpagegraphic_initialize(VALUE self) {
+		VALUE reventpagegraphic_initialize(VALUE self)
+		{
 			rb_iv_set(self, "@tile_id", INT2NUM(0));
 			rb_iv_set(self, "@character_name", rb_str_new2(""));
 			rb_iv_set(self, "@character_hue", INT2NUM(0));
@@ -144,26 +150,30 @@ namespace ARGSS
 			rb_iv_set(self, "@blend_type", INT2NUM(0));
 			return self;
 		}
-		VALUE reventcommand_initialize(int argc, VALUE* argv, VALUE self) {
+		VALUE reventcommand_initialize(int argc, VALUE* argv, VALUE self)
+		{
 			if (argc > 3) raise_argn(argc, 3);
 			rb_iv_set(self, "@code", argc < 1 ?  INT2NUM(0) : argv[0]);
 			rb_iv_set(self, "@indent", argc < 2 ? INT2NUM(0) : argv[1]);
 			rb_iv_set(self, "@parameters", argc < 3 ? rb_ary_new() : argv[2]);
 			return self;
 		}
-		VALUE rmoveroute_initialize(VALUE self) {
+		VALUE rmoveroute_initialize(VALUE self)
+		{
 			rb_iv_set(self, "@repeat", Qtrue);
 			rb_iv_set(self, "@skippable", Qfalse);
 			rb_iv_set(self, "@list", rb_ary_new3(1, rb_class_new_instance(0, 0, MoveCommand_id)));
 			return self;
 		}
-		VALUE rmovecommand_initialize(int argc, VALUE* argv, VALUE self) {
+		VALUE rmovecommand_initialize(int argc, VALUE* argv, VALUE self)
+		{
 			if (argc > 2) raise_argn(argc, 2);
 			rb_iv_set(self, "@code", argc < 1 ?  INT2NUM(0) : argv[0]);
 			rb_iv_set(self, "@parameters", argc < 2 ? rb_ary_new() : argv[1]);
 			return self;
 		}
-		VALUE ractor_initialize(VALUE self) {
+		VALUE ractor_initialize(VALUE self)
+		{
 			rb_iv_set(self, "@id", INT2NUM(0));
 			rb_iv_set(self, "@name", rb_str_new2(""));
 			rb_iv_set(self, "@class_id", INT2NUM(1));
@@ -199,7 +209,8 @@ namespace ARGSS
 			rb_iv_set(self, "@armor4_fix", Qfalse);
 			return self;
 		}
-		VALUE rclass_initialize(VALUE self) {
+		VALUE rclass_initialize(VALUE self)
+		{
 			rb_iv_set(self, "@id", INT2NUM(0));
 			rb_iv_set(self, "@name", rb_str_new2(""));
 			rb_iv_set(self, "@position", INT2NUM(0));
@@ -210,12 +221,14 @@ namespace ARGSS
 			rb_iv_set(self, "@learnings", rb_ary_new());
 			return self;
 		}
-		VALUE rclasslearning_initialize(VALUE self) {
+		VALUE rclasslearning_initialize(VALUE self)
+		{
 			rb_iv_set(self, "@level", INT2NUM(1));
 			rb_iv_set(self, "@skill_id", INT2NUM(1));
 			return self;
 		}
-		VALUE rskill_initialize(VALUE self) {
+		VALUE rskill_initialize(VALUE self)
+		{
 			rb_iv_set(self, "@id", INT2NUM(0));
 			rb_iv_set(self, "@name", rb_str_new2(""));
 			rb_iv_set(self, "@icon_name", rb_str_new2(""));
@@ -244,7 +257,8 @@ namespace ARGSS
 			rb_iv_set(self, "@minus_state_set", rb_ary_new());
 			return self;
 		}
-		VALUE ritem_initialize(VALUE self) {
+		VALUE ritem_initialize(VALUE self)
+		{
 			rb_iv_set(self, "@id", INT2NUM(0));
 			rb_iv_set(self, "@name", rb_str_new2(""));
 			rb_iv_set(self, "@icon_name", rb_str_new2(""));
@@ -273,7 +287,8 @@ namespace ARGSS
 			rb_iv_set(self, "@minus_state_set", rb_ary_new());
 			return self;
 		}
-		VALUE rweapon_initialize(VALUE self) {
+		VALUE rweapon_initialize(VALUE self)
+		{
 			rb_iv_set(self, "@id", INT2NUM(0));
 			rb_iv_set(self, "@name", rb_str_new2(""));
 			rb_iv_set(self, "@icon_name", rb_str_new2(""));
@@ -293,7 +308,8 @@ namespace ARGSS
 			rb_iv_set(self, "@minus_state_set", rb_ary_new());
 			return self;
 		}
-		VALUE rarmor_initialize(VALUE self) {
+		VALUE rarmor_initialize(VALUE self)
+		{
 			rb_iv_set(self, "@id", INT2NUM(0));
 			rb_iv_set(self, "@name", rb_str_new2(""));
 			rb_iv_set(self, "@icon_name", rb_str_new2(""));
@@ -312,7 +328,8 @@ namespace ARGSS
 			rb_iv_set(self, "@guard_state_set", rb_ary_new());
 			return self;
 		}
-		VALUE renemy_initialize(VALUE self) {
+		VALUE renemy_initialize(VALUE self)
+		{
 			rb_iv_set(self, "@id", INT2NUM(0));
 			rb_iv_set(self, "@name", rb_str_new2(""));
 			rb_iv_set(self, "@battler_name", rb_str_new2(""));
@@ -340,7 +357,8 @@ namespace ARGSS
 			rb_iv_set(self, "@treasure_prob", INT2NUM(100));
 			return self;
 		}
-		VALUE renemyaction_initialize(VALUE self) {
+		VALUE renemyaction_initialize(VALUE self)
+		{
 			rb_iv_set(self, "@kind", INT2NUM(0));
 			rb_iv_set(self, "@basic", INT2NUM(0));
 			rb_iv_set(self, "@skill_id", INT2NUM(1));
@@ -352,14 +370,16 @@ namespace ARGSS
 			rb_iv_set(self, "@rating", INT2NUM(5));
 			return self;
 		}
-		VALUE rtroop_initialize(VALUE self) {
+		VALUE rtroop_initialize(VALUE self)
+		{
 			rb_iv_set(self, "@id", INT2NUM(0));
 			rb_iv_set(self, "@name", rb_str_new2(""));
 			rb_iv_set(self, "@members", rb_ary_new());
 			rb_iv_set(self, "@pages", rb_ary_new3(1, rb_class_new_instance(0, 0, TroopPage_id)));
 			return self;
 		}
-		VALUE rtroopmember_initialize(VALUE self) {
+		VALUE rtroopmember_initialize(VALUE self)
+		{
 			rb_iv_set(self, "@enemy_id", INT2NUM(1));
 			rb_iv_set(self, "@x", INT2NUM(0));
 			rb_iv_set(self, "@y", INT2NUM(0));
@@ -367,7 +387,8 @@ namespace ARGSS
 			rb_iv_set(self, "@immortal", Qfalse);
 			return self;
 		}
-		VALUE rtrooppage_initialize(VALUE self) {
+		VALUE rtrooppage_initialize(VALUE self)
+		{
 			rb_iv_set(self, "@condition", rb_class_new_instance(0, 0, TroopPageCondition_id));
 			rb_iv_set(self, "@span", INT2NUM(0));
 			rb_iv_set(self, "@list", rb_ary_new3(1, rb_class_new_instance(0, 0, EventCommand_id)));

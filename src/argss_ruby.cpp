@@ -25,8 +25,10 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <cassert>
 #include <cstdarg>
 
+#include <iomanip>
 #include <iostream>
 #include <string>
 
@@ -95,14 +97,38 @@ namespace ARGSS
 				}
 				return ret;
 			}
+/*
 			VALUE eval_wrap(VALUE arg)
 			{
-				return rb_eval_string( RSTRING_PTR(arg) );
-				// return rb_funcall(rb_cObject, rb_intern("eval"), 2, rb_ary_entry(arg, 0), rb_ary_entry(arg, 1));
+				return rb_funcall(rb_cObject, rb_intern("eval"), 2, rb_ary_entry(arg, 0), rb_ary_entry(arg, 1));
 			}
+ */
 			VALUE require_wrap(VALUE arg)
 			{
 				return rb_require( slasher(System::ScriptsPath).c_str() );
+			}
+			void checkError(int error)
+			{
+				if (error) {
+					VALUE lasterr = rb_gv_get("$!");
+					VALUE klass = rb_class_path(CLASS_OF(lasterr));
+					VALUE message = rb_obj_as_string(lasterr);
+					if (CLASS_OF(lasterr) != rb_eSystemExit) {
+						std::string report = "RUBY ERROR\n";
+						report += std::string( RSTRING_PTR(klass) );
+						report += " - ";
+						report += std::string( RSTRING_PTR(message) );
+						if (!NIL_P(ruby_errinfo)) {
+							VALUE ary = rb_funcall(ruby_errinfo, rb_intern("backtrace"), 0);
+							for (int i = 0; i < RARRAY_LEN(ary); i++) {
+								report += "\n  from ";
+								report += RSTRING_PTR(RARRAY_PTR(ary)[i]);
+							}
+						}
+						Output::ErrorStr(report);
+						return;
+					}
+				}
 			}
 		} // namespace
 		void Run()
@@ -122,48 +148,30 @@ namespace ARGSS
 				VALUE file = rb_file_open(target.c_str(), "rb");
 				VALUE scripts = rb_marshal_load(file);
 				RArray* arr = RARRAY(scripts);
-				VALUE section_arr;
-				VALUE section;
 				for (int i = 0; i < RARRAY_LEN(arr); i++) {
-					section_arr = rb_ary_entry(scripts, i);
-					section = rb_ary_entry(section_arr, 2);
-					section = rb_funcall3(cInflate, rb_intern("inflate"), 1, &section);
+					VALUE section_arr = rb_ary_entry(scripts, i);
+					VALUE section = rb_funcall( cInflate, rb_intern("inflate"), 1, rb_ary_entry(section_arr, 2) );
 
 /*
 					std::cout
-						<< i << " : " << RSTRING_LEN(section) << std::endl
-						<< RSTRING_PTR(section) << std::endl
+						<< std::setw(4) << i
+							<< " : " << std::setw(8) << RSTRING_LEN(section)
+							<< " : " << RSTRING_PTR( rb_ary_entry(section_arr, 1) )
+						<< std::endl
+						// << RSTRING_PTR(section) << std::endl
 						;
  */
 
-					result = rb_protect(eval_wrap, section, &error);
-					// result = rb_protect(eval_wrap, rb_ary_new3(2, StringValuePtr(section), rb_ary_entry(section_arr, 1)), &error);
+					result = 
+						rb_eval_string_protect( RSTRING_PTR(section), &error );
+						// rb_protect(eval_wrap, rb_ary_new3(2, StringValuePtr(section), rb_ary_entry(section_arr, 1)), &error);
+					checkError(error);
 				}
-			}
-			else { // if( suffix == "rb" )
+			} else { // if( suffix == "rb" )
 				result = rb_protect(require_wrap, Qundef, &error);
 			}
+			checkError(error);
 
-			if (error) {
-				VALUE lasterr = rb_gv_get("$!");
-				VALUE klass = rb_class_path(CLASS_OF(lasterr));
-				VALUE message = rb_obj_as_string(lasterr);
-				if (CLASS_OF(lasterr) != rb_eSystemExit) {
-					std::string report = "RUBY ERROR\n";
-					report += std::string( RSTRING_PTR(klass) );
-					report += " - ";
-					report += std::string( RSTRING_PTR(message) );
-					if (!NIL_P(ruby_errinfo)) {
-						VALUE ary = rb_funcall(ruby_errinfo, rb_intern("backtrace"), 0);
-						for (int i = 0; i < RARRAY_LEN(ary); i++) {
-							report += "\n  from ";
-							report += RSTRING_PTR(RARRAY_PTR(ary)[i]);
-						}
-					}
-					Output::ErrorStr(report);
-					return;
-				}
-			}
 			Player::Exit();
 		}
 

@@ -88,7 +88,7 @@ VALUE ARGSS::AGraphics::rframe_countE(VALUE self, VALUE framecount) {
 	return framecount;
 }
 VALUE ARGSS::AGraphics::rfps(VALUE self) {
-	return INT2FIX(Graphics::fps);
+	return INT2FIX( Graphics::getFPS() );
 }
 VALUE ARGSS::AGraphics::rbackcolor(VALUE self) {
 	return Graphics::GetBackColor();

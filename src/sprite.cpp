@@ -92,21 +92,21 @@ Sprite::~Sprite() {
 /// Class Is Sprite Disposed?
 ////////////////////////////////////////////////////////////
 bool Sprite::IsDisposed(VALUE id) {
-	return Graphics::drawable_map.count(id) == 0;
+	return Graphics::drawableMap().count(id) == 0;
 }
 
 ////////////////////////////////////////////////////////////
 /// Class New Sprite
 ////////////////////////////////////////////////////////////
 void Sprite::New(VALUE id) {
-	Graphics::drawable_map[id] = new Sprite(id);
+	Graphics::drawableMap()[id] = new Sprite(id);
 }
 
 ////////////////////////////////////////////////////////////
 /// Class Get Sprite
 ////////////////////////////////////////////////////////////
 Sprite* Sprite::Get(VALUE id) {
-	return (Sprite*)Graphics::drawable_map[id];
+	return (Sprite*)Graphics::drawableMap()[id];
 }
 
 ////////////////////////////////////////////////////////////
@@ -119,9 +119,9 @@ void Sprite::Dispose(unsigned long id) {
 	else {
 		Graphics::RemoveZObj(id);
 	}
-	delete Graphics::drawable_map[id];
-	std::map<unsigned long, Drawable*>::iterator it = Graphics::drawable_map.find(id);
-	Graphics::drawable_map.erase(it);
+	delete Graphics::drawableMap()[id];
+	std::map<unsigned long, Drawable*>::iterator it = Graphics::drawableMap().find(id);
+	Graphics::drawableMap().erase(it);
 }
 
 ////////////////////////////////////////////////////////////

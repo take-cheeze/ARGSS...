@@ -97,21 +97,21 @@ Tilemap::~Tilemap() {
 /// Class Is Tilemap Disposed?
 ////////////////////////////////////////////////////////////
 bool Tilemap::IsDisposed(VALUE id) {
-	return Graphics::drawable_map.count(id) == 0;
+	return Graphics::drawableMap().count(id) == 0;
 }
 
 ////////////////////////////////////////////////////////////
 /// Class New Tilemap
 ////////////////////////////////////////////////////////////
 void Tilemap::New(VALUE id) {
-	Graphics::drawable_map[id] = new Tilemap(id);
+	Graphics::drawableMap()[id] = new Tilemap(id);
 }
 
 ////////////////////////////////////////////////////////////
 /// Class Get Tilemap
 ////////////////////////////////////////////////////////////
 Tilemap* Tilemap::Get(VALUE id) {
-	return (Tilemap*)Graphics::drawable_map[id];
+	return (Tilemap*)Graphics::drawableMap()[id];
 }
 
 ////////////////////////////////////////////////////////////
@@ -124,9 +124,9 @@ void Tilemap::Dispose(unsigned long id) {
 	else {
 		Graphics::RemoveZObj(id);
 	}
-	delete Graphics::drawable_map[id];
-	std::map<unsigned long, Drawable*>::iterator it = Graphics::drawable_map.find(id);
-	Graphics::drawable_map.erase(it);
+	delete Graphics::drawableMap()[id];
+	std::map<unsigned long, Drawable*>::iterator it = Graphics::drawableMap().find(id);
+	Graphics::drawableMap().erase(it);
 }
 
 ////////////////////////////////////////////////////////////

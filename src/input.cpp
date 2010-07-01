@@ -86,7 +86,7 @@ namespace Input
 	void Update() {
 		Player::Update();
 
-		std::vector<bool> keystates = Player::main_window->GetKeyStates(); 
+		std::vector<bool> keystates = Player::getMainWindow().GetKeyStates(); 
 		for (unsigned int i = 0; i < press_time.size(); ++i) {
 			if (keystates[i]) {
 				press_time[i] += 1;

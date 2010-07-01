@@ -41,379 +41,392 @@
 #include "tilemap.h"
 #include "text.h"
 
-////////////////////////////////////////////////////////////
-/// Global Variables
-////////////////////////////////////////////////////////////
-int Graphics::fps;
-int Graphics::framerate;
-int Graphics::framecount;
-Color Graphics::backcolor;
-int Graphics::brightness;
-double Graphics::framerate_interval;
-std::map<unsigned long, Drawable*> Graphics::drawable_map;
-std::map<unsigned long, Drawable*>::iterator Graphics::it_drawable_map;
-std::list<ZObj> Graphics::zlist;
-std::list<ZObj>::iterator Graphics::it_zlist;
-long Graphics::creation;
-long Graphics::last_tics;
-long Graphics::last_tics_wait;
-long Graphics::next_tics_fps;
-
-////////////////////////////////////////////////////////////
-/// Initialize
-////////////////////////////////////////////////////////////
-void Graphics::Init()
+namespace Graphics
 {
-	fps = 0;
-	framerate = 40;
-	framecount = 0;
-	backcolor = Color(0, 0, 0, 0);
-	brightness = 255;
-	creation = 0;
-	framerate_interval = 1000.0 / framerate;
-	last_tics = Time::GetTime() + (long)framerate_interval;
-	next_tics_fps = Time::GetTime() + 1000;
-
-	InitOpenGL();
-
-	Text::Init();
-	Tilemap::Init();
-}
-
-////////////////////////////////////////////////////////////
-/// Initialize OpengGL
-////////////////////////////////////////////////////////////
-void Graphics::InitOpenGL()
-{
-	glViewport(0, 0, Player::GetWidth(), Player::GetHeight());
-	glShadeModel(GL_FLAT);
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0, Player::GetWidth(), Player::GetHeight(), 0, -1, 1); 
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	glEnable(GL_BLEND);
-
-	glClearColor((GLclampf)(backcolor.red   / 255.0f),
-				 (GLclampf)(backcolor.green / 255.0f),
-				 (GLclampf)(backcolor.blue  / 255.0f),
-				 (GLclampf)(backcolor.alpha / 255.0f));
-	glClearDepth(1.0);
-	glClear(GL_COLOR_BUFFER_BIT);
-	Player::SwapBuffers();
-}
-
-////////////////////////////////////////////////////////////
-/// Exit
-////////////////////////////////////////////////////////////
-void Graphics::Exit()
-{
-	for (it_drawable_map = drawable_map.begin(); it_drawable_map != drawable_map.end(); it_drawable_map++) {
-		delete it_drawable_map->second;
-	}
-	drawable_map.clear();
-	Bitmap::DisposeBitmaps();
-}
-
-////////////////////////////////////////////////////////////
-/// Refresh all graphic objects
-////////////////////////////////////////////////////////////
-void Graphics::RefreshAll()
-{
-	for (it_drawable_map = drawable_map.begin(); it_drawable_map != drawable_map.end(); it_drawable_map++) {
-		it_drawable_map->second->RefreshBitmaps();
-	}
-	Bitmap::RefreshBitmaps();
-}
-
-////////////////////////////////////////////////////////////
-/// Wait
-////////////////////////////////////////////////////////////
-void Graphics::TimerWait()
-{
-	last_tics_wait = Time::GetTime();
-}
-
-////////////////////////////////////////////////////////////
-/// Continue
-////////////////////////////////////////////////////////////
-void Graphics::TimerContinue()
-{
-	last_tics += Time::GetTime() - last_tics_wait;
-	next_tics_fps += Time::GetTime() - last_tics_wait;
-}
-
-////////////////////////////////////////////////////////////
-/// Update
-////////////////////////////////////////////////////////////
-void Graphics::Update()
-{
-	static long tics;
-	// static long tics_fps = Time::GetTime();
-	static long frames = 0;
-	// static double waitframes = 0;
-	// static double cyclesleftover;
-
-	Player::Update();
-	/*if (waitframes >= 1) {
-		waitframes -= 1;
-		return;
-	}*/
-	tics = Time::GetTime();
-
-	std::cout << tics << std::endl;
-
-	if ((tics - last_tics) >= framerate_interval) {// || (framerate_interval - tics + last_tics) < 12) {
-		//cyclesleftover = waitframes;
-		//waitframes = (double)(tics - last_tics) / framerate_interval - cyclesleftover;
-		//last_tics += (tics - last_tics);
-		last_tics = tics;
-
-		DrawFrame();
-
-		framecount++;
-		frames++;
-
-		if (tics >= next_tics_fps) {
-			next_tics_fps += 1000;
-			fps = frames;
-			frames = 0;
-			
-			char title[255];
-#ifdef MSVC
-			sprintf_s(title, 255, "%s - %d FPS", System::Title.c_str(), fps);
-#else
-			sprintf(title, "%s - %d FPS", System::Title.c_str(), fps);
-#endif
-			Player::main_window->SetTitle(title);
-		}
-	}
-	else {
-		Time::SleepMs((long)(framerate_interval) - (tics - last_tics));
-	}
-}
-
-////////////////////////////////////////////////////////////
-/// Draw Frame
-////////////////////////////////////////////////////////////
-void Graphics::DrawFrame()
-{
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	for (it_zlist = zlist.begin(); it_zlist != zlist.end(); it_zlist++) {
-		Graphics::drawable_map[it_zlist->GetId()]->Draw(it_zlist->GetZ());
+	namespace
+	{
+		////////////////////////////////////////////////////////////
+		/// Global Variables
+		////////////////////////////////////////////////////////////
+		int fps;
+		int framerate;
+		int framecount;
+		Color backcolor;
+		int brightness;
+		double framerate_interval;
+		std::map<unsigned long, Drawable*> drawable_map;
+		std::map<unsigned long, Drawable*>::iterator it_drawable_map;
+		std::list<ZObj> zlist;
+		std::list<ZObj>::iterator it_zlist;
+		long creation;
+		long last_tics;
+		long last_tics_wait;
+		long next_tics_fps;
 	}
 
-	if (brightness < 255) {
-		glDisable(GL_TEXTURE_2D);
+	int getFPS() { return fps; }
+	std::map<unsigned long, Drawable*>& drawableMap() { return drawable_map; }
+	void incrementCreation() { creation++; }
+	long getCreation() { return creation; }
+
+	////////////////////////////////////////////////////////////
+	/// Initialize
+	////////////////////////////////////////////////////////////
+	void Init()
+	{
+		fps = 0;
+		framerate = 40;
+		framecount = 0;
+		backcolor = Color(0, 0, 0, 0);
+		brightness = 255;
+		creation = 0;
+		framerate_interval = 1000.0 / framerate;
+		last_tics = Time::GetTime() + (long)framerate_interval;
+		next_tics_fps = Time::GetTime() + 1000;
+
+		InitOpenGL();
+
+		Text::Init();
+		Tilemap::Init();
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Initialize OpengGL
+	////////////////////////////////////////////////////////////
+	void InitOpenGL()
+	{
+		glViewport(0, 0, Player::GetWidth(), Player::GetHeight());
+		glShadeModel(GL_FLAT);
+
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(0, Player::GetWidth(), Player::GetHeight(), 0, -1, 1); 
+
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
-		glColor4f(0.0f, 0.0f, 0.0f, (float)(1.0f - brightness / 255.0f));
-		glBegin(GL_QUADS);
-			glVertex2i(0, 0);
-			glVertex2i(0, Player::GetHeight());
-			glVertex2i(Player::GetWidth(), Player::GetHeight());
-			glVertex2i(Player::GetWidth(), 0);
-		glEnd();
+
+		glEnable(GL_BLEND);
+
+		glClearColor((GLclampf)(backcolor.red   / 255.0f),
+					 (GLclampf)(backcolor.green / 255.0f),
+					 (GLclampf)(backcolor.blue  / 255.0f),
+					 (GLclampf)(backcolor.alpha / 255.0f));
+		glClearDepth(1.0);
+		glClear(GL_COLOR_BUFFER_BIT);
+		Player::SwapBuffers();
 	}
 
-	Player::SwapBuffers();
-}
-
-////////////////////////////////////////////////////////////
-/// Freeze screen
-////////////////////////////////////////////////////////////
-void Graphics::Freeze()
-{
-	// TODO
-}
-
-////////////////////////////////////////////////////////////
-/// Transition effect
-////////////////////////////////////////////////////////////
-void Graphics::Transition(int duration, std::string const& filename, int vague)
-{
-	// TODO
-}
-
-////////////////////////////////////////////////////////////
-/// Reset frames
-////////////////////////////////////////////////////////////
-void Graphics::FrameReset()
-{
-	last_tics = Time::GetTime();
-	next_tics_fps = Time::GetTime() + 1000;
-}
-
-////////////////////////////////////////////////////////////
-/// Wait frames
-////////////////////////////////////////////////////////////
-void Graphics::Wait(int duration)
-{
-	for(int i = duration; i > 0; i--) {
-		Update();
+	////////////////////////////////////////////////////////////
+	/// Exit
+	////////////////////////////////////////////////////////////
+	void Exit()
+	{
+		for (it_drawable_map = drawable_map.begin(); it_drawable_map != drawable_map.end(); it_drawable_map++) {
+			delete it_drawable_map->second;
+		}
+		drawable_map.clear();
+		Bitmap::DisposeBitmaps();
 	}
-}
 
-////////////////////////////////////////////////////////////
-/// Resize screen
-////////////////////////////////////////////////////////////
-void Graphics::ResizeScreen(int width, int height)
-{
-	Player::ResizeWindow(width, height);
-
-	glViewport(0, 0, width, height);
-	glShadeModel(GL_FLAT);
-
-	glMatrixMode(GL_PROJECTION);
-	glLoadIdentity();
-	glOrtho(0, width, height, 0, -1, 1); 
-
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-
-	glClear(GL_COLOR_BUFFER_BIT);
-
-	Player::SwapBuffers();
-}
-
-////////////////////////////////////////////////////////////
-/// Snap scree to bitmap
-////////////////////////////////////////////////////////////
-VALUE Graphics::SnapToBitmap()
-{
-	return Qnil;
-}
-
-////////////////////////////////////////////////////////////
-/// Fade out
-////////////////////////////////////////////////////////////
-void Graphics::FadeOut(int duration)
-{
-	int n = brightness / duration;
-	for (;duration > 0; duration--) {
-		brightness -= n;
-		Update();
+	////////////////////////////////////////////////////////////
+	/// Refresh all graphic objects
+	////////////////////////////////////////////////////////////
+	void RefreshAll()
+	{
+		for (it_drawable_map = drawable_map.begin(); it_drawable_map != drawable_map.end(); it_drawable_map++) {
+			it_drawable_map->second->RefreshBitmaps();
+		}
+		Bitmap::RefreshBitmaps();
 	}
-	if (brightness > 0) {
-		brightness = 0;
-		Update();
+
+	////////////////////////////////////////////////////////////
+	/// Wait
+	////////////////////////////////////////////////////////////
+	void TimerWait()
+	{
+		last_tics_wait = Time::GetTime();
 	}
-}
 
-
-////////////////////////////////////////////////////////////
-/// Fade in
-////////////////////////////////////////////////////////////
-void Graphics::FadeIn(int duration)
-{
-	int n = 255 / duration;
-	for (;duration > 0; duration--) {
-		brightness += n;
-		Update();
+	////////////////////////////////////////////////////////////
+	/// Continue
+	////////////////////////////////////////////////////////////
+	void TimerContinue()
+	{
+		last_tics += Time::GetTime() - last_tics_wait;
+		next_tics_fps += Time::GetTime() - last_tics_wait;
 	}
-	if (brightness < 255) {
-		brightness = 255;
-		Update();
-	}
-}
 
-////////////////////////////////////////////////////////////
-/// Properties
-////////////////////////////////////////////////////////////
-int Graphics::GetFrameRate()
-{
-	return framerate;
-}
-void Graphics::SetFrameRate(int nframerate)
-{
-	framerate = nframerate;
-	framerate_interval = 1000.0 / framerate;
-}
-int Graphics::GetFrameCount()
-{
-	return framecount;
-}
-void Graphics::SetFrameCount(int nframecount)
-{
-	framecount = nframecount;
-}
-VALUE Graphics::GetBackColor()
-{
-	return backcolor.GetARGSS();
-}
-void Graphics::SetBackColor(VALUE nbackcolor)
-{
-	backcolor = Color(nbackcolor);
-	glClearColor((GLclampf)(backcolor.red / 255.0f),
-				 (GLclampf)(backcolor.green / 255.0f),
-				 (GLclampf)(backcolor.blue / 255.0f),
-				 (GLclampf)(backcolor.alpha / 255.0f));
-}
-int Graphics::GetBrightness()
-{
-	return brightness;
-}
-void Graphics::SetBrightness(int nbrightness)
-{
-	brightness = nbrightness;
-}
+	////////////////////////////////////////////////////////////
+	/// Update
+	////////////////////////////////////////////////////////////
+	void Update()
+	{
+		// Player::getMainWindow().makeCurrent();
 
-////////////////////////////////////////////////////////////
-/// Sort ZObj
-////////////////////////////////////////////////////////////
-bool Graphics::SortZObj(ZObj &first, ZObj &second)
-{
-	if (first.GetZ() < second.GetZ()) return true;
-	else if (first.GetZ() > second.GetZ()) return false;
-	else return first.GetCreation() < second.GetCreation();
-}
+		static long tics;
+		// static long tics_fps = Time::GetTime();
+		static long frames = 0;
+		// static double waitframes = 0;
+		// static double cyclesleftover;
 
-////////////////////////////////////////////////////////////
-/// Register ZObj
-////////////////////////////////////////////////////////////
-void Graphics::RegisterZObj(long z, unsigned long id)
-{
-	creation += 1;
-	ZObj zobj(z, creation, id);
+		Player::Update();
+		/*if (waitframes >= 1) {
+			waitframes -= 1;
+			return;
+		}*/
+		tics = Time::GetTime();
 
-	zlist.push_back(zobj);
-	zlist.sort(SortZObj);
-}
-void Graphics::RegisterZObj(long z, unsigned long id, bool multiz)
-{
-	ZObj zobj(z, 999999, id);
-	zlist.push_back(zobj);
-	zlist.sort(SortZObj);
-}
+		std::cout << tics << std::endl;
 
-////////////////////////////////////////////////////////////
-/// Remove ZObj
-////////////////////////////////////////////////////////////
-struct remove_zobj_id : public std::binary_function<ZObj, ZObj, bool>
-{
-	remove_zobj_id(VALUE val) : id(val) {}
-	bool operator () (ZObj &obj) const {return obj.GetId() == id;}
-	unsigned long id;
-};
-void Graphics::RemoveZObj(unsigned long id)
-{
-	zlist.remove_if (remove_zobj_id(id));
-}
+		if ((tics - last_tics) >= framerate_interval) {// || (framerate_interval - tics + last_tics) < 12) {
+			//cyclesleftover = waitframes;
+			//waitframes = (double)(tics - last_tics) / framerate_interval - cyclesleftover;
+			//last_tics += (tics - last_tics);
+			last_tics = tics;
 
-////////////////////////////////////////////////////////////
-/// Update ZObj Z
-////////////////////////////////////////////////////////////
-void Graphics::UpdateZObj(unsigned long id, long z)
-{
-	for(it_zlist = zlist.begin(); it_zlist != zlist.end(); it_zlist++) {
-		if (it_zlist->GetId() == id) {
-			it_zlist->SetZ(z);
-			break;
+			DrawFrame();
+
+			framecount++;
+			frames++;
+
+			if (tics >= next_tics_fps) {
+				next_tics_fps += 1000;
+				fps = frames;
+				frames = 0;
+				
+				char title[255];
+	#ifdef MSVC
+				sprintf_s(title, 255, "%s - %d FPS", System::Title.c_str(), fps);
+	#else
+				sprintf(title, "%s - %d FPS", System::Title.c_str(), fps);
+	#endif
+				Player::getMainWindow().SetTitle(title);
+			}
+		}
+		else {
+			Time::SleepMs((long)(framerate_interval) - (tics - last_tics));
 		}
 	}
-	zlist.sort(SortZObj);
-}
+
+	////////////////////////////////////////////////////////////
+	/// Draw Frame
+	////////////////////////////////////////////////////////////
+	void DrawFrame()
+	{
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		for (it_zlist = zlist.begin(); it_zlist != zlist.end(); it_zlist++) {
+			drawable_map[it_zlist->GetId()]->Draw(it_zlist->GetZ());
+		}
+
+		if (brightness < 255) {
+			glDisable(GL_TEXTURE_2D);
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			glColor4f(0.0f, 0.0f, 0.0f, (float)(1.0f - brightness / 255.0f));
+			glBegin(GL_QUADS);
+				glVertex2i(0, 0);
+				glVertex2i(0, Player::GetHeight());
+				glVertex2i(Player::GetWidth(), Player::GetHeight());
+				glVertex2i(Player::GetWidth(), 0);
+			glEnd();
+		}
+
+		Player::SwapBuffers();
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Freeze screen
+	////////////////////////////////////////////////////////////
+	void Freeze()
+	{
+		// TODO
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Transition effect
+	////////////////////////////////////////////////////////////
+	void Transition(int duration, std::string const& filename, int vague)
+	{
+		// TODO
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Reset frames
+	////////////////////////////////////////////////////////////
+	void FrameReset()
+	{
+		last_tics = Time::GetTime();
+		next_tics_fps = Time::GetTime() + 1000;
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Wait frames
+	////////////////////////////////////////////////////////////
+	void Wait(int duration)
+	{
+		for(int i = duration; i > 0; i--) {
+			Update();
+		}
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Resize screen
+	////////////////////////////////////////////////////////////
+	void ResizeScreen(int width, int height)
+	{
+		Player::ResizeWindow(width, height);
+
+		glViewport(0, 0, width, height);
+		glShadeModel(GL_FLAT);
+
+		glMatrixMode(GL_PROJECTION);
+		glLoadIdentity();
+		glOrtho(0, width, height, 0, -1, 1); 
+
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+
+		glClear(GL_COLOR_BUFFER_BIT);
+
+		Player::SwapBuffers();
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Snap scree to bitmap
+	////////////////////////////////////////////////////////////
+	VALUE SnapToBitmap()
+	{
+		return Qnil;
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Fade out
+	////////////////////////////////////////////////////////////
+	void FadeOut(int duration)
+	{
+		int n = brightness / duration;
+		for (;duration > 0; duration--) {
+			brightness -= n;
+			Update();
+		}
+		if (brightness > 0) {
+			brightness = 0;
+			Update();
+		}
+	}
+
+
+	////////////////////////////////////////////////////////////
+	/// Fade in
+	////////////////////////////////////////////////////////////
+	void FadeIn(int duration)
+	{
+		int n = 255 / duration;
+		for (;duration > 0; duration--) {
+			brightness += n;
+			Update();
+		}
+		if (brightness < 255) {
+			brightness = 255;
+			Update();
+		}
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Properties
+	////////////////////////////////////////////////////////////
+	int GetFrameRate()
+	{
+		return framerate;
+	}
+	void SetFrameRate(int nframerate)
+	{
+		framerate = nframerate;
+		framerate_interval = 1000.0 / framerate;
+	}
+	int GetFrameCount()
+	{
+		return framecount;
+	}
+	void SetFrameCount(int nframecount)
+	{
+		framecount = nframecount;
+	}
+	VALUE GetBackColor()
+	{
+		return backcolor.GetARGSS();
+	}
+	void SetBackColor(VALUE nbackcolor)
+	{
+		backcolor = Color(nbackcolor);
+		glClearColor((GLclampf)(backcolor.red / 255.0f),
+					 (GLclampf)(backcolor.green / 255.0f),
+					 (GLclampf)(backcolor.blue / 255.0f),
+					 (GLclampf)(backcolor.alpha / 255.0f));
+	}
+	int GetBrightness()
+	{
+		return brightness;
+	}
+	void SetBrightness(int nbrightness)
+	{
+		brightness = nbrightness;
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Sort ZObj
+	////////////////////////////////////////////////////////////
+	bool SortZObj(ZObj &first, ZObj &second)
+	{
+		if (first.GetZ() < second.GetZ()) return true;
+		else if (first.GetZ() > second.GetZ()) return false;
+		else return first.GetCreation() < second.GetCreation();
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Register ZObj
+	////////////////////////////////////////////////////////////
+	void RegisterZObj(long z, unsigned long id)
+	{
+		creation += 1;
+		ZObj zobj(z, creation, id);
+
+		zlist.push_back(zobj);
+		zlist.sort(SortZObj);
+	}
+	void RegisterZObj(long z, unsigned long id, bool multiz)
+	{
+		ZObj zobj(z, 999999, id);
+		zlist.push_back(zobj);
+		zlist.sort(SortZObj);
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Remove ZObj
+	////////////////////////////////////////////////////////////
+	struct remove_zobj_id : public std::binary_function<ZObj, ZObj, bool>
+	{
+		remove_zobj_id(VALUE val) : id(val) {}
+		bool operator () (ZObj &obj) const {return obj.GetId() == id;}
+		unsigned long id;
+	};
+	void RemoveZObj(unsigned long id)
+	{
+		zlist.remove_if (remove_zobj_id(id));
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Update ZObj Z
+	////////////////////////////////////////////////////////////
+	void UpdateZObj(unsigned long id, long z)
+	{
+		for(it_zlist = zlist.begin(); it_zlist != zlist.end(); it_zlist++) {
+			if (it_zlist->GetId() == id) {
+				it_zlist->SetZ(z);
+				break;
+			}
+		}
+		zlist.sort(SortZObj);
+	}
+} // namespace Graphics

@@ -87,21 +87,21 @@ Window::~Window() {
 /// Class Is Window Disposed?
 ////////////////////////////////////////////////////////////
 bool Window::IsDisposed(VALUE id) {
-	return Graphics::drawable_map.count(id) == 0;
+	return Graphics::drawableMap().count(id) == 0;
 }
 
 ////////////////////////////////////////////////////////////
 /// Class New Window
 ////////////////////////////////////////////////////////////
 void Window::New(VALUE id) {
-	Graphics::drawable_map[id] = new Window(id);
+	Graphics::drawableMap()[id] = new Window(id);
 }
 
 ////////////////////////////////////////////////////////////
 /// Class Get Window
 ////////////////////////////////////////////////////////////
 Window* Window::Get(VALUE id) {
-	return (Window*)Graphics::drawable_map[id];
+	return (Window*)Graphics::drawableMap()[id];
 }
 
 ////////////////////////////////////////////////////////////
@@ -114,9 +114,9 @@ void Window::Dispose(unsigned long id) {
 	else {
 		Graphics::RemoveZObj(id);
 	}
-	delete Graphics::drawable_map[id];
-	std::map<unsigned long, Drawable*>::iterator it = Graphics::drawable_map.find(id);
-	Graphics::drawable_map.erase(it);
+	delete Graphics::drawableMap()[id];
+	std::map<unsigned long, Drawable*>::iterator it = Graphics::drawableMap().find(id);
+	Graphics::drawableMap().erase(it);
 }
 
 ////////////////////////////////////////////////////////////

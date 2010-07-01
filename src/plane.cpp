@@ -73,21 +73,21 @@ Plane::~Plane() {
 /// Class Is Plane Disposed?
 ////////////////////////////////////////////////////////////
 bool Plane::IsDisposed(VALUE id) {
-	return Graphics::drawable_map.count(id) == 0;
+	return Graphics::drawableMap().count(id) == 0;
 }
 
 ////////////////////////////////////////////////////////////
 /// Class New Plane
 ////////////////////////////////////////////////////////////
 void Plane::New(VALUE id) {
-	Graphics::drawable_map[id] = new Plane(id);
+	Graphics::drawableMap()[id] = new Plane(id);
 }
 
 ////////////////////////////////////////////////////////////
 /// Class Get Plane
 ////////////////////////////////////////////////////////////
 Plane* Plane::Get(VALUE id) {
-	return (Plane*)Graphics::drawable_map[id];
+	return (Plane*)Graphics::drawableMap()[id];
 }
 
 ////////////////////////////////////////////////////////////
@@ -100,9 +100,9 @@ void Plane::Dispose(unsigned long id) {
 	else {
 		Graphics::RemoveZObj(id);
 	}
-	delete Graphics::drawable_map[id];
-	std::map<unsigned long, Drawable*>::iterator it = Graphics::drawable_map.find(id);
-	Graphics::drawable_map.erase(it);
+	delete Graphics::drawableMap()[id];
+	std::map<unsigned long, Drawable*>::iterator it = Graphics::drawableMap().find(id);
+	Graphics::drawableMap().erase(it);
 }
 
 ////////////////////////////////////////////////////////////

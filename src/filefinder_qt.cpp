@@ -27,183 +27,188 @@
 ////////////////////////////////////////////////////////////
 #include <iostream>
 #include <fstream>
+#include <vector>
+
 #include "filefinder_qt.h"
 #include "system.h"
 // #include "registry.h"
 #include "options.h"
 
-////////////////////////////////////////////////////////////
-/// Global Variables
-////////////////////////////////////////////////////////////
-std::string FileFinder::rtp_paths[3];
-std::string FileFinder::fonts_path;
+namespace FileFinder
+{
+	namespace
+	{
+		////////////////////////////////////////////////////////////
+		/// Global Variables
+		////////////////////////////////////////////////////////////
+		std::string rtp_paths[3];
+		std::string fonts_path;
 
-////////////////////////////////////////////////////////////
-/// Find image
-////////////////////////////////////////////////////////////
-void FileFinder::Init() {
-/*
-	for (int i = 0; i < 3; i++) {
-		if (System::RTPS[i] == "") continue;
-		if (RPGMAKER == RPGXP) {
-			rtp_paths[i] = Registry::ReadStrValue(HKEY_CURRENT_USER, "SOFTWARE\\Enterbrain\\RGSS\\RTP", System::RTPS[i]);
-			if (rtp_paths[i].size() == 0) {
-				rtp_paths[i] = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, "SOFTWARE\\Enterbrain\\RGSS\\RTP", System::RTPS[i]);
+		std::vector< char const* > imageSuffix, musicSuffix, fontSuffix;
+
+		////////////////////////////////////////////////////////////
+		/// Check if file exists
+		////////////////////////////////////////////////////////////
+		bool fexists(std::string const& filename) {
+			std::ifstream file(filename.c_str());
+			return file.is_open();
+		}
+
+		////////////////////////////////////////////////////////////
+		/// Make path
+		////////////////////////////////////////////////////////////
+		std::string slasher(std::string const& str) {
+			std::string ret;
+			for(std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
+				ret.push_back( (*it == '\\') ? '/' : *it );
+			}
+			return ret;
+		}
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Find image
+	////////////////////////////////////////////////////////////
+	void Init() {
+	/*
+		for (int i = 0; i < 3; i++) {
+			if (System::RTPS[i] == "") continue;
+			if (RPGMAKER == RPGXP) {
+				rtp_paths[i] = Registry::ReadStrValue(HKEY_CURRENT_USER, "SOFTWARE\\Enterbrain\\RGSS\\RTP", System::RTPS[i]);
+				if (rtp_paths[i].size() == 0) {
+					rtp_paths[i] = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, "SOFTWARE\\Enterbrain\\RGSS\\RTP", System::RTPS[i]);
+				}
+			}
+			else if (RPGMAKER == RPGVX) {
+				rtp_paths[i] = Registry::ReadStrValue(HKEY_CURRENT_USER, "SOFTWARE\\Enterbrain\\RGSS2\\RTP", System::RTPS[i]);
+				if (rtp_paths[i].size() == 0) {
+					rtp_paths[i] = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, "SOFTWARE\\Enterbrain\\RGSS2\\RTP", System::RTPS[i]);
+				}
 			}
 		}
-		else if (RPGMAKER == RPGVX) {
-			rtp_paths[i] = Registry::ReadStrValue(HKEY_CURRENT_USER, "SOFTWARE\\Enterbrain\\RGSS2\\RTP", System::RTPS[i]);
-			if (rtp_paths[i].size() == 0) {
-				rtp_paths[i] = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, "SOFTWARE\\Enterbrain\\RGSS2\\RTP", System::RTPS[i]);
+	 */
+		fonts_path = "";
+	/*
+	#if MSVC
+		wchar_t* dir = new wchar_t[256];
+	#else
+		char* dir  = new char[256];
+	#endif
+		int n = GetWindowsDirectory(dir, 256);
+		if (n > 0) {
+			char* str = (char*)dir;
+			for(unsigned int i = 0; i < n * sizeof(dir[0]); i++) {
+				if (str[i] != '\0' ) {
+					fonts_path += str[i];
+				}
+			}
+			fonts_path += "\\Fonts\\";
+			std::string string_value = fonts_path;
+		}
+		delete dir;
+	 */
+
+		imageSuffix.push_back(".bmp");
+		imageSuffix.push_back(".gif");
+		imageSuffix.push_back(".jpg");
+		imageSuffix.push_back(".jpeg");
+		imageSuffix.push_back(".png");
+
+		musicSuffix.push_back(".wav");
+		musicSuffix.push_back(".mid");
+		musicSuffix.push_back(".midi");
+		musicSuffix.push_back(".ogg");
+		musicSuffix.push_back(".mp3");
+
+		fontSuffix.push_back(".ttf");
+		fontSuffix.push_back(".otf");
+		fontSuffix.push_back(".tfb");
+		fontSuffix.push_back(".fnt");
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Find image
+	////////////////////////////////////////////////////////////
+	std::string FindImage(std::string const& name) {
+		std::string target = slasher(name), path = target;
+
+		if (fexists(path)) return path;
+		for( std::vector< char const* >::const_iterator it = imageSuffix.begin(); it < imageSuffix.end(); ++it) {
+			path = target + *it;
+			if (fexists(path)) return path;
+		}
+		for (int i = 0; i < 3; i++) {
+			if ( !rtp_paths[i].empty() ) {
+				std::string rtp_path = slasher(rtp_paths[i]);
+				rtp_path += target;
+				path = rtp_path;
+				if (fexists(path)) return path;
+				for( std::vector< char const* >::const_iterator it = imageSuffix.begin(); it < imageSuffix.end(); ++it) {
+					path = rtp_path + target + *it;
+					if (fexists(path)) return path;
+				}
 			}
 		}
+		return std::string();
 	}
- */
-	fonts_path = "";
-/*
-#if MSVC
-	wchar_t* dir = new wchar_t[256];
-#else
-	char* dir  = new char[256];
-#endif
-	int n = GetWindowsDirectory(dir, 256);
-	if (n > 0) {
-		char* str = (char*)dir;
-		for(unsigned int i = 0; i < n * sizeof(dir[0]); i++) {
-			if (str[i] != '\0' ) {
-				fonts_path += str[i];
+
+	////////////////////////////////////////////////////////////
+	/// Find music
+	////////////////////////////////////////////////////////////
+	std::string FindMusic(std::string const& name) {
+		std::string target = slasher(name), path = target;
+
+		if (fexists(path)) return path;
+		for( std::vector< char const* >::const_iterator it = musicSuffix.begin(); it < musicSuffix.end(); ++it) {
+			path = target + *it;
+			if (fexists(path)) return path;
+		}
+		for (int i = 0; i < 3; i++) {
+			if (rtp_paths[i] != "") {
+				std::string rtp_path = slasher(rtp_paths[i]);
+				rtp_path += target;
+				path = rtp_path;
+				if (fexists(path)) return path;
+				for( std::vector< char const* >::const_iterator it = musicSuffix.begin(); it < musicSuffix.end(); ++it) {
+					path = rtp_path + target + *it;
+					if (fexists(path)) return path;
+				}
 			}
 		}
-		fonts_path += "\\Fonts\\";
-		std::string string_value = fonts_path;
+		return std::string();
 	}
-	delete dir;
- */
-}
 
-////////////////////////////////////////////////////////////
-/// Check if file exists
-////////////////////////////////////////////////////////////
-bool fexists(std::string const& filename) {
-	std::ifstream file(filename.c_str());
-	return file.is_open();
-}
+	////////////////////////////////////////////////////////////
+	/// Find font
+	////////////////////////////////////////////////////////////
+	std::string FindFont(std::string const& name) {
+		std::string target = slasher(name), path = target;
+		if (fexists(path)) return path;
+		path = target; path += ".ttf";
+		if (fexists(path)) return path;
 
-////////////////////////////////////////////////////////////
-/// Make path
-////////////////////////////////////////////////////////////
-std::string slasher(std::string const& str) {
-	std::string ret;
-	for(std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
-		ret.push_back( (*it == '\\') ? '/' : *it );
-	}
-	return ret;
-}
-
-////////////////////////////////////////////////////////////
-/// Find image
-////////////////////////////////////////////////////////////
-std::string FileFinder::FindImage(std::string const& name) {
-	std::string target = slasher(name), path = target;
-	if (fexists(path)) return path;
-	path = target; path += ".bmp";
-	if (fexists(path)) return path;
-	path = target; path += ".gif";
-	if (fexists(path)) return path;
-	path = target; path += ".jpg";
-	if (fexists(path)) return path;
-	path = target; path += ".jpeg";
-	if (fexists(path)) return path;
-	path = target; path += ".png";
-	if (fexists(path)) return path;
-	for (int i = 0; i < 3; i++) {
-		if (rtp_paths[i] != "") {
-			std::string rtp_path = slasher(rtp_paths[i]);
-			rtp_path += target;
-			path = rtp_path;
+		path = fonts_path; path += target;
+		if (fexists(path)) return path;
+		path = fonts_path; path += target; path += ".ttf";
+		if (fexists(path)) return path;
+	/*
+		std::string real_target;
+		real_target = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts", target + " (TrueType)");
+		if (real_target.length() > 0) {
+			path = real_target;
 			if (fexists(path)) return path;
-			path = rtp_path; path += ".bmp";
-			if (fexists(path)) return path;
-			path = rtp_path; path += ".gif";
-			if (fexists(path)) return path;
-			path = rtp_path; path += ".jpg";
-			if (fexists(path)) return path;
-			path = rtp_path; path += ".jpeg";
-			if (fexists(path)) return path;
-			path = rtp_path; path += ".png";
+			path = fonts_path; path += real_target;
 			if (fexists(path)) return path;
 		}
-	}
-	return "";
-}
 
-////////////////////////////////////////////////////////////
-/// Find music
-////////////////////////////////////////////////////////////
-std::string FileFinder::FindMusic(std::string const& name) {
-	std::string target = slasher(name), path = target;
-	if (fexists(path)) return path;
-	path = target; path += ".wav";
-	if (fexists(path)) return path;
-	path = target; path += ".mid";
-	if (fexists(path)) return path;
-	path = target; path += ".midi";
-	if (fexists(path)) return path;
-	path = target; path += ".ogg";
-	if (fexists(path)) return path;
-	path = target; path += ".mp3";
-	if (fexists(path)) return path;
-	for (int i = 0; i < 3; i++) {
-		if (rtp_paths[i] != "") {
-			std::string rtp_path = slasher(rtp_paths[i]);
-			rtp_path += target;
-			path = rtp_path;
+		real_target = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion\\Fonts", target + " (TrueType)");
+		if (real_target.length() > 0) {
+			path = real_target;
 			if (fexists(path)) return path;
-			path = rtp_path; path += ".wav";
-			if (fexists(path)) return path;
-			path = rtp_path; path += ".mid";
-			if (fexists(path)) return path;
-			path = rtp_path; path += ".midi";
-			if (fexists(path)) return path;
-			path = rtp_path; path += ".ogg";
-			if (fexists(path)) return path;
-			path = rtp_path; path += ".mp3";
+			path = fonts_path; path += real_target;
 			if (fexists(path)) return path;
 		}
+	 */
+		return std::string();
 	}
-	return "";
-}
-
-////////////////////////////////////////////////////////////
-/// Find font
-////////////////////////////////////////////////////////////
-std::string FileFinder::FindFont(std::string const& name) {
-	std::string target = slasher(name), path = target;
-	if (fexists(path)) return path;
-	path = target; path += ".ttf";
-	if (fexists(path)) return path;
-
-	path = fonts_path; path += target;
-	if (fexists(path)) return path;
-	path = fonts_path; path += target; path += ".ttf";
-	if (fexists(path)) return path;
-/*
-	std::string real_target;
-	real_target = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts", target + " (TrueType)");
-	if (real_target.length() > 0) {
-		path = real_target;
-		if (fexists(path)) return path;
-		path = fonts_path; path += real_target;
-		if (fexists(path)) return path;
-	}
-
-	real_target = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion\\Fonts", target + " (TrueType)");
-	if (real_target.length() > 0) {
-		path = real_target;
-		if (fexists(path)) return path;
-		path = fonts_path; path += real_target;
-		if (fexists(path)) return path;
-	}
- */
-	return "";
-}
+} // namespace FileFinder

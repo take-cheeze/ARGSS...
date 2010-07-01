@@ -25,6 +25,8 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <cassert>
+
 #include "player.h"
 #include "options.h"
 #include "system.h"
@@ -34,125 +36,138 @@
 #include "audio.h"
 #include "argss.h"
 
-////////////////////////////////////////////////////////////
-/// Global Variables
-////////////////////////////////////////////////////////////
-WindowUi* Player::main_window;
-bool Player::focus;
-bool Player::alt_pressing;
-
-////////////////////////////////////////////////////////////
-/// Initialize
-////////////////////////////////////////////////////////////
-void Player::Init()
+namespace Player
 {
-	main_window = new WindowUi(System::Width, System::Height, System::Title, true, RUN_FULLSCREEN);
+	namespace
+	{
+		////////////////////////////////////////////////////////////
+		/// Global Variables
+		////////////////////////////////////////////////////////////
+		WindowUi* main_window;
+		bool focus;
+		bool alt_pressing;
+	} // namespace
 
-	focus = true;
-	alt_pressing = false;
-}
+	WindowUi& getMainWindow()
+	{
+		assert(main_window);
+		return *main_window;
+	}
 
-////////////////////////////////////////////////////////////
-/// Initialize
-////////////////////////////////////////////////////////////
-void Player::Update()
-{
-	Event evnt;
+	////////////////////////////////////////////////////////////
+	/// Initialize
+	////////////////////////////////////////////////////////////
+	void Init()
+	{
+		main_window = new WindowUi(System::Width, System::Height, System::Title, true, RUN_FULLSCREEN);
 
-	while (true) {
-		bool result = main_window->GetEvent(evnt);
-		if (evnt.type == Event::Quit) {
-			ARGSS::Exit();
-			break;
-		}
-		else if (evnt.type == Event::KeyDown) {
-			if (evnt.param1 == Input::Keys::ALT) {
-				alt_pressing = true;
+		focus = true;
+		alt_pressing = false;
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Initialize
+	////////////////////////////////////////////////////////////
+	void Update()
+	{
+		Event evnt;
+
+		while (true) {
+			bool result = getMainWindow().GetEvent(evnt);
+			if (evnt.type == Event::Quit) {
+				ARGSS::Exit();
+				break;
 			}
-			else if (evnt.param1 == Input::Keys::RETURN && alt_pressing) {
-				ToggleFullscreen();
-				alt_pressing = false;
-			}
-		}
-		else if (evnt.type == Event::KeyUp) {
-			if (evnt.param1 == Input::Keys::ALT) {
-				alt_pressing = false;
-			}
-		}
-		else if (PAUSE_GAME_WHEN_FOCUS_LOST) {
-			if (evnt.type == Event::GainFocus && !focus) {
-				focus = true;
-				Graphics::TimerContinue();
-				if (PAUSE_AUDIO_WHEN_FOCUS_LOST) {
-					Audio::Continue();
+			else if (evnt.type == Event::KeyDown) {
+				if (evnt.param1 == Input::Keys::ALT) {
+					alt_pressing = true;
+				}
+				else if (evnt.param1 == Input::Keys::RETURN && alt_pressing) {
+					ToggleFullscreen();
+					alt_pressing = false;
 				}
 			}
-			else if (evnt.type == Event::LostFocus && focus) {
-				focus = false;
-				Input::ClearKeys();
-				Graphics::TimerWait();
-				if (PAUSE_AUDIO_WHEN_FOCUS_LOST) {
-					Audio::Pause();
+			else if (evnt.type == Event::KeyUp) {
+				if (evnt.param1 == Input::Keys::ALT) {
+					alt_pressing = false;
 				}
 			}
-		}
+			else if (PAUSE_GAME_WHEN_FOCUS_LOST) {
+				if (evnt.type == Event::GainFocus && !focus) {
+					focus = true;
+					Graphics::TimerContinue();
+					if (PAUSE_AUDIO_WHEN_FOCUS_LOST) {
+						Audio::Continue();
+					}
+				}
+				else if (evnt.type == Event::LostFocus && focus) {
+					focus = false;
+					Input::ClearKeys();
+					Graphics::TimerWait();
+					if (PAUSE_AUDIO_WHEN_FOCUS_LOST) {
+						Audio::Pause();
+					}
+				}
+			}
 
-		if (!result && !(PAUSE_GAME_WHEN_FOCUS_LOST && !focus)) {
-			break;
+			if (!result && !(PAUSE_GAME_WHEN_FOCUS_LOST && !focus)) {
+				break;
+			}
 		}
 	}
-}
 
-////////////////////////////////////////////////////////////
-/// Exit
-////////////////////////////////////////////////////////////
-void Player::Exit() {
-	Graphics::Exit();
-	Output::None();
-	main_window->Dispose();
-}
+	////////////////////////////////////////////////////////////
+	/// Exit
+	////////////////////////////////////////////////////////////
+	void Exit()
+	{
+		Graphics::Exit();
+		Output::None();
+		getMainWindow().Dispose();
+	}
 
-////////////////////////////////////////////////////////////
-/// Switch fullscreen
-////////////////////////////////////////////////////////////
-void Player::ToggleFullscreen()
-{
-	bool toggle = !main_window->IsFullscreen();
-	main_window->Dispose();
-	delete main_window;
-	main_window = new WindowUi(System::Width, System::Height, System::Title, true, toggle);
-	Graphics::InitOpenGL();
-	Graphics::RefreshAll();
-}
+	////////////////////////////////////////////////////////////
+	/// Switch fullscreen
+	////////////////////////////////////////////////////////////
+	void ToggleFullscreen()
+	{
+		bool toggle = !getMainWindow().IsFullscreen();
+		getMainWindow().Dispose();
+		delete main_window;
+		main_window = new WindowUi(System::Width, System::Height, System::Title, true, toggle);
+		Graphics::InitOpenGL();
+		Graphics::RefreshAll();
+	}
 
-////////////////////////////////////////////////////////////
-/// Resize window
-////////////////////////////////////////////////////////////
-void Player::ResizeWindow(long width, long height)
-{
-	main_window->Resize(width, height);
-}
+	////////////////////////////////////////////////////////////
+	/// Resize window
+	////////////////////////////////////////////////////////////
+	void ResizeWindow(long width, long height)
+	{
+		getMainWindow().Resize(width, height);
+	}
 
-////////////////////////////////////////////////////////////
-/// Get window width
-////////////////////////////////////////////////////////////
-int Player::GetWidth()
-{
-	return main_window->GetWidth();
-}
+	////////////////////////////////////////////////////////////
+	/// Get window width
+	////////////////////////////////////////////////////////////
+	int GetWidth()
+	{
+		return getMainWindow().GetWidth();
+	}
 
-////////////////////////////////////////////////////////////
-/// Get window height
-////////////////////////////////////////////////////////////
-int Player::GetHeight()
-{
-	return main_window->GetHeight();
-}
+	////////////////////////////////////////////////////////////
+	/// Get window height
+	////////////////////////////////////////////////////////////
+	int GetHeight()
+	{
+		return getMainWindow().GetHeight();
+	}
 
-////////////////////////////////////////////////////////////
-/// Swap Buffers
-////////////////////////////////////////////////////////////
-void Player::SwapBuffers()
-{
-	main_window->SwapBuffers();
-}
+	////////////////////////////////////////////////////////////
+	/// Swap Buffers
+	////////////////////////////////////////////////////////////
+	void SwapBuffers()
+	{
+		getMainWindow().SwapBuffers();
+	}
+} // namespace Player
