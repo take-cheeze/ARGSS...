@@ -72,6 +72,11 @@ namespace Graphics
 	void RemoveZObj(unsigned long id);
 	void UpdateZObj(unsigned long id, long z);
 
+	int getFPS();
+	std::map<unsigned long, Drawable*>& drawableMap();
+	void incrementCreation();
+	long getCreation();
+/*
 	extern int fps;
 	extern int framerate;
 	extern int framecount;
@@ -88,6 +93,7 @@ namespace Graphics
 
 	extern std::list<ZObj> zlist;
 	extern std::list<ZObj>::iterator it_zlist;
+ */
 } // namespace Graphics
 
 #endif

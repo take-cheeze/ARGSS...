@@ -14,7 +14,7 @@ public:
 	virtual ~WindowUi();
 
 	void Dispose();
-	void SwapBuffers() { swapBuffers(); }
+	void SwapBuffers();
 	void Resize(long nwidth, long nheight) { resize(nwidth, nheight); }
 	void SetTitle(std::string const& title) { setWindowTitle( title.c_str() ); }
 	void ToggleFullscreen() { showFullScreen(); }

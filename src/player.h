@@ -46,9 +46,12 @@ namespace Player
 
 	void SwapBuffers();
 
+	WindowUi& getMainWindow();
+/*
 	extern WindowUi* main_window;
 	extern bool focus;
 	extern bool alt_pressing;
+ */
 } // namespace Player
 
 #endif

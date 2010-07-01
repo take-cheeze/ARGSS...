@@ -50,12 +50,18 @@ RUBY_BUILD = i486-linux
 ifeq ($(RUBY_VERSION),1.8)
 CFLAGS += -I/usr/lib/ruby/$(RUBY_VERSION)/$(RUBY_BUILD) -DRUBY_VERSION_1_8
 LIBS += -lruby$(RUBY_VERSION)
+else ifeq ($(RUBY_VERSION),1.9.0)
+CFLAGS += \
+	-I/usr/include/ruby-$(RUBY_VERSION) \
+	-I/usr/include/ruby-$(RUBY_VERSION)/$(RUBY_BUILD)
+LIBS += -lruby1.9
 else
 CFLAGS += \
 	-I/usr/include/ruby-$(RUBY_VERSION) \
 	-I/usr/include/ruby-$(RUBY_VERSION)/$(RUBY_BUILD)
 LIBS += -lruby-$(RUBY_VERSION)
 endif
+
 CFLAGS += -include /usr/include/time.h
 
 
