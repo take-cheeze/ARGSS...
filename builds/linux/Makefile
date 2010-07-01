@@ -3,9 +3,9 @@ TARGET = ARGSS
 BIN_DIR = ../../bin
 
 SRC_DIR = ../../src
-SRC_CXX = $(wildcard $(SRC_DIR)/*.cpp)
+SRC_CXX = $(wildcard $(SRC_DIR)/*.cxx)
 OBJS_DIR = ./objs
-OBJS_CXX = $(subst $(SRC_DIR), $(OBJS_DIR), $(SRC_CXX:.cpp=.o))
+OBJS_CXX = $(subst $(SRC_DIR), $(OBJS_DIR), $(SRC_CXX:.cxx=.o))
 NO_WIN32_OBJS = $(subst $(OBJS_DIR)/registry.o, , $(patsubst $(OBJS_DIR)/%_win32.o, , $(OBJS_CXX)))
 OBJS = $(NO_WIN32_OBJS) $(wildcard src/SOIL/projects/makefile/obj/*.o)
 
@@ -82,7 +82,7 @@ run : $(TARGET)
 profile : run
 	gprof $(BIN_DIR)/$(TARGET) gmon.out > $(TARGET).profile
 
-$(OBJS_DIR)/%.o : $(SRC_DIR)/%.cpp
+$(OBJS_DIR)/%.o : $(SRC_DIR)/%.cxx
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 $(OBJS_DIR)/%.o : $(LINUX_SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@

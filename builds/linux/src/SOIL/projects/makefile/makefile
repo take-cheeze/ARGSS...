@@ -26,7 +26,11 @@ SRCNAMES = \
 OBJ = $(addprefix $(OBJDIR)/, $(notdir $(SRCNAMES:.c=.o)))
 BIN = $(LIBDIR)/$(LIB)
 
-all: $(BIN)
+all: create_dir $(BIN)
+
+create_dir :
+	mkdir -p obj
+	mkdir -p ../../lib
 
 $(BIN): $(OBJ)
 	ar r $(BIN) $(OBJ)
