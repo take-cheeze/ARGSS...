@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_TONE_H_
-#define _ARGSS_TONE_H_
+#ifndef _ARGSS_TONE_HXX_
+#define _ARGSS_TONE_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -37,7 +37,8 @@ namespace ARGSS
 {
 	namespace ATone
 	{
-		extern VALUE id;
+		VALUE& getID();
+
 		void Init();
 		VALUE New(double r, double g, double b, double gray);
 		VALUE New();

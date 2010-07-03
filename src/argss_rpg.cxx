@@ -34,42 +34,46 @@ namespace ARGSS
 {
 	namespace ARPG
 	{
-		////////////////////////////////////////////////////////////
-		/// Global Variables
-		////////////////////////////////////////////////////////////
-		VALUE id;
-		VALUE Map_id;
-		VALUE MapInfo_id;
-		VALUE Event_id;
-		VALUE EventPage_id;
-		VALUE EventPageCondition_id;
-		VALUE EventPageGraphic_id;
-		VALUE EventCommand_id;
-		VALUE MoveRoute_id;
-		VALUE MoveCommand_id;
-		VALUE Actor_id;
-		VALUE Class_id;
-		VALUE ClassLearning_id;
-		VALUE Skill_id;
-		VALUE Item_id;
-		VALUE Weapon_id;
-		VALUE Armor_id;
-		VALUE Enemy_id;
-		VALUE EnemyAction_id;
-		VALUE Troop_id;
-		VALUE TroopMember_id;
-		VALUE TroopPage_id;
-		VALUE TroopPageCondition_id;
-		VALUE State_id;
-		VALUE Animation_id;
-		VALUE AnimationFrame_id;
-		VALUE AnimationTiming_id;
-		VALUE Tileset_id;
-		VALUE CommonEvent_id;
-		VALUE System_id;
-		VALUE SystemWords_id;
-		VALUE SystemTestBattler_id;
-		VALUE AudioFile_id;
+		namespace
+		{
+			////////////////////////////////////////////////////////////
+			/// Global Variables
+			////////////////////////////////////////////////////////////
+			VALUE id;
+			VALUE Map_id;
+			VALUE MapInfo_id;
+			VALUE Event_id;
+			VALUE EventPage_id;
+			VALUE EventPageCondition_id;
+			VALUE EventPageGraphic_id;
+			VALUE EventCommand_id;
+			VALUE MoveRoute_id;
+			VALUE MoveCommand_id;
+			VALUE Actor_id;
+			VALUE Class_id;
+			VALUE ClassLearning_id;
+			VALUE Skill_id;
+			VALUE Item_id;
+			VALUE Weapon_id;
+			VALUE Armor_id;
+			VALUE Enemy_id;
+			VALUE EnemyAction_id;
+			VALUE Troop_id;
+			VALUE TroopMember_id;
+			VALUE TroopPage_id;
+			VALUE TroopPageCondition_id;
+			VALUE State_id;
+			VALUE Animation_id;
+			VALUE AnimationFrame_id;
+			VALUE AnimationTiming_id;
+			VALUE Tileset_id;
+			VALUE CommonEvent_id;
+			VALUE System_id;
+			VALUE SystemWords_id;
+			VALUE SystemTestBattler_id;
+			VALUE AudioFile_id;
+		} // namespace
+		VALUE& getID() { return id; }
 
 		////////////////////////////////////////////////////////////
 		/// ARGSS RPG ruby functions

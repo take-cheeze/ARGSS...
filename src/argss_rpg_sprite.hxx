@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_RPG_SPRITE_H_
-#define _ARGSS_RPG_SPRITE_H_
+#ifndef _ARGSS_RPG_SPRITE_HXX_
+#define _ARGSS_RPG_SPRITE_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -39,7 +39,6 @@ namespace ARGSS
 	{
 		namespace ASprite
 		{
-			extern VALUE id;
 			void Init();
 
 			VALUE rinitialize(int argc, VALUE* argv, VALUE self);

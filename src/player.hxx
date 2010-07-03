@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _PLAYER_H_
-#define _PLAYER_H_
+#ifndef _PLAYER_HXX_
+#define _PLAYER_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -47,11 +47,6 @@ namespace Player
 	void SwapBuffers();
 
 	WindowUi& getMainWindow();
-/*
-	extern WindowUi* main_window;
-	extern bool focus;
-	extern bool alt_pressing;
- */
 } // namespace Player
 
 #endif

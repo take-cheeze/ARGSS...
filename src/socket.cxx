@@ -43,7 +43,7 @@ void Socket::Connect(const std::string& host, unsigned short port) {
 	hostAddr.sin_port = htons(port);
 
 	if (connect(m_Socket, (struct sockaddr*)&hostAddr, sizeof(hostAddr))) {
-		rb_raise(ARGSS::AError::id, "Could not connect to the host, make sure the host address is valid and the port is correct.");
+		rb_raise(ARGSS::AError::getID(), "Could not connect to the host, make sure the host address is valid and the port is correct.");
 	}
 }
 
@@ -54,12 +54,12 @@ void Socket::Listen(unsigned short port, int maxclients) {
 	machineAddr.sin_port = htons(port);
 
 	if (bind(m_Socket, (struct sockaddr*)&machineAddr, sizeof(machineAddr))) {
-		rb_raise(ARGSS::AError::id, "Could not bind the socket, port specified might be used.");
+		rb_raise(ARGSS::AError::getID(), "Could not bind the socket, port specified might be used.");
 		return;
 	}
 
 	if (listen(m_Socket, maxclients)) {
-		rb_raise(ARGSS::AError::id, "Could not set the socket to listening mode, make sure the arguments are right.");
+		rb_raise(ARGSS::AError::getID(), "Could not set the socket to listening mode, make sure the arguments are right.");
 	}
 }
 
@@ -67,12 +67,12 @@ Buffer Socket::Receive() {
 	Buffer buffer(0);
 	unsigned short msglen = 0;
 	if (recv(m_Socket, (char*)&msglen, 2, 0) <= 0) {
-		rb_raise(ARGSS::AError::id, "Could not receive the message length.");
+		rb_raise(ARGSS::AError::getID(), "Could not receive the message length.");
 	} else {
 		buffer = Buffer(msglen);
 		char* pBufferData = buffer.GetData();
 		if (recv(m_Socket, pBufferData, msglen, 0) <= 0) {
-			rb_raise(ARGSS::AError::id, "Could not receive the message.");
+			rb_raise(ARGSS::AError::getID(), "Could not receive the message.");
 		}
 	}
 
@@ -87,7 +87,7 @@ void Socket::Send(Buffer buffer) {
 	memcpy(pFinalBuffer + 2, buffer.GetData(), bufferSize);
 
 	if (send(m_Socket, pFinalBuffer, 2 + bufferSize, 0) <= 0) {
-		rb_raise(ARGSS::AError::id, "Could not send the message.");
+		rb_raise(ARGSS::AError::getID(), "Could not send the message.");
 	}
 
 	delete[] pFinalBuffer;

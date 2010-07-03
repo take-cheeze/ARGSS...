@@ -22,8 +22,11 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _INPUT_KEYS_H_
-#define _INPUT_KEYS_H_
+#ifndef _INPUT_KEYS_HXX_
+#define _INPUT_KEYS_HXX_
+
+#include "argss_ruby.hxx"
+
 
 ////////////////////////////////////////////////////////////
 /// Keys namespace
@@ -175,8 +178,8 @@ namespace Input
 		}; // enum InputKey
 	} // namespace Keys
 
-	Keys::InputKey NUM2KEY(unsigned long num);
-	unsigned long KEY2NUM(int key);
+	Keys::InputKey NUM2KEY(VALUE num);
+	VALUE KEY2NUM(int key);
 } // namespace Input
 
 #endif

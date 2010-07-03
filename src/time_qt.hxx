@@ -1,5 +1,5 @@
-#ifndef _TIME_QT_H_
-#define _TIME_QT_H_
+#ifndef _TIME_QT_HXX_
+#define _TIME_QT_HXX_
 
 namespace Time
 {

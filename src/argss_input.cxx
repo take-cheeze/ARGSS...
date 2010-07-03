@@ -30,87 +30,109 @@
 
 #include "input.hxx"
 
-////////////////////////////////////////////////////////////
-/// Global Variables
-////////////////////////////////////////////////////////////
-VALUE ARGSS::AInput::id;
 
-////////////////////////////////////////////////////////////
-/// ARGSS Input ruby functions
-////////////////////////////////////////////////////////////
-VALUE ARGSS::AInput::rupdate(VALUE self) {
-	Input::Update();
-	return Qnil;
-}
-VALUE ARGSS::AInput::rpressQ(VALUE self, VALUE button) {
-	Check_Type(button, T_FIXNUM);
-	return INT2BOOL(Input::IsPressed(button));
-}
-VALUE ARGSS::AInput::rtriggerQ(VALUE self, VALUE button) {
-	Check_Type(button, T_FIXNUM);
-	return INT2BOOL(Input::IsTriggered(button));
-}
-VALUE ARGSS::AInput::rrepeatQ(VALUE self, VALUE button) {
-	Check_Type(button, T_FIXNUM);
-	return INT2BOOL(Input::IsRepeated(button));
-}
-VALUE ARGSS::AInput::rreleaseQ(VALUE self, VALUE button) {
-	Check_Type(button, T_FIXNUM);
-	return INT2BOOL(Input::IsReleased(button));
-}
-VALUE ARGSS::AInput::rdir4(VALUE self) {
-	return INT2NUM(Input::dir4);
-}
-VALUE ARGSS::AInput::rdir8(VALUE self) {
-	return INT2NUM(Input::dir8);
-}
-VALUE ARGSS::AInput::rpressed(VALUE self) {
-	return Input::GetPressed();
-}
-VALUE ARGSS::AInput::rtriggered(VALUE self) {
-	return Input::GetTriggered();
-}
-VALUE ARGSS::AInput::rrepeated(VALUE self) {
-	return Input::GetRepeated();
-}
-VALUE ARGSS::AInput::rreleased(VALUE self) {
-	return Input::GetReleased();
-}
+namespace ARGSS
+{
+	namespace AInput
+	{
+		namespace
+		{
+			////////////////////////////////////////////////////////////
+			/// Global Variables
+			////////////////////////////////////////////////////////////
+			VALUE id;
+		}
 
-////////////////////////////////////////////////////////////
-/// ARGSS Input initialize
-////////////////////////////////////////////////////////////
-void ARGSS::AInput::Init() {
-	id = rb_define_module("Input");
-	rb_define_singleton_method(id, "update", RubyFunc(rupdate), 0);
-	rb_define_singleton_method(id, "press?", RubyFunc(rpressQ), 1);
-	rb_define_singleton_method(id, "trigger?", RubyFunc(rtriggerQ), 1);
-	rb_define_singleton_method(id, "repeat?", RubyFunc(rrepeatQ), 1);
-	rb_define_singleton_method(id, "release?", RubyFunc(rreleaseQ), 1);
-	rb_define_singleton_method(id, "dir4", RubyFunc(rdir4), 0);
-	rb_define_singleton_method(id, "dir8", RubyFunc(rdir8), 0);
-	rb_define_singleton_method(id, "pressed", RubyFunc(rpressed), 0);
-	rb_define_singleton_method(id, "triggered", RubyFunc(rtriggered), 0);
-	rb_define_singleton_method(id, "repeated", RubyFunc(rrepeated), 0);
-	rb_define_singleton_method(id, "released", RubyFunc(rreleased), 0);
-	rb_define_const(id, "DOWN", INT2FIX(2));
-	rb_define_const(id, "LEFT", INT2FIX(4));
-	rb_define_const(id, "RIGHT", INT2FIX(6));
-	rb_define_const(id, "UP", INT2FIX(8));
-	rb_define_const(id, "A", INT2FIX(11));
-	rb_define_const(id, "B", INT2FIX(12));
-	rb_define_const(id, "C", INT2FIX(13));
-	rb_define_const(id, "X", INT2FIX(14));
-	rb_define_const(id, "Y", INT2FIX(15));
-	rb_define_const(id, "Z", INT2FIX(16));
-	rb_define_const(id, "L", INT2FIX(17));
-	rb_define_const(id, "R", INT2FIX(18));
-	rb_define_const(id, "SHIFT", INT2FIX(21));
-	rb_define_const(id, "CTRL", INT2FIX(22));
-	rb_define_const(id, "ALT", INT2FIX(23));
-	rb_define_const(id, "F5", INT2FIX(25));
-	rb_define_const(id, "F6", INT2FIX(26));
-	rb_define_const(id, "F7", INT2FIX(27));
-	rb_define_const(id, "F8", INT2FIX(28));
-	rb_define_const(id, "F9", INT2FIX(29));
-}
+		////////////////////////////////////////////////////////////
+		/// ARGSS Input ruby functions
+		////////////////////////////////////////////////////////////
+		VALUE rupdate(VALUE self)
+		{
+			Input::Update();
+			return Qnil;
+		}
+		VALUE rpressQ(VALUE self, VALUE button)
+		{
+			Check_Type(button, T_FIXNUM);
+			return INT2BOOL(Input::IsPressed(button));
+		}
+		VALUE rtriggerQ(VALUE self, VALUE button)
+		{
+			Check_Type(button, T_FIXNUM);
+			return INT2BOOL(Input::IsTriggered(button));
+		}
+		VALUE rrepeatQ(VALUE self, VALUE button)
+		{
+			Check_Type(button, T_FIXNUM);
+			return INT2BOOL(Input::IsRepeated(button));
+		}
+		VALUE rreleaseQ(VALUE self, VALUE button)
+		{
+			Check_Type(button, T_FIXNUM);
+			return INT2BOOL(Input::IsReleased(button));
+		}
+		VALUE rdir4(VALUE self)
+		{
+			return INT2NUM( Input::getDir4() );
+		}
+		VALUE rdir8(VALUE self)
+		{
+			return INT2NUM( Input::getDir8() );
+		}
+		VALUE rpressed(VALUE self)
+		{
+			return Input::GetPressed();
+		}
+		VALUE rtriggered(VALUE self)
+		{
+			return Input::GetTriggered();
+		}
+		VALUE rrepeated(VALUE self)
+		{
+			return Input::GetRepeated();
+		}
+		VALUE rreleased(VALUE self)
+		{
+			return Input::GetReleased();
+		}
+
+		////////////////////////////////////////////////////////////
+		/// ARGSS Input initialize
+		////////////////////////////////////////////////////////////
+		void Init()
+		{
+			id = rb_define_module("Input");
+			rb_define_singleton_method(id, ARGSS_FUNC(update), 0);
+			rb_define_singleton_method(id, ARGSS_Q(press), 1);
+			rb_define_singleton_method(id, ARGSS_Q(trigger), 1);
+			rb_define_singleton_method(id, ARGSS_Q(repeat), 1);
+			rb_define_singleton_method(id, ARGSS_Q(release), 1);
+			rb_define_singleton_method(id, ARGSS_FUNC(dir4), 0);
+			rb_define_singleton_method(id, ARGSS_FUNC(dir8), 0);
+			rb_define_singleton_method(id, ARGSS_FUNC(pressed), 0);
+			rb_define_singleton_method(id, ARGSS_FUNC(triggered), 0);
+			rb_define_singleton_method(id, ARGSS_FUNC(repeated), 0);
+			rb_define_singleton_method(id, ARGSS_FUNC(released), 0);
+			rb_define_const(id, "DOWN", INT2FIX(2));
+			rb_define_const(id, "LEFT", INT2FIX(4));
+			rb_define_const(id, "RIGHT", INT2FIX(6));
+			rb_define_const(id, "UP", INT2FIX(8));
+			rb_define_const(id, "A", INT2FIX(11));
+			rb_define_const(id, "B", INT2FIX(12));
+			rb_define_const(id, "C", INT2FIX(13));
+			rb_define_const(id, "X", INT2FIX(14));
+			rb_define_const(id, "Y", INT2FIX(15));
+			rb_define_const(id, "Z", INT2FIX(16));
+			rb_define_const(id, "L", INT2FIX(17));
+			rb_define_const(id, "R", INT2FIX(18));
+			rb_define_const(id, "SHIFT", INT2FIX(21));
+			rb_define_const(id, "CTRL", INT2FIX(22));
+			rb_define_const(id, "ALT", INT2FIX(23));
+			rb_define_const(id, "F5", INT2FIX(25));
+			rb_define_const(id, "F6", INT2FIX(26));
+			rb_define_const(id, "F7", INT2FIX(27));
+			rb_define_const(id, "F8", INT2FIX(28));
+			rb_define_const(id, "F9", INT2FIX(29));
+		}
+	} // namespace AInput
+} // namespace ARGSS

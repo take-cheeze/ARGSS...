@@ -22,15 +22,16 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _WINDOWUI_WIN32_H_
-#define _WINDOWUI_WIN32_H_
+#ifndef _WINDOWUI_WIN32_HXX_
+#define _WINDOWUI_WIN32_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
 #include <string>
 #include <queue>
-#include "windows.hxx"
+#include <windows.h>
+
 #include "event.hxx"
 #include "inputkeys.hxx"
 

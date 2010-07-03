@@ -35,16 +35,12 @@
 #include "player.hxx"
 #include "rect.hxx"
 
-////////////////////////////////////////////////////////////
-/// Defines
-////////////////////////////////////////////////////////////
-#define max(a, b)	(((a) > (b)) ? (a) : (b))
-#define min(a, b)	(((a) < (b)) ? (a) : (b))
 
 ////////////////////////////////////////////////////////////
 /// Constructor
 ////////////////////////////////////////////////////////////
-Window::Window(VALUE iid) {
+Window::Window(VALUE iid)
+{
 	id = iid;
 	viewport = rb_iv_get(id, "@viewport");
 	windowskin = Qnil;
@@ -68,68 +64,64 @@ Window::Window(VALUE iid) {
 	pause_frame = 0;
 	pause_id = 0;
 
-	if (viewport != Qnil) {
-		Viewport::Get(viewport)->RegisterZObj(0, id);
-	}
-	else {
-		Graphics::RegisterZObj(0, id);
-	}
+	if (viewport != Qnil) Viewport::Get(viewport).RegisterZObj(0, id);
+	else Graphics::RegisterZObj(0, id);
 }
 
 ////////////////////////////////////////////////////////////
 /// Destructor
 ////////////////////////////////////////////////////////////
-Window::~Window() {
-
+Window::~Window()
+{
 }
 
 ////////////////////////////////////////////////////////////
 /// Class Is Window Disposed?
 ////////////////////////////////////////////////////////////
-bool Window::IsDisposed(VALUE id) {
-	return Graphics::drawableMap().count(id) == 0;
+bool Window::IsDisposed(VALUE id)
+{
+	return Graphics::countDrawable(id) == 0;
 }
 
 ////////////////////////////////////////////////////////////
 /// Class New Window
 ////////////////////////////////////////////////////////////
-void Window::New(VALUE id) {
-	Graphics::drawableMap()[id] = new Window(id);
+void Window::New(VALUE id)
+{
+	Graphics::insertDrawable(id, boost::shared_ptr< Drawable >( new Window(id) ) );
 }
 
 ////////////////////////////////////////////////////////////
 /// Class Get Window
 ////////////////////////////////////////////////////////////
-Window* Window::Get(VALUE id) {
-	return (Window*)Graphics::drawableMap()[id];
+Window& Window::Get(VALUE id)
+{
+	return dynamic_cast< Window& >( Graphics::getDrawable(id) );
 }
 
 ////////////////////////////////////////////////////////////
 /// Class Dispose Window
 ////////////////////////////////////////////////////////////
-void Window::Dispose(unsigned long id) {
-	if (Window::Get(id)->viewport != Qnil) {
-		Viewport::Get(Window::Get(id)->viewport)->RemoveZObj(id);
-	}
-	else {
-		Graphics::RemoveZObj(id);
-	}
-	delete Graphics::drawableMap()[id];
-	std::map<unsigned long, Drawable*>::iterator it = Graphics::drawableMap().find(id);
-	Graphics::drawableMap().erase(it);
+void Window::Dispose(VALUE id)
+{
+	if (Window::Get(id).viewport != Qnil) Viewport::Get(Window::Get(id).viewport).RemoveZObj(id);
+	else Graphics::RemoveZObj(id);
+
+	Graphics::eraseDrawable(id);
 }
 
 ////////////////////////////////////////////////////////////
 /// Refresh Bitmaps
 ////////////////////////////////////////////////////////////
-void Window::RefreshBitmaps() {
-	
+void Window::RefreshBitmaps()
+{
 }
 
 ////////////////////////////////////////////////////////////
 /// Draw
 ////////////////////////////////////////////////////////////
-void Window::Draw(long z) {
+void Window::Draw(long z)
+{
 	if (!visible) return;
 	if (width <= 0 || height <= 0) return;
 	if (x < -width || x > Player::GetWidth() || y < -height || y > Player::GetHeight()) return;
@@ -143,7 +135,7 @@ void Window::Draw(long z) {
 	glLoadIdentity();
 
 	if (viewport != Qnil) {
-		Rect rect = Viewport::Get(viewport)->GetViewportRect();
+		Rect rect = Viewport::Get(viewport).GetViewportRect();
 
 		glEnable(GL_SCISSOR_TEST);
 		glScissor(rect.x, Player::GetHeight() - (rect.y + rect.height), rect.width, rect.height);
@@ -154,18 +146,18 @@ void Window::Draw(long z) {
 	glTranslatef((GLfloat)x, (GLfloat)y, 0.0f);
 
 	if (windowskin != Qnil) {
-		Bitmap* bmp = Bitmap::Get(windowskin);
+		Bitmap& bmp = Bitmap::Get(windowskin);
 
 		glPushMatrix();
-						
-		bmp->Refresh();
-		bmp->BindBitmap();
+
+		bmp.Refresh();
+		bmp.BindBitmap();
 
 		glMatrixMode(GL_MODELVIEW);
 		glPopMatrix();
 
-		float bmpw = (float)bmp->GetWidth();
-		float bmph = (float)bmp->GetHeight();
+		float bmpw = (float)bmp.GetWidth();
+		float bmph = (float)bmp.GetHeight();
 		float widthf = (float)width;
 		float heightf = (float)height;
 
@@ -186,7 +178,7 @@ void Window::Draw(long z) {
 				Rect dstrect(x + 2, y + 2, width - 4, height - 4);
 
 				if (viewport != Qnil) {
-					Rect rect = Viewport::Get(viewport)->GetViewportRect();
+					Rect rect = Viewport::Get(viewport).GetViewportRect();
 
 					dstrect.x -= rect.x;
 					dstrect.y -= rect.y;
@@ -239,24 +231,24 @@ void Window::Draw(long z) {
 				glTexCoord2f(128.0f / bmpw, 64.0f / bmph);	glVertex2f(0.0f, heightf);
 				// Border up
 				glTexCoord2f(144.0f / bmpw, 0.0f);			glVertex2f(16.0f, 0.0f);
-				glTexCoord2f(176.0f / bmpw, 0.0f);			glVertex2f(max(widthf - 16.0f, 1.0f), 0.0f);
-				glTexCoord2f(176.0f / bmpw, 16.0f / bmph);	glVertex2f(max(widthf - 16.0f, 1.0f), 16.0f);
+				glTexCoord2f(176.0f / bmpw, 0.0f);			glVertex2f(std::max(widthf - 16.0f, 1.0f), 0.0f);
+				glTexCoord2f(176.0f / bmpw, 16.0f / bmph);	glVertex2f(std::max(widthf - 16.0f, 1.0f), 16.0f);
 				glTexCoord2f(144.0f / bmpw, 16.0f / bmph);	glVertex2f(16.0f, 16.0f);
 				// Border down
 				glTexCoord2f(144.0f / bmpw, 48.0f / bmph);	glVertex2f(16.0f, height - 16.0f);
-				glTexCoord2f(176.0f / bmpw, 48.0f / bmph);	glVertex2f(max(widthf - 16.0f, 1.0f), heightf - 16.0f);
-				glTexCoord2f(176.0f / bmpw, 64.0f / bmph);	glVertex2f(max(widthf - 16.0f, 1.0f), heightf);
+				glTexCoord2f(176.0f / bmpw, 48.0f / bmph);	glVertex2f(std::max(widthf - 16.0f, 1.0f), heightf - 16.0f);
+				glTexCoord2f(176.0f / bmpw, 64.0f / bmph);	glVertex2f(std::max(widthf - 16.0f, 1.0f), heightf);
 				glTexCoord2f(144.0f / bmpw, 64.0f / bmph);	glVertex2f(16.0f, heightf);
 				// Border left
 				glTexCoord2f(128.0f / bmpw, 16.0f / bmph);	glVertex2f(0.0f, 16.0f);
 				glTexCoord2f(144.0f / bmpw, 16.0f / bmph);	glVertex2f(16.0f, 16.0f);
-				glTexCoord2f(144.0f / bmpw, 48.0f / bmph);	glVertex2f(16.0f, max(heightf - 16.0f, 1.0f));
-				glTexCoord2f(128.0f / bmpw, 48.0f / bmph);	glVertex2f(0.0f, max(heightf - 16.0f, 1.0f));
+				glTexCoord2f(144.0f / bmpw, 48.0f / bmph);	glVertex2f(16.0f, std::max(heightf - 16.0f, 1.0f));
+				glTexCoord2f(128.0f / bmpw, 48.0f / bmph);	glVertex2f(0.0f, std::max(heightf - 16.0f, 1.0f));
 				// Border right
 				glTexCoord2f(176.0f / bmpw, 16.0f / bmph);	glVertex2f(widthf - 16.0f, 16.0f);
 				glTexCoord2f(192.0f / bmpw, 16.0f / bmph);	glVertex2f(widthf, 16.0f);
-				glTexCoord2f(192.0f / bmpw, 48.0f / bmph);	glVertex2f(widthf, max(heightf - 16.0f, 1.0f));
-				glTexCoord2f(176.0f / bmpw, 48.0f / bmph);	glVertex2f(widthf - 16.0f, max(heightf - 16.0f, 1.0f));
+				glTexCoord2f(192.0f / bmpw, 48.0f / bmph);	glVertex2f(widthf, std::max(heightf - 16.0f, 1.0f));
+				glTexCoord2f(176.0f / bmpw, 48.0f / bmph);	glVertex2f(widthf - 16.0f, std::max(heightf - 16.0f, 1.0f));
 			glEnd();
 		}
 
@@ -265,12 +257,7 @@ void Window::Draw(long z) {
 			Rect rect(cursor_rect);
 			if (rect.width > 0 && rect.height > 0) {
 				float cursor_opacity = 255.0f;
-				if (cursor_frame <= 16) {
-					cursor_opacity -= (92.0f / 16.0f) * cursor_frame;
-				}
-				else {
-					cursor_opacity -= (92.0f / 16.0f) * (32 - cursor_frame);
-				}
+				cursor_opacity -= (92.0f / 16.0f) * ( (cursor_frame <= 16) ? cursor_frame : (32 - cursor_frame) );
 				glColor4f(1.0f, 1.0f, 1.0f, cursor_opacity / 255.0f);
 
 				float left = (float)rect.x + 16;
@@ -328,10 +315,10 @@ void Window::Draw(long z) {
 			}
 		}
 		if (pause) {
-			float dstx = (float)max(width / 2 - 8, 0);
-			float dsty = (float)max(height - 16, 0);
-			float w = (float)min(16, width);
-			float h = (float)min(16, height);
+			float dstx = (float)std::max(width / 2 - 8, 0);
+			float dsty = (float)std::max(height - 16, 0);
+			float w = (float)std::min(16, width);
+			float h = (float)std::min(16, height);
 			float srcx = 176.0f;
 			float srcy = 64.0f;
 			switch (pause_id) {
@@ -365,12 +352,12 @@ void Window::Draw(long z) {
 
 	if (contents != Qnil) {
 		if (width > 32 && height > 32 && -ox < width - 32 && -oy < height - 32 && contents_opacity > 0) {
-			Bitmap* bmp = Bitmap::Get(contents);
+			Bitmap& bmp = Bitmap::Get(contents);
 
 			glPushMatrix();
-						
-			bmp->Refresh();
-			bmp->BindBitmap();
+
+			bmp.Refresh();
+			bmp.BindBitmap();
 
 			glMatrixMode(GL_MODELVIEW);
 			glPopMatrix();
@@ -379,7 +366,7 @@ void Window::Draw(long z) {
 
 			glEnable(GL_SCISSOR_TEST);
 			if (viewport != Qnil) {
-				Rect rect = Viewport::Get(viewport)->GetViewportRect();
+				Rect rect = Viewport::Get(viewport).GetViewportRect();
 
 				dstrect.x -= rect.x;
 				dstrect.y -= rect.y;
@@ -393,9 +380,9 @@ void Window::Draw(long z) {
 
 			glBegin(GL_QUADS);
 				glTexCoord2f(0.0f, 0.0f);	glVertex2f(16.0f - ox, 16.0f - oy);
-				glTexCoord2f(1.0f, 0.0f);	glVertex2f(16.0f - ox + bmp->GetWidth(), 16.0f - oy);
-				glTexCoord2f(1.0f, 1.0f);	glVertex2f(16.0f - ox + bmp->GetWidth(), 16.0f - oy + bmp->GetHeight());
-				glTexCoord2f(0.0f, 1.0f);	glVertex2f(16.0f - ox, 16.0f - oy + bmp->GetHeight());
+				glTexCoord2f(1.0f, 0.0f);	glVertex2f(16.0f - ox + bmp.GetWidth(), 16.0f - oy);
+				glTexCoord2f(1.0f, 1.0f);	glVertex2f(16.0f - ox + bmp.GetWidth(), 16.0f - oy + bmp.GetHeight());
+				glTexCoord2f(0.0f, 1.0f);	glVertex2f(16.0f - ox, 16.0f - oy + bmp.GetHeight());
 			glEnd();
 
 			glViewport(0, 0, Player::GetWidth(), Player::GetHeight());
@@ -404,14 +391,14 @@ void Window::Draw(long z) {
 		}
 
 		if (windowskin != Qnil) {
-			Bitmap* bmp = Bitmap::Get(windowskin);
+			Bitmap& bmp = Bitmap::Get(windowskin);
 
-			float bmpw = (float)bmp->GetWidth();
-			float bmph = (float)bmp->GetHeight();
+			float bmpw = (float)bmp.GetWidth();
+			float bmph = (float)bmp.GetHeight();
 			float widthf = (float)width;
 			float heightf = (float)height;
 
-			bmp->BindBitmap();
+			bmp.BindBitmap();
 
 			glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
@@ -428,13 +415,13 @@ void Window::Draw(long z) {
 					glTexCoord2f(168.0f / bmpw, 24.0f / bmph);	glVertex2f(widthf / 2.0f + 8.0f, 12.0f);
 					glTexCoord2f(152.0f / bmpw, 24.0f / bmph);	glVertex2f(widthf / 2.0f - 8.0f, 12.0f);
 				}
-				if (Bitmap::Get(contents)->GetWidth() - ox > width - 32) {
+				if (Bitmap::Get(contents).GetWidth() - ox > width - 32) {
 					glTexCoord2f(168.0f / bmpw, 24.0f / bmph);	glVertex2f(widthf - 12.0f, heightf / 2.0f - 8.0f);
 					glTexCoord2f(176.0f / bmpw, 24.0f / bmph);	glVertex2f(widthf - 4.0f, heightf / 2.0f - 8.0f);
 					glTexCoord2f(176.0f / bmpw, 40.0f / bmph);	glVertex2f(widthf - 4.0f, heightf / 2.0f + 8.0f);
 					glTexCoord2f(168.0f / bmpw, 40.0f / bmph);	glVertex2f(widthf - 12.0f, heightf / 2.0f + 8.0f);
 				}
-				if (Bitmap::Get(contents)->GetHeight() - oy > height - 32) {
+				if (Bitmap::Get(contents).GetHeight() - oy > height - 32) {
 					glTexCoord2f(152.0f / bmpw, 40.0f / bmph);	glVertex2f(widthf / 2.0f - 8.0f, heightf - 12.0f);
 					glTexCoord2f(168.0f / bmpw, 40.0f / bmph);	glVertex2f(widthf / 2.0f + 8.0f, heightf - 12.0f);
 					glTexCoord2f(168.0f / bmpw, 48.0f / bmph);	glVertex2f(widthf / 2.0f + 8.0f, heightf - 4.0f);
@@ -446,14 +433,15 @@ void Window::Draw(long z) {
 
 	glDisable(GL_SCISSOR_TEST);
 }
-void Window::Draw(long z, Bitmap* dst_bitmap) {
-
+void Window::Draw(long z, Bitmap* dst_bitmap)
+{
 }
 
 ////////////////////////////////////////////////////////////
 /// Update
 ////////////////////////////////////////////////////////////
-void Window::Update() {
+void Window::Update()
+{
 	if (active) {
 		cursor_frame += 1;
 		if (cursor_frame == 32) {
@@ -475,74 +463,94 @@ void Window::Update() {
 ////////////////////////////////////////////////////////////
 /// Properties
 ////////////////////////////////////////////////////////////
-VALUE Window::GetViewport() {
+VALUE Window::GetViewport()
+{
 	return viewport;
 }
-void Window::SetViewport(VALUE nviewport) {
+void Window::SetViewport(VALUE nviewport)
+{
 	if (viewport != nviewport) {
 		if (nviewport != Qnil) {
 			Graphics::RemoveZObj(id);
-			Viewport::Get(nviewport)->RegisterZObj(0, id);
+			Viewport::Get(nviewport).RegisterZObj(0, id);
 		}
 		else {
-			if (viewport != Qnil) Viewport::Get(viewport)->RemoveZObj(id);
+			if (viewport != Qnil) Viewport::Get(viewport).RemoveZObj(id);
 			Graphics::RegisterZObj(0, id);
 		}
 	}
 	viewport = nviewport;
 }
-VALUE Window::GetWindowskin() {
+VALUE Window::GetWindowskin()
+{
 	return windowskin;
 }
-void Window::SetWindowskin(VALUE nwindowskin) {
+void Window::SetWindowskin(VALUE nwindowskin)
+{
 	windowskin = nwindowskin;
 }
-VALUE Window::GetContents() {
+VALUE Window::GetContents()
+{
 	return contents;
 }
-void Window::SetContents(VALUE ncontents) {
+void Window::SetContents(VALUE ncontents)
+{
 	contents = ncontents;
 }
-bool Window::GetStretch() {
+bool Window::GetStretch()
+{
 	return stretch;
 }
-void Window::SetStretch(bool nstretch) {
+void Window::SetStretch(bool nstretch)
+{
 	stretch = nstretch;
 }
-VALUE Window::GetCursorRect() {
+VALUE Window::GetCursorRect()
+{
 	return cursor_rect;
 }
-void Window::SetCursorRect(VALUE ncursor_rect) {
+void Window::SetCursorRect(VALUE ncursor_rect)
+{
 	cursor_rect = ncursor_rect;
 }
-bool Window::GetActive() {
+bool Window::GetActive()
+{
 	return active;
 }
-void Window::SetActive(bool nactive) {
+void Window::SetActive(bool nactive)
+{
 	active = nactive;
 }
-bool Window::GetVisible() {
+bool Window::GetVisible()
+{
 	return visible;
 }
-void Window::SetVisible(bool nvisible) {
+void Window::SetVisible(bool nvisible)
+{
 	visible = nvisible;
 }
-bool Window::GetPause() {
+bool Window::GetPause()
+{
 	return pause;
 }
-void Window::SetPause(bool npause) {
+void Window::SetPause(bool npause)
+{
 	pause = npause;
 }
-int Window::GetX() {
+int Window::GetX()
+{
 	return x;
 }
-void Window::SetX(int nx) {
+void Window::SetX(int nx)
+{
 	x = nx;
 }
-int Window::GetY() {
+int Window::GetY()
+{
 	return y;
 }
-void Window::SetY(int ny) {
+void Window::SetY(int ny)
+{
 	y = ny;
 }
 int Window::GetWidth() {
@@ -562,42 +570,47 @@ int Window::GetZ() {
 }
 void Window::SetZ(int nz) {
 	if (z != nz) {
-		if (viewport != Qnil) {
-			Viewport::Get(viewport)->UpdateZObj(id, nz);
-		}
-		else {
-			Graphics::UpdateZObj(id, nz);
-		}
+		if (viewport != Qnil) Viewport::Get(viewport).UpdateZObj(id, nz);
+		else Graphics::UpdateZObj(id, nz);
 	}
 	z = nz;
 }
-int Window::GetOx() {
+int Window::GetOx()
+{
 	return ox;
 }
-void Window::SetOx(int nox) {
+void Window::SetOx(int nox)
+{
 	ox = nox;
 }
-int Window::GetOy() {
+int Window::GetOy()
+{
 	return oy;
 }
-void Window::SetOy(int noy) {
+void Window::SetOy(int noy)
+{
 	oy = noy;
 }
-int Window::GetOpacity() {
+int Window::GetOpacity()
+{
 	return opacity;
 }
-void Window::SetOpacity(int nopacity) {
+void Window::SetOpacity(int nopacity)
+{
 	opacity = nopacity;
 }
 int Window::GetBackOpacity() {
 	return back_opacity;
 }
-void Window::SetBackOpacity(int nback_opacity) {
+void Window::SetBackOpacity(int nback_opacity)
+{
 	back_opacity = nback_opacity;
 }
-int Window::GetContentsOpacity() {
+int Window::GetContentsOpacity()
+{
 	return contents_opacity;
 }
-void Window::SetContentsOpacity(int ncontents_opacity) {
+void Window::SetContentsOpacity(int ncontents_opacity)
+{
 	contents_opacity = ncontents_opacity;
 }

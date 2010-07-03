@@ -25,6 +25,7 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <cassert>
 #include <cmath>
 #include <string>
 
@@ -39,92 +40,78 @@
 ////////////////////////////////////////////////////////////
 /// Constructor
 ////////////////////////////////////////////////////////////
-Plane::Plane(VALUE iid) {
-	id = iid;
-	viewport = rb_iv_get(id, "@viewport");
-	bitmap = Qnil;
-	visible = true;
-	z = 0;
-	ox = 0;
-	oy = 0;
-	zoom_x = 1.0;
-	zoom_y = 1.0;
-	opacity = 255;
-	blend_type = 0;
-	color = rb_iv_get(id, "@color");
-	tone = rb_iv_get(id, "@tone");
-
-	if (viewport != Qnil) {
-		Viewport::Get(viewport)->RegisterZObj(0, id);
-	}
-	else {
-		Graphics::RegisterZObj(0, id);
-	}
+Plane::Plane(VALUE iid)
+: id(iid), viewport( rb_iv_get(id, "@viewport") ), bitmap(Qnil)
+, visible(true), z(0), ox(0),  oy(0), zoom_x(1.0), zoom_y(1.0)
+, opacity(255), blend_type(0)
+, color( rb_iv_get(id, "@color") ), tone( rb_iv_get(id, "@tone") )
+{
+	if (viewport != Qnil) Viewport::Get(viewport).RegisterZObj(0, id);
+	else Graphics::RegisterZObj(0, id);
 }
 
 ////////////////////////////////////////////////////////////
 /// Destructor
 ////////////////////////////////////////////////////////////
-Plane::~Plane() {
-
+Plane::~Plane()
+{
 }
 
 ////////////////////////////////////////////////////////////
 /// Class Is Plane Disposed?
 ////////////////////////////////////////////////////////////
-bool Plane::IsDisposed(VALUE id) {
-	return Graphics::drawableMap().count(id) == 0;
+bool Plane::IsDisposed(VALUE id)
+{
+	return Graphics::countDrawable(id) == 0;
 }
 
 ////////////////////////////////////////////////////////////
 /// Class New Plane
 ////////////////////////////////////////////////////////////
-void Plane::New(VALUE id) {
-	Graphics::drawableMap()[id] = new Plane(id);
+void Plane::New(VALUE id)
+{
+	Graphics::insertDrawable( id, boost::shared_ptr< class Drawable >( new Plane(id) ) );
 }
 
 ////////////////////////////////////////////////////////////
 /// Class Get Plane
 ////////////////////////////////////////////////////////////
-Plane* Plane::Get(VALUE id) {
-	return (Plane*)Graphics::drawableMap()[id];
+Plane& Plane::Get(VALUE id)
+{
+	return dynamic_cast< Plane& >( Graphics::getDrawable(id) );
 }
 
 ////////////////////////////////////////////////////////////
 /// Class Dispose Plane
 ////////////////////////////////////////////////////////////
-void Plane::Dispose(unsigned long id) {
-	if (Plane::Get(id)->viewport != Qnil) {
-		Viewport::Get(Plane::Get(id)->viewport)->RemoveZObj(id);
-	}
-	else {
-		Graphics::RemoveZObj(id);
-	}
-	delete Graphics::drawableMap()[id];
-	std::map<unsigned long, Drawable*>::iterator it = Graphics::drawableMap().find(id);
-	Graphics::drawableMap().erase(it);
+void Plane::Dispose(VALUE id)
+{
+	if (Plane::Get(id).viewport != Qnil) Viewport::Get(Plane::Get(id).viewport).RemoveZObj(id);
+	else Graphics::RemoveZObj(id);
+
+	Graphics::eraseDrawable(id);
 }
 
 ////////////////////////////////////////////////////////////
 /// Refresh Bitmaps
 ////////////////////////////////////////////////////////////
-void Plane::RefreshBitmaps() {
-	
+void Plane::RefreshBitmaps()
+{
 }
 
 ////////////////////////////////////////////////////////////
 /// Draw
 ////////////////////////////////////////////////////////////
-void Plane::Draw(long z) {
-	if (!visible) return;
-	if (bitmap == Qnil) return;
+void Plane::Draw(long z)
+{
+	if( (!visible) || (bitmap == Qnil) ) return;
 
-	Bitmap* bmp = Bitmap::Get(bitmap);
-	bmp->Refresh();
+	Bitmap& bmp = Bitmap::Get(bitmap);
+	bmp.Refresh();
 
 	glEnable(GL_TEXTURE_2D);
 
-	bmp->BindBitmap();
+	bmp.BindBitmap();
 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
@@ -132,7 +119,7 @@ void Plane::Draw(long z) {
 	float rectw, recth;
 
 	if (viewport != Qnil) {
-		Rect rect = Viewport::Get(viewport)->GetViewportRect();
+		Rect const& rect = Viewport::Get(viewport).GetViewportRect();
 
 		glEnable(GL_SCISSOR_TEST);
 		glScissor(rect.x, Player::GetHeight() - (rect.y + rect.height), rect.width, rect.height);
@@ -148,7 +135,7 @@ void Plane::Draw(long z) {
 	}
 
 	glColor4f(1.0f, 1.0f, 1.0f, opacity / 255.0f);
-	
+
 	glEnable(GL_BLEND);
 	switch(blend_type) {
 		case 1:
@@ -161,8 +148,8 @@ void Plane::Draw(long z) {
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	}
 
-	float bmpw = bmp->GetWidth() * zoom_x;
-	float bmph = bmp->GetHeight() * zoom_y;
+	float bmpw = bmp.GetWidth() * zoom_x;
+	float bmph = bmp.GetHeight() * zoom_y;
 	int r_ox = -ox % (int)bmpw;
 	int r_oy = -oy % (int)bmph;
 	float tilesx = ceil(rectw / bmpw) + ceil(r_ox / bmpw);
@@ -182,105 +169,124 @@ void Plane::Draw(long z) {
 
 	glDisable(GL_SCISSOR_TEST);
 }
-void Plane::Draw(long z, Bitmap* dst_bitmap) {
-
+void Plane::Draw(long z, Bitmap* dst_bitmap)
+{
 }
 
 ////////////////////////////////////////////////////////////
 /// Properties
 ////////////////////////////////////////////////////////////
-VALUE Plane::GetViewport() {
+VALUE Plane::GetViewport()
+{
 	return viewport;
 }
-void Plane::SetViewport(VALUE nviewport) {
+void Plane::SetViewport(VALUE nviewport)
+{
 	if (viewport != nviewport) {
 		if (nviewport != Qnil) {
 			Graphics::RemoveZObj(id);
-			Viewport::Get(nviewport)->RegisterZObj(0, id);
-		}
-		else {
-			if (viewport != Qnil) Viewport::Get(viewport)->RemoveZObj(id);
+			Viewport::Get(nviewport).RegisterZObj(0, id);
+		} else {
+			if (viewport != Qnil) Viewport::Get(viewport).RemoveZObj(id);
 			Graphics::RegisterZObj(0, id);
 		}
 	}
 	viewport = nviewport;
 }
-VALUE Plane::GetBitmap() {
+VALUE Plane::GetBitmap()
+{
 	return bitmap;
 }
-void Plane::SetBitmap(VALUE nbitmap) {
+void Plane::SetBitmap(VALUE nbitmap)
+{
 	if (bitmap != nbitmap) needs_refresh = true;
 	bitmap = nbitmap;
 }
-bool Plane::GetVisible() {
+bool Plane::GetVisible()
+{
 	return visible;
 }
-void Plane::SetVisible(bool nvisible) {
+void Plane::SetVisible(bool nvisible)
+{
 	visible = nvisible;
 }
-int Plane::GetZ() {
+int Plane::GetZ()
+{
 	return z;
 }
-void Plane::SetZ(int nz) {
+void Plane::SetZ(int nz)
+{
 	if (z != nz) {
-		if (viewport != Qnil) {
-			Viewport::Get(viewport)->UpdateZObj(id, nz);
-		}
-		else {
-			Graphics::UpdateZObj(id, nz);
-		}
+		if (viewport != Qnil) Viewport::Get(viewport).UpdateZObj(id, nz);
+		else Graphics::UpdateZObj(id, nz);
 	}
 	z = nz;
 }
-int Plane::GetOx() {
+int Plane::GetOx()
+{
 	return ox;
 }
-void Plane::SetOx(int nox) {
+void Plane::SetOx(int nox)
+{
 	ox = nox;
 }
-int Plane::GetOy() {
+int Plane::GetOy()
+{
 	return oy;
 }
-void Plane::SetOy(int noy) {
+void Plane::SetOy(int noy)
+{
 	oy = noy;
 }
-float Plane::GetZoomX() {
+float Plane::GetZoomX()
+{
 	return zoom_x;
 }
-void Plane::SetZoomX(float nzoom_x) {
+void Plane::SetZoomX(float nzoom_x)
+{
 	if (zoom_x != nzoom_x) needs_refresh = true;
 	zoom_x = nzoom_x;
 }
-float Plane::GetZoomY() {
+float Plane::GetZoomY()
+{
 	return zoom_y;
 }
-void Plane::SetZoomY(float nzoom_y) {
+void Plane::SetZoomY(float nzoom_y)
+{
 	if (zoom_y != nzoom_y) needs_refresh = true;
 	zoom_y = nzoom_y;
 }
-int Plane::GetOpacity() {
+int Plane::GetOpacity()
+{
 	return opacity;
 }
-void Plane::SetOpacity(int nopacity) {
+void Plane::SetOpacity(int nopacity)
+{
 	if (opacity != nopacity) needs_refresh = true;
 	opacity = nopacity;
 }
-int Plane::GetBlendType() {
+int Plane::GetBlendType()
+{
 	return blend_type;
 }
-void Plane::SetBlendType(int nblend_type) {
+void Plane::SetBlendType(int nblend_type)
+{
 	blend_type = nblend_type;
 }
-VALUE Plane::GetColor() {
+VALUE Plane::GetColor()
+{
 	return color;
 }
-void Plane::SetColor(VALUE ncolor) {
+void Plane::SetColor(VALUE ncolor)
+{
 	color = ncolor;
 }
-VALUE Plane::GetTone() {
+VALUE Plane::GetTone()
+{
 	return tone;
 }
-void Plane::SetTone(VALUE ntone) {
+void Plane::SetTone(VALUE ntone)
+{
 	if (tone != ntone) needs_refresh = true;
 	tone = ntone;
 }

@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_COLOR_H_
-#define _ARGSS_COLOR_H_
+#ifndef _ARGSS_COLOR_HXX_
+#define _ARGSS_COLOR_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -38,7 +38,8 @@ namespace ARGSS
 {
 	namespace AColor
 	{
-		extern VALUE id;
+		VALUE& getID();
+
 		void Init();
 		VALUE New();
 		VALUE New(VALUE color);

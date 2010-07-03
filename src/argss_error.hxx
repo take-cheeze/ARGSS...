@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_ERROR_H_
-#define _ARGSS_ERROR_H_
+#ifndef _ARGSS_ERROR_HXX_
+#define _ARGSS_ERROR_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -37,7 +37,8 @@ namespace ARGSS
 {
 	namespace AError
 	{
-		extern VALUE id;
+		VALUE& getID();
+
 		void Init();
 	} // namespace AError
 } // namespace ARGSS

@@ -22,8 +22,11 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _TONE_H_
-#define _TONE_H_
+#ifndef _TONE_HXX_
+#define _TONE_HXX_
+
+#include "argss_ruby.hxx"
+
 
 ////////////////////////////////////////////////////////////
 /// Tone class
@@ -32,10 +35,10 @@ class Tone
 {
 public:
 	Tone();
-	Tone(unsigned long tone);
+	Tone(VALUE tone);
 	~Tone();
 
-	void Set(unsigned long tone);
+	void Set(VALUE tone);
 
 	double red;
 	double green;

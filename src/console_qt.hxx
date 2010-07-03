@@ -1,5 +1,5 @@
-#ifndef _CONSOLE_QT_H_
-#define _CONSOLE_QT_H_
+#ifndef _CONSOLE_QT_HXX_
+#define _CONSOLE_QT_HXX_
 
 #include <string>
 

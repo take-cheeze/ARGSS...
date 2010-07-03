@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _INPUT_H_
-#define _INPUT_H_
+#ifndef _INPUT_HXX_
+#define _INPUT_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -39,24 +39,17 @@ namespace Input
 	void Init();
 	void Update();
 	void ClearKeys();
-	bool IsPressed(unsigned long button);
-	bool IsTriggered(unsigned long button);
-	bool IsRepeated(unsigned long button);
-	bool IsReleased(unsigned long button);
-	unsigned long GetPressed();
-	unsigned long GetTriggered();
-	unsigned long GetRepeated();
-	unsigned long GetReleased();
+	bool IsPressed(VALUE button);
+	bool IsTriggered(VALUE button);
+	bool IsRepeated(VALUE button);
+	bool IsReleased(VALUE button);
+	VALUE GetPressed();
+	VALUE GetTriggered();
+	VALUE GetRepeated();
+	VALUE GetReleased();
 
-	extern std::vector<int> press_time;
-	extern std::vector<bool> triggered;
-	extern std::vector<bool> repeated;
-	extern std::vector<bool> released;
-	extern int dir4;
-	extern int dir8;
-	extern int start_repeat_time;
-	extern int repeat_time;
-	extern std::vector< std::vector<int> > dirkeys;
+	int& getDir4();
+	int& getDir8();
 } // namespace Input
 
 #endif

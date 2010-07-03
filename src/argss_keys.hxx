@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_KEYS_H_
-#define _ARGSS_KEYS_H_
+#ifndef _ARGSS_KEYS_HXX_
+#define _ARGSS_KEYS_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -38,7 +38,6 @@ namespace ARGSS
 {
 	namespace AKeys
 	{
-		extern VALUE id;
 		void Init();
 	} // namespace AKeys
 } // namespace ARGSS

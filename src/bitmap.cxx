@@ -41,19 +41,21 @@
 ////////////////////////////////////////////////////////////
 /// Static Variables
 ////////////////////////////////////////////////////////////
-std::map<unsigned long, Bitmap*> Bitmap::bitmaps;
+std::map< VALUE, boost::shared_ptr< Bitmap > > Bitmap::bitmaps;
 
 ////////////////////////////////////////////////////////////
 /// Constructors
 ////////////////////////////////////////////////////////////
-Bitmap::Bitmap(int iwidth, int iheight) {
+Bitmap::Bitmap(int iwidth, int iheight)
+{
 	id = 0;
 	pixels.resize(iwidth * iheight, 0);
 	width = (long)iwidth;
 	height = (long)iheight;
 	gl_bitmap = 0;
 }
-Bitmap::Bitmap(unsigned long iid, std::string const& filename) {
+Bitmap::Bitmap(VALUE iid, std::string const& filename)
+{
 	std::string path = FileFinder::FindImage(filename);
 	if (path == "") {
 		VALUE enoent = rb_const_get(rb_mErrno, rb_intern("ENOENT"));
@@ -64,7 +66,7 @@ Bitmap::Bitmap(unsigned long iid, std::string const& filename) {
 	unsigned char* load_pixels = SOIL_load_image(path.c_str(), &rwidth, &rheight, &channels, SOIL_LOAD_RGBA);
 
 	if (!load_pixels) {
-		rb_raise(ARGSS::AError::id, "couldn't load %s image.\n%s\n", filename.c_str(), SOIL_last_result());
+		rb_raise(ARGSS::AError::getID(), "couldn't load %s image.\n%s\n", filename.c_str(), SOIL_last_result());
 	}
 
 	pixels.resize(rwidth * rheight);
@@ -77,9 +79,10 @@ Bitmap::Bitmap(unsigned long iid, std::string const& filename) {
 	height = (long)rheight;
 	gl_bitmap = 0;
 }
-Bitmap::Bitmap(unsigned long iid, int iwidth, int iheight) {
+Bitmap::Bitmap(VALUE iid, int iwidth, int iheight)
+{
 	if (iwidth <= 0 && iheight <= 0) {
-		rb_raise(ARGSS::AError::id, "cant't create %dx%d image.\nWidth and height must be bigger than 0.\n", iwidth, iheight);
+		rb_raise(ARGSS::AError::getID(), "cant't create %dx%d image.\nWidth and height must be bigger than 0.\n", iwidth, iheight);
 	}
 	id = iid;
 	pixels.resize(iwidth * iheight, 0);
@@ -87,9 +90,10 @@ Bitmap::Bitmap(unsigned long iid, int iwidth, int iheight) {
 	height = (long)iheight;
 	gl_bitmap = 0;
 }
-Bitmap::Bitmap(Bitmap* source, Rect src_rect) {
+Bitmap::Bitmap(Bitmap& source, Rect src_rect)
+{
 	if (src_rect.width <= 0 && src_rect.height <= 0) {
-		rb_raise(ARGSS::AError::id, "cant't create %dx%d image.\nWidth and height must be bigger than 0.\n", src_rect.width, src_rect.height);
+		rb_raise(ARGSS::AError::getID(), "cant't create %dx%d image.\nWidth and height must be bigger than 0.\n", src_rect.width, src_rect.height);
 	}
 	id = 0;
 	width = (long)src_rect.width;
@@ -111,41 +115,45 @@ Bitmap::~Bitmap() {
 ////////////////////////////////////////////////////////////
 /// Class Is Bitmap Disposed?
 ////////////////////////////////////////////////////////////
-bool Bitmap::IsDisposed(unsigned long id) {
+bool Bitmap::IsDisposed(VALUE id) {
 	return bitmaps.count(id) == 0;
 }
 
 ////////////////////////////////////////////////////////////
 /// Class New Bitmap
 ////////////////////////////////////////////////////////////
-void Bitmap::New(unsigned long id, std::string const& filename) {
-	bitmaps[id] = new Bitmap(id, filename);
+void Bitmap::New(VALUE id, std::string const& filename)
+{
+	bitmaps[id] = boost::shared_ptr< Bitmap >( new Bitmap(id, filename) );
 }
-void Bitmap::New(unsigned long id, int width, int height) {
-	bitmaps[id] = new Bitmap(id, width, height);
+void Bitmap::New(VALUE id, int width, int height)
+{
+	bitmaps[id] = boost::shared_ptr< Bitmap >( new Bitmap(id, width, height) );
 }
 
 ////////////////////////////////////////////////////////////
 /// Class Get Bitmap
 ////////////////////////////////////////////////////////////
-Bitmap* Bitmap::Get(unsigned long id) {
-	return bitmaps[id];
+Bitmap& Bitmap::Get(VALUE id)
+{
+	assert( bitmaps.find(id) != bitmaps.end() );
+	return *bitmaps.find(id)->second;
 }
 
 ////////////////////////////////////////////////////////////
 /// Class Dispose Bitmap
 ////////////////////////////////////////////////////////////
-void Bitmap::Dispose(unsigned long id) {
-	delete bitmaps[id];
-	std::map<unsigned long, Bitmap*>::iterator it = bitmaps.find(id);
-	bitmaps.erase(it);
+void Bitmap::Dispose(VALUE id)
+{
+	assert( bitmaps.find(id) != bitmaps.end() );
+	bitmaps.erase( bitmaps.find(id) );
 }
 
 ////////////////////////////////////////////////////////////
 /// Class Refresh Bitmaps
 ////////////////////////////////////////////////////////////
 void Bitmap::RefreshBitmaps() {
-	std::map<unsigned long, Bitmap*>::iterator it_bitmaps;
+	std::map< VALUE, boost::shared_ptr< Bitmap > >::iterator it_bitmaps;
 	for (it_bitmaps = bitmaps.begin(); it_bitmaps != bitmaps.end(); it_bitmaps++) {
 		it_bitmaps->second->Changed();
 	}
@@ -155,10 +163,6 @@ void Bitmap::RefreshBitmaps() {
 /// Class Dispose Bitmaps
 ////////////////////////////////////////////////////////////
 void Bitmap::DisposeBitmaps() {
-	std::map<unsigned long, Bitmap*>::iterator it_bitmaps;
-	for (it_bitmaps = bitmaps.begin(); it_bitmaps != bitmaps.end(); it_bitmaps++) {
-		delete it_bitmaps->second;
-	}
 	bitmaps.clear();
 }
 
@@ -218,22 +222,22 @@ Uint32* Bitmap::GetPixels() {
 ////////////////////////////////////////////////////////////
 /// Get width
 ////////////////////////////////////////////////////////////
-int Bitmap::GetWidth() {
+int Bitmap::GetWidth() const {
 	return width;
 }
 
 ////////////////////////////////////////////////////////////
 /// Get height
 ////////////////////////////////////////////////////////////
-int Bitmap::GetHeight() {
+int Bitmap::GetHeight() const {
 	return height;
 }
 
 ////////////////////////////////////////////////////////////
 /// Copy
 ////////////////////////////////////////////////////////////
-void Bitmap::Copy(int x, int y, Bitmap* src_bitmap, Rect src_rect) {
-	if (src_bitmap->GetWidth() == 0 || src_bitmap->GetHeight() == 0 || width == 0 || height == 0) return;
+void Bitmap::Copy(int x, int y, Bitmap& src_bitmap, Rect src_rect) {
+	if (src_bitmap.GetWidth() == 0 || src_bitmap.GetHeight() == 0 || width == 0 || height == 0) return;
 	if (x >= width || y >= height) return;
 
 	if (x < 0) {
@@ -245,8 +249,8 @@ void Bitmap::Copy(int x, int y, Bitmap* src_bitmap, Rect src_rect) {
 		y = 0;
 	}
 	
-	src_rect.Adjust(src_bitmap->GetWidth(), src_bitmap->GetHeight());
-	if (src_rect.IsOutOfBounds(src_bitmap->GetWidth(), src_bitmap->GetHeight())) return;
+	src_rect.Adjust(src_bitmap.GetWidth(), src_bitmap.GetHeight());
+	if (src_rect.IsOutOfBounds(src_bitmap.GetWidth(), src_bitmap.GetHeight())) return;
 
 	int src_width = src_rect.width;
 	int src_height = src_rect.height;
@@ -255,8 +259,8 @@ void Bitmap::Copy(int x, int y, Bitmap* src_bitmap, Rect src_rect) {
 	if (src_width <= 0 || src_height <= 0)  return;
 
 	int src_pitch = src_width * 4;
-	int src_row = src_bitmap->GetWidth();
-	const Uint32* src_pixels = ((Uint32*)(&src_bitmap->pixels[0])) + src_rect.x + src_rect.y * src_bitmap->GetWidth();
+	int src_row = src_bitmap.GetWidth();
+	const Uint32* src_pixels = ((Uint32*)(&src_bitmap.pixels[0])) + src_rect.x + src_rect.y * src_bitmap.GetWidth();
 	Uint32* dst_pixels = ((Uint32*)(&pixels[0])) + x + y * width;
 
 	for (int i = 0; i < src_height; ++i) {
@@ -271,8 +275,8 @@ void Bitmap::Copy(int x, int y, Bitmap* src_bitmap, Rect src_rect) {
 ////////////////////////////////////////////////////////////
 /// Blit
 ////////////////////////////////////////////////////////////
-void Bitmap::Blit(int x, int y, Bitmap* src_bitmap, Rect src_rect, int opacity) {
-	if (src_bitmap->GetWidth() == 0 || src_bitmap->GetHeight() == 0 || width == 0 || height == 0) return;
+void Bitmap::Blit(int x, int y, Bitmap& src_bitmap, Rect src_rect, int opacity) {
+	if (src_bitmap.GetWidth() == 0 || src_bitmap.GetHeight() == 0 || width == 0 || height == 0) return;
 	if (x >= width || y >= height) return;
 
 	if (x < 0) {
@@ -284,8 +288,8 @@ void Bitmap::Blit(int x, int y, Bitmap* src_bitmap, Rect src_rect, int opacity) 
 		y = 0;
 	}
 	
-	src_rect.Adjust(src_bitmap->GetWidth(), src_bitmap->GetHeight());
-	if (src_rect.IsOutOfBounds(src_bitmap->GetWidth(), src_bitmap->GetHeight())) return;
+	src_rect.Adjust(src_bitmap.GetWidth(), src_bitmap.GetHeight());
+	if (src_rect.IsOutOfBounds(src_bitmap.GetWidth(), src_bitmap.GetHeight())) return;
 	
 	int src_width = src_rect.width;
 	int src_height = src_rect.height;
@@ -293,9 +297,9 @@ void Bitmap::Blit(int x, int y, Bitmap* src_bitmap, Rect src_rect, int opacity) 
 	if (y + src_height > height) src_height = height - y;    
 	if (src_width <= 0 || src_height <= 0)  return;
 	
-	int src_row = src_bitmap->GetWidth() * 4;
+	int src_row = src_bitmap.GetWidth() * 4;
 	int dst_row = width * 4;
-	const Uint8* src_pixels = ((Uint8*)(&src_bitmap->pixels[0])) + (src_rect.x + src_rect.y * src_bitmap->GetWidth()) * 4;
+	const Uint8* src_pixels = ((Uint8*)(&src_bitmap.pixels[0])) + (src_rect.x + src_rect.y * src_bitmap.GetWidth()) * 4;
 	Uint8* dst_pixels = ((Uint8*)(&pixels[0])) + (x + y * width) * 4;
 
 	if (opacity > 255) opacity = 255;
@@ -322,18 +326,16 @@ void Bitmap::Blit(int x, int y, Bitmap* src_bitmap, Rect src_rect, int opacity) 
 ////////////////////////////////////////////////////////////
 /// Stretch blit
 ////////////////////////////////////////////////////////////
-void Bitmap::StretchBlit(Rect dst_rect, Bitmap* src_bitmap, Rect src_rect, int opacity) {
+void Bitmap::StretchBlit(Rect dst_rect, Bitmap& src_bitmap, Rect src_rect, int opacity) {
 	if (src_rect.width == dst_rect.width && src_rect.height == dst_rect.height) {
 		Blit(dst_rect.x, dst_rect.y, src_bitmap, src_rect, opacity);
-	}
-	else {
-		src_rect.Adjust(src_bitmap->GetWidth(), src_bitmap->GetHeight());
-		if (src_rect.IsOutOfBounds(src_bitmap->GetWidth(), src_bitmap->GetHeight())) return;
+	} else {
+		src_rect.Adjust(src_bitmap.GetWidth(), src_bitmap.GetHeight());
+		if (src_rect.IsOutOfBounds(src_bitmap.GetWidth(), src_bitmap.GetHeight())) return;
 
-		Bitmap* resampled = src_bitmap->Resample(dst_rect.width, dst_rect.height, src_rect);
+		std::auto_ptr< Bitmap > resampled = src_bitmap.Resample(dst_rect.width, dst_rect.height, src_rect);
 		Rect rect(0, 0, dst_rect.width, dst_rect.height);
-		Blit(dst_rect.x, dst_rect.y, resampled, rect, opacity);
-		delete resampled;
+		Blit(dst_rect.x, dst_rect.y, *resampled, rect, opacity);
 	}
 
 	Changed();
@@ -466,23 +468,21 @@ void Bitmap::TextDraw(Rect rect, std::string const& text, int align)
 {
 	if (text.length() == 0) return;
 	if (rect.IsOutOfBounds(GetWidth(), GetHeight())) return;
-	
+
 	VALUE font_id = rb_iv_get(id, "@font");
 	VALUE name_id = rb_iv_get(font_id, "@name");
 	Color color = Color(rb_iv_get(font_id, "@color"));
 	int size = NUM2INT(rb_iv_get(font_id, "@size"));
 	bool bold = NUM2BOOL(rb_iv_get(font_id, "@bold"));
 	bool italic = NUM2BOOL(rb_iv_get(font_id, "@italic"));
-	
-	Bitmap* text_bmp = Text::Draw(text, StringValuePtr(name_id), color, size, bold, italic, false);
+
+	std::auto_ptr< Bitmap > text_bmp = Text::Draw(text, StringValuePtr(name_id), color, size, bold, italic, false);
 
 	if (text_bmp->GetWidth() > rect.width) {
 		int stretch = (int)(text_bmp->GetWidth() * 0.4);
 		if (rect.width > stretch) stretch = rect.width;
 		Rect resample_rect(0, 0, text_bmp->GetWidth(), text_bmp->GetHeight());
-		Bitmap* resampled = text_bmp->Resample(stretch, text_bmp->GetHeight(), resample_rect);
-		delete text_bmp;
-		text_bmp = resampled;
+		text_bmp = text_bmp->Resample(stretch, text_bmp->GetHeight(), resample_rect);;
 	}
 	Rect src_rect(0, 0, rect.width, rect.height);
 	int y = rect.y;
@@ -496,8 +496,7 @@ void Bitmap::TextDraw(Rect rect, std::string const& text, int align)
 			x += rect.width - text_bmp->GetWidth();
 		}
 	}
-	Blit(x, y, text_bmp, src_rect, (int)color.alpha);
-	delete text_bmp;
+	Blit(x, y, *text_bmp, src_rect, (int)color.alpha);
 
 	Changed();
 }
@@ -733,11 +732,11 @@ void Bitmap::Zoom(double zoom_x, double zoom_y) {
 ////////////////////////////////////////////////////////////
 /// Resample
 ////////////////////////////////////////////////////////////
-Bitmap* Bitmap::Resample(int scalew, int scaleh, Rect src_rect) {
+std::auto_ptr< Bitmap > Bitmap::Resample(int scalew, int scaleh, Rect src_rect) {
 	double zoom_x = (double)(scalew) / src_rect.width;
 	double zoom_y = (double)(scaleh) / src_rect.height;
 
-	Bitmap* resampled = new Bitmap(scalew, scaleh);
+	std::auto_ptr< Bitmap > resampled( new Bitmap(scalew, scaleh) );
 
 	Uint8* src_pixels = (Uint8*)&pixels[0];
 	Uint8* dst_pixels = (Uint8*)(&resampled->pixels[0]);

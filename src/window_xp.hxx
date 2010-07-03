@@ -22,13 +22,14 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _WINDOW_XP_H_
-#define _WINDOW_XP_H_
+#ifndef _WINDOW_XP_HXX_
+#define _WINDOW_XP_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
 #include <string>
+
 #include "bitmap.hxx"
 #include "drawable.hxx"
 
@@ -38,29 +39,29 @@
 class Window : public Drawable
 {
 public:
-	Window(unsigned long iid);
+	Window(VALUE iid);
 	~Window();
 
-	static bool IsDisposed(unsigned long id);
-	static void New(unsigned long id);
-	static Window* Get(unsigned long id);
-	static void Dispose(unsigned long id);
+	static bool IsDisposed(VALUE id);
+	static void New(VALUE id);
+	static Window& Get(VALUE id);
+	static void Dispose(VALUE id);
 
 	void RefreshBitmaps();
 	void Draw(long z);
 	void Draw(long z, Bitmap* dst_bitmap);
 
 	void Update();
-	unsigned long GetViewport();
-	void SetViewport(unsigned long nviewport);
-	unsigned long GetWindowskin();
-	void SetWindowskin(unsigned long nwindowskin);
-	unsigned long GetContents();
-	void SetContents(unsigned long ncontents);
+	VALUE GetViewport();
+	void SetViewport(VALUE nviewport);
+	VALUE GetWindowskin();
+	void SetWindowskin(VALUE nwindowskin);
+	VALUE GetContents();
+	void SetContents(VALUE ncontents);
 	bool GetStretch();
 	void SetStretch(bool nstretch);
-	unsigned long GetCursorRect();
-	void SetCursorRect(unsigned long ncursor_rect);
+	VALUE GetCursorRect();
+	void SetCursorRect(VALUE ncursor_rect);
 	bool GetActive();
 	void SetActive(bool nactive);
 	bool GetVisible();
@@ -89,12 +90,12 @@ public:
 	void SetContentsOpacity(int ncontents_opacity);
 
 private:
-	unsigned long id;
-	unsigned long viewport;
-	unsigned long windowskin;
-	unsigned long contents;
+	VALUE id;
+	VALUE viewport;
+	VALUE windowskin;
+	VALUE contents;
 	bool stretch;
-	unsigned long cursor_rect;
+	VALUE cursor_rect;
 	bool active;
 	bool visible;
 	bool pause;

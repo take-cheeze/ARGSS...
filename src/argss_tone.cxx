@@ -25,6 +25,8 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <boost/format.hpp>
+
 #include "argss_tone.hxx"
 #include "tone.hxx"
 
@@ -39,10 +41,14 @@ namespace ARGSS
 {
 	namespace ATone
 	{
-		////////////////////////////////////////////////////////////
-		/// Global Variables
-		////////////////////////////////////////////////////////////
-		VALUE id;
+		namespace
+		{
+			////////////////////////////////////////////////////////////
+			/// Global Variables
+			////////////////////////////////////////////////////////////
+			VALUE id;
+		}
+		VALUE& getID() { return id; }
 
 		////////////////////////////////////////////////////////////
 		/// ARGSS Tone ruby functions
@@ -100,20 +106,13 @@ namespace ARGSS
 			return rb_iv_set(self, "@gray", rb_float_new(CapToneValue(NUM2DBL(g))));
 		}
 		VALUE rinspect(VALUE self) {
-			char str[255];
-			long n;
-		#ifdef MSVC
-			n = sprintf_s(str, 255, "(%f, %f, %f, %f)",  NUM2DBL(rb_iv_get(self, "@red")),
-			                                             NUM2DBL(rb_iv_get(self, "@green")),
-			                                             NUM2DBL(rb_iv_get(self, "@blue")),
-			                                             NUM2DBL(rb_iv_get(self, "@gray")));
-		#else
-			n = sprintf(str, "(%f, %f, %f, %f)",  NUM2DBL(rb_iv_get(self, "@red")),
-			                                      NUM2DBL(rb_iv_get(self, "@green")),
-			                                      NUM2DBL(rb_iv_get(self, "@blue")),
-			                                      NUM2DBL(rb_iv_get(self, "@gray")));
-		#endif
-			return rb_str_new(str, n);
+			std::string str = ( boost::format("(%f, %f, %f, %f)")
+				% NUM2DBL(rb_iv_get(self, "@red"))
+				% NUM2DBL(rb_iv_get(self, "@green"))
+				% NUM2DBL(rb_iv_get(self, "@blue"))
+				% NUM2DBL(rb_iv_get(self, "@gray"))
+			).str();
+			return rb_str_new( str.c_str(), str.length() );
 		}
 		VALUE rdump(int argc, VALUE* argv, VALUE self) {
 			if (argc > 1) raise_argn(argc, 1);
@@ -130,20 +129,21 @@ namespace ARGSS
 		////////////////////////////////////////////////////////////
 		/// ARGSS Tone initialize
 		////////////////////////////////////////////////////////////
-		void Init() {
+		void Init()
+		{
 			id = rb_define_class("Tone", rb_cObject);
-			rb_define_method(id, "initialize", RubyFunc(rinitialize), -1);
-			rb_define_method(id, "set", RubyFunc(rset), -1);
-			rb_define_method(id, "red", RubyFunc(rred), 0);
-			rb_define_method(id, "red=", RubyFunc(rredE), 1);
-			rb_define_method(id, "green", RubyFunc(rgreen), 0);
-			rb_define_method(id, "green=", RubyFunc(rgreenE), 1);
-			rb_define_method(id, "blue", RubyFunc(rblue), 0);
-			rb_define_method(id, "blue=", RubyFunc(rblueE), 1);
-			rb_define_method(id, "gray", RubyFunc(rgray), 0);
-			rb_define_method(id, "gray=", RubyFunc(rgrayE), 1);
-			rb_define_method(id, "inspect", RubyFunc(rinspect), 0);
-			rb_define_method(id, "_dump", RubyFunc(rdump), -1);
+			static FuncTable funcTable =
+			{
+				{ ARGSS_FUNC(initialize), -1},
+				{ ARGSS_FUNC(set), -1 },
+				ARGSS_GETTER_SETTER(red),
+				ARGSS_GETTER_SETTER(green),
+				ARGSS_GETTER_SETTER(blue),
+				ARGSS_GETTER_SETTER(gray),
+				{ ARGSS_FUNC(inspect), 0 },
+				{ "_dump", RubyFunc(rdump), -1 },
+			};
+			defineMethods(id, funcTable);
 			rb_define_singleton_method(id, "_load", RubyFunc(rload), 1);
 		}
 

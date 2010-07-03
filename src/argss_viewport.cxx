@@ -27,162 +27,188 @@
 ////////////////////////////////////////////////////////////
 #include <string>
 
-#include "argss_viewport.hxx"
-#include "argss_rect.hxx"
 #include "argss_color.hxx"
-#include "argss_tone.hxx"
 #include "argss_error.hxx"
+#include "argss_rect.hxx"
+#include "argss_tone.hxx"
+#include "argss_viewport.hxx"
 
 #include "viewport.hxx"
 
-////////////////////////////////////////////////////////////
-/// Global Variables
-////////////////////////////////////////////////////////////
-VALUE ARGSS::AViewport::id;
+namespace ARGSS
+{
+	namespace AViewport
+	{
+		namespace
+		{
+			////////////////////////////////////////////////////////////
+			/// Global Variables
+			////////////////////////////////////////////////////////////
+			VALUE id;
+		} // namespace
+		VALUE& getID() { return id; }
 
-////////////////////////////////////////////////////////////
-/// ARGSS Viewport ruby functions
-////////////////////////////////////////////////////////////
-VALUE ARGSS::AViewport::rinitialize(int argc, VALUE *argv, VALUE self) {
-	if (argc == 0) raise_argn(argc, 1);
-	else if (argc > 1 && argc < 4) raise_argn(argc, 4);
-	if (argc == 1) rb_iv_set(self, "@rect", argv[0]);
-	else rb_iv_set(self, "@rect", ARGSS::ARect::New(argv[0], argv[1], argv[2], argv[3]));
-	rb_iv_set(self, "@visible", Qtrue);
-	rb_iv_set(self, "@z", INT2NUM(0));
-	rb_iv_set(self, "@ox", INT2NUM(0));
-	rb_iv_set(self, "@oy", INT2NUM(0));
-	rb_iv_set(self, "@color", ARGSS::AColor::New(0, 0, 0, 0));
-	rb_iv_set(self, "@tone", ARGSS::ATone::New());
-	Viewport::New(self);
-	ARGSS::ARuby::AddObject(self);
-	return self;
-}
-VALUE ARGSS::AViewport::rdispose(VALUE self) {
-	if (!Viewport::IsDisposed(self)) {
-		ARGSS::AViewport::CheckDisposed(self);
-		Viewport::Dispose(self);
-		ARGSS::ARuby::RemoveObject(self);
-		rb_gc_start();
-	}
-	return self;
-}
-VALUE ARGSS::AViewport::rdisposedQ(VALUE self) {
-	return INT2BOOL(Viewport::IsDisposed(self));
-}
-VALUE ARGSS::AViewport::rflash(VALUE self, VALUE color, VALUE duration) {
-	ARGSS::AViewport::CheckDisposed(self);
-	if (color == Qnil) {
-		Viewport::Get(self)->Flash(NUM2INT(duration));
-	}
-	else {
-		Viewport::Get(self)->Flash(Color(color), NUM2INT(duration));
-	}
-	return Qnil;
-}
-VALUE ARGSS::AViewport::rupdate(VALUE self) {
-	ARGSS::AViewport::CheckDisposed(self);
-	Viewport::Get(self)->Update();
-	return Qnil;
-}
-VALUE ARGSS::AViewport::rrect(VALUE self) {
-	ARGSS::AViewport::CheckDisposed(self);
-	return rb_iv_get(self, "@rect");
-}
-VALUE ARGSS::AViewport::rrectE(VALUE self, VALUE rect) {
-	ARGSS::AViewport::CheckDisposed(self);
-	Check_Class(rect, ARGSS::ARect::id);
-	Viewport::Get(self)->SetRect(rect);
-	return rb_iv_set(self, "@rect", rect);
-}
-VALUE ARGSS::AViewport::rvisible(VALUE self) {
-	ARGSS::AViewport::CheckDisposed(self);
-	return rb_iv_get(self, "@visible");
-}
-VALUE ARGSS::AViewport::rvisibleE(VALUE self, VALUE visible) {
-	ARGSS::AViewport::CheckDisposed(self);
-	Viewport::Get(self)->SetVisible(NUM2BOOL(visible));
-	return rb_iv_set(self, "@visible", visible);
-}
-VALUE ARGSS::AViewport::rz(VALUE self) {
-	ARGSS::AViewport::CheckDisposed(self);
-	return rb_iv_get(self, "@z");
-}
-VALUE ARGSS::AViewport::rzE(VALUE self, VALUE z) {
-	ARGSS::AViewport::CheckDisposed(self);
-	Viewport::Get(self)->SetZ(NUM2INT(z));
-	return rb_iv_set(self, "@z", z);
-}
-VALUE ARGSS::AViewport::rox(VALUE self) {
-	ARGSS::AViewport::CheckDisposed(self);
-	return rb_iv_get(self, "@ox");
-}
-VALUE ARGSS::AViewport::roxE(VALUE self, VALUE ox) {
-	ARGSS::AViewport::CheckDisposed(self);
-	Viewport::Get(self)->SetOx(NUM2INT(ox));
-	return rb_iv_set(self, "@ox", ox);
-}
-VALUE ARGSS::AViewport::roy(VALUE self) {
-	ARGSS::AViewport::CheckDisposed(self);
-	return rb_iv_get(self, "@oy");
-}
-VALUE ARGSS::AViewport::royE(VALUE self, VALUE oy) {
-	ARGSS::AViewport::CheckDisposed(self);
-	Viewport::Get(self)->SetOy(NUM2INT(oy));
-	return rb_iv_set(self, "@oy", oy);
-}
-VALUE ARGSS::AViewport::rcolor(VALUE self) {
-	ARGSS::AViewport::CheckDisposed(self);
-	return rb_iv_get(self, "@color");
-}
-VALUE ARGSS::AViewport::rcolorE(VALUE self, VALUE color) {
-	ARGSS::AViewport::CheckDisposed(self);
-	Check_Class(color, ARGSS::AColor::id);
-	Viewport::Get(self)->SetColor(color);
-	return rb_iv_set(self, "@color", color);
-}
-VALUE ARGSS::AViewport::rtone(VALUE self) {
-	ARGSS::AViewport::CheckDisposed(self);
-	return rb_iv_get(self, "@tone");
-}
-VALUE ARGSS::AViewport::rtoneE(VALUE self, VALUE tone) {
-	ARGSS::AViewport::CheckDisposed(self);
-	Check_Class(tone, ARGSS::ATone::id);
-	Viewport::Get(self)->SetTone(tone);
-	return rb_iv_set(self, "@tone", tone);
-}
+		////////////////////////////////////////////////////////////
+		/// ARGSS Viewport ruby functions
+		////////////////////////////////////////////////////////////
+		VALUE rinitialize(int argc, VALUE *argv, VALUE self)
+		{
+			if (argc == 0) raise_argn(argc, 1);
+			else if (argc > 1 && argc < 4) raise_argn(argc, 4);
+			if (argc == 1) rb_iv_set(self, "@rect", argv[0]);
+			else rb_iv_set(self, "@rect", ARGSS::ARect::New(argv[0], argv[1], argv[2], argv[3]));
+			rb_iv_set(self, "@visible", Qtrue);
+			rb_iv_set(self, "@z", INT2NUM(0));
+			rb_iv_set(self, "@ox", INT2NUM(0));
+			rb_iv_set(self, "@oy", INT2NUM(0));
+			rb_iv_set(self, "@color", ARGSS::AColor::New(0, 0, 0, 0));
+			rb_iv_set(self, "@tone", ARGSS::ATone::New());
+			Viewport::New(self);
+			ARGSS::ARuby::AddObject(self);
+			return self;
+		}
+		VALUE rdispose(VALUE self)
+		{
+			if (!Viewport::IsDisposed(self)) {
+				CheckDisposed(self);
+				Viewport::Dispose(self);
+				ARGSS::ARuby::RemoveObject(self);
+				rb_gc_start();
+			}
+			return self;
+		}
+		VALUE rdisposedQ(VALUE self)
+		{
+			return INT2BOOL(Viewport::IsDisposed(self));
+		}
+		VALUE rflash(VALUE self, VALUE color, VALUE duration)
+		{
+			CheckDisposed(self);
+			if (color == Qnil) {
+				Viewport::Get(self).Flash(NUM2INT(duration));
+			}
+			else {
+				Viewport::Get(self).Flash(Color(color), NUM2INT(duration));
+			}
+			return Qnil;
+		}
+		VALUE rupdate(VALUE self)
+		{
+			CheckDisposed(self);
+			Viewport::Get(self).Update();
+			return Qnil;
+		}
+		VALUE rrect(VALUE self)
+		{
+			CheckDisposed(self);
+			return rb_iv_get(self, "@rect");
+		}
+		VALUE rrectE(VALUE self, VALUE rect)
+		{
+			CheckDisposed(self);
+			Check_Class(rect, ARGSS::ARect::getID());
+			Viewport::Get(self).SetRect(rect);
+			return rb_iv_set(self, "@rect", rect);
+		}
+		VALUE rvisible(VALUE self)
+		{
+			CheckDisposed(self);
+			return rb_iv_get(self, "@visible");
+		}
+		VALUE rvisibleE(VALUE self, VALUE visible)
+		{
+			CheckDisposed(self);
+			Viewport::Get(self).SetVisible(NUM2BOOL(visible));
+			return rb_iv_set(self, "@visible", visible);
+		}
+		VALUE rz(VALUE self)
+		{
+			CheckDisposed(self);
+			return rb_iv_get(self, "@z");
+		}
+		VALUE rzE(VALUE self, VALUE z)
+		{
+			CheckDisposed(self);
+			Viewport::Get(self).SetZ(NUM2INT(z));
+			return rb_iv_set(self, "@z", z);
+		}
+		VALUE rox(VALUE self)
+		{
+			CheckDisposed(self);
+			return rb_iv_get(self, "@ox");
+		}
+		VALUE roxE(VALUE self, VALUE ox)
+		{
+			CheckDisposed(self);
+			Viewport::Get(self).SetOx(NUM2INT(ox));
+			return rb_iv_set(self, "@ox", ox);
+		}
+		VALUE roy(VALUE self)
+		{
+			CheckDisposed(self);
+			return rb_iv_get(self, "@oy");
+		}
+		VALUE royE(VALUE self, VALUE oy)
+		{
+			CheckDisposed(self);
+			Viewport::Get(self).SetOy(NUM2INT(oy));
+			return rb_iv_set(self, "@oy", oy);
+		}
+		VALUE rcolor(VALUE self)
+		{
+			CheckDisposed(self);
+			return rb_iv_get(self, "@color");
+		}
+		VALUE rcolorE(VALUE self, VALUE color)
+		{
+			CheckDisposed(self);
+			Check_Class(color, ARGSS::AColor::getID());
+			Viewport::Get(self).SetColor(color);
+			return rb_iv_set(self, "@color", color);
+		}
+		VALUE rtone(VALUE self)
+		{
+			CheckDisposed(self);
+			return rb_iv_get(self, "@tone");
+		}
+		VALUE rtoneE(VALUE self, VALUE tone)
+		{
+			CheckDisposed(self);
+			Check_Class(tone, ARGSS::ATone::getID());
+			Viewport::Get(self).SetTone(tone);
+			return rb_iv_set(self, "@tone", tone);
+		}
 
-////////////////////////////////////////////////////////////
-/// ARGSS Viewport initialize
-////////////////////////////////////////////////////////////
-void ARGSS::AViewport::Init() {
-	id = rb_define_class("Viewport", rb_cObject);
-	rb_define_method(id, "initialize", RubyFunc(rinitialize), -1);
-	rb_define_method(id, "dispose", RubyFunc(rdispose), 0);
-	rb_define_method(id, "disposed?", RubyFunc(rdisposedQ), 0);
-	rb_define_method(id, "flash", RubyFunc(rflash), 2);
-	rb_define_method(id, "update", RubyFunc(rupdate), 0);
-	rb_define_method(id, "rect", RubyFunc(rrect), 0);
-	rb_define_method(id, "rect=", RubyFunc(rrectE), 1);
-	rb_define_method(id, "visible", RubyFunc(rvisible), 0);
-	rb_define_method(id, "visible=", RubyFunc(rvisibleE), 1);
-	rb_define_method(id, "z", RubyFunc(rz), 0);
-	rb_define_method(id, "z=", RubyFunc(rzE), 1);
-	rb_define_method(id, "ox", RubyFunc(rox), 0);
-	rb_define_method(id, "ox=", RubyFunc(roxE), 1);
-	rb_define_method(id, "oy", RubyFunc(roy), 0);
-	rb_define_method(id, "oy=", RubyFunc(royE), 1);
-	rb_define_method(id, "color", RubyFunc(rcolor), 0);
-	rb_define_method(id, "color=", RubyFunc(rcolorE), 1);
-	rb_define_method(id, "tone", RubyFunc(rtone), 0);
-	rb_define_method(id, "tone=", RubyFunc(rtoneE), 1);
-}
+		////////////////////////////////////////////////////////////
+		/// ARGSS Viewport initialize
+		////////////////////////////////////////////////////////////
+		void Init()
+		{
+			id = rb_define_class("Viewport", rb_cObject);
+			static FuncTable funcTable =
+			{
+				{ ARGSS_FUNC(initialize), -1 },
+				{ ARGSS_FUNC(dispose), 0 }, { ARGSS_Q(disposed), 0 },
+				{ ARGSS_FUNC(flash), 2 },
+				{ ARGSS_FUNC(update), 0 },
+				ARGSS_GETTER_SETTER(rect),
+				ARGSS_GETTER_SETTER(visible),
+				ARGSS_GETTER_SETTER(z),
+				ARGSS_GETTER_SETTER(ox),
+				ARGSS_GETTER_SETTER(oy),
+				ARGSS_GETTER_SETTER(color),
+				ARGSS_GETTER_SETTER(tone),
+			};
+			defineMethods(id, funcTable);
+		}
 
-////////////////////////////////////////////////////////////
-/// Check if plane isn't disposed
-////////////////////////////////////////////////////////////
-void ARGSS::AViewport::CheckDisposed(VALUE self) {
-	if (Viewport::IsDisposed(self)) {
-		rb_raise(ARGSS::AError::id, "disposed viewport <%i>", (int)self);
-	}
-}
+		////////////////////////////////////////////////////////////
+		/// Check if plane isn't disposed
+		////////////////////////////////////////////////////////////
+		void CheckDisposed(VALUE self) {
+			if (Viewport::IsDisposed(self)) {
+				rb_raise(ARGSS::AError::getID(), "disposed viewport <%i>", (int)self);
+			}
+		}
+	} // namespace AViewport
+} // namespace ARGSS

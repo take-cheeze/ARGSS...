@@ -365,7 +365,7 @@ public:
         FILE * m_file;
     public:
         FileWriter(FILE * a_file) : m_file(a_file) { }
-        void Write(const char * a_pBuf) {
+        virtual void Write(const char * a_pBuf) {
             fputs(a_pBuf, m_file);
         }
     private:
@@ -378,7 +378,7 @@ public:
         std::string & m_string;
     public:
         StringWriter(std::string & a_string) : m_string(a_string) { }
-        void Write(const char * a_pBuf) {
+        virtual void Write(const char * a_pBuf) {
             m_string.append(a_pBuf);
         }
     private:
@@ -392,7 +392,7 @@ public:
         std::ostream & m_ostream;
     public:
         StreamWriter(std::ostream & a_ostream) : m_ostream(a_ostream) { }
-        void Write(const char * a_pBuf) {
+        virtual void Write(const char * a_pBuf) {
             m_ostream << a_pBuf;
         }
     private:

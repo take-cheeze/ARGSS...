@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_WINDOW_XP_H_
-#define _ARGSS_WINDOW_XP_H_
+#ifndef _ARGSS_WINDOW_XP_HXX_
+#define _ARGSS_WINDOW_XP_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -37,7 +37,6 @@ namespace ARGSS
 {
 	namespace AWindow
 	{
-		extern VALUE id;
 		void Init();
 		void CheckDisposed(VALUE self);
 

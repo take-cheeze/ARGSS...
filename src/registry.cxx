@@ -25,83 +25,91 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <boost/smart_ptr.hpp>
 #include <string>
+
 #include "registry.hxx"
 
-////////////////////////////////////////////////////////////
-/// Unicode std::string to LPCWSTR
-////////////////////////////////////////////////////////////
-std::wstring s2ws2(const std::string& s)
+
+namespace Registry
 {
-	int len;
-	int slength = (int)s.length() + 1;
-	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0); 
-	wchar_t* buf = new wchar_t[len];
-	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
-	std::wstring r(buf);
-	delete[] buf;
-	return r;
-}
+	namespace
+	{
+		typedef std::basic_string< WCHAR > WCharString;
 
-////////////////////////////////////////////////////////////
-/// Read String value
-////////////////////////////////////////////////////////////
-std::string Registry::ReadStrValue(HKEY hkey, std::string key, std::string val) {
-	char value[1024]; 
-	DWORD size = 1024;
-	DWORD type = REG_SZ;
-	HKEY key_handle;
-#if MSVC
-	std::wstring wkey = s2ws2(key.c_str());
-#else
-	std::string wkey  = key;
-#endif
-	if (RegOpenKeyEx(hkey, wkey.c_str(), NULL, KEY_QUERY_VALUE, &key_handle)) {
-		return "";
-	}
-#if MSVC
-	std::wstring wval = s2ws2(val.c_str());
-#else
-	std::string wval  = val;
-#endif
-	if (RegQueryValueEx(key_handle, wval.c_str(), NULL, &type, (LPBYTE)&value, &size)) {
-		return "";
-	}
-	RegCloseKey(key_handle);
-
-	std::string string_value = "";
-	for(unsigned int i = 0; i < size; i++) {
-		if (value[i] != '\0' ) {
-			string_value += value[i];
+		////////////////////////////////////////////////////////////
+		/// Unicode std::string to LPCWSTR
+		////////////////////////////////////////////////////////////
+		WCharString s2ws2(std::string const& s)
+		{
+			int len;
+			int slength = (int)s.length() + 1;
+			len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0); 
+			boost::scoped_array< WCHAR > buf( new WCHAR[len] );
+			MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf.get(), len);
+			WCharString r( buf.get() );
+			return r;
 		}
 	}
-	return string_value;
-}
 
-////////////////////////////////////////////////////////////
-/// Read Binary value
-////////////////////////////////////////////////////////////
-int Registry::ReadBinValue(HKEY hkey, std::string key, std::string val, unsigned char* bin) {
-	DWORD size = 1024;
-	DWORD type = REG_BINARY;
-	HKEY key_handle;
-#if MSVC
-	std::wstring wkey = s2ws2(key.c_str());
-#else
-	std::string wkey  = key;
-#endif
-	if (RegOpenKeyEx(hkey, wkey.c_str(), NULL, KEY_QUERY_VALUE, &key_handle)) {
+	////////////////////////////////////////////////////////////
+	/// Read String value
+	////////////////////////////////////////////////////////////
+	std::string ReadStrValue(HKEY hkey, std::string const& key, std::string const& val)
+	{
+/*
+		char value[1024]; 
+		DWORD size = 1024;
+		DWORD type = REG_SZ;
+		HKEY key_handle;
+
+		WCharString wkey = s2ws2(key);
+		if (::RegOpenKeyEx(hkey, wkey.c_str(), NULL, KEY_QUERY_VALUE, &key_handle)) {
+			return std::string();
+		}
+
+		WCharString wval = s2ws2(val);
+		if (::RegQueryValueEx(key_handle, wval.c_str(), DWORD(), &type, (LPBYTE)&value, &size)) {
+			return std::string();
+		}
+		::RegCloseKey(key_handle);
+
+		std::string string_value(0);
+		for(unsigned int i = 0; i < size; i++) {
+			if (value[i] != '\0' ) {
+				string_value += value[i];
+			}
+		}
+		return string_value;
+ */
+		key.empty(); val.empty();
+		return std::string();
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Read Binary value
+	////////////////////////////////////////////////////////////
+	int ReadBinValue(HKEY hkey, std::string const& key, std::string const& val, uint8_t* bin)
+	{
+/*
+		DWORD size = 1024;
+		DWORD type = REG_BINARY;
+		HKEY key_handle;
+
+		WCharString wkey = s2ws2(key);
+		if (::RegOpenKeyEx(hkey, wkey.c_str(), DWORD(), KEY_QUERY_VALUE, &key_handle)) {
+			return 0;
+		}
+
+		WCharString wval = s2ws2(val);
+		if (::RegQueryValueEx(key_handle, wval.c_str(), NULL, &type, bin, &size)) {
+			return 0;
+		}
+		::RegCloseKey(key_handle);
+
+		return size;
+ */
+		key.empty(); val.empty(); bin = bin;
 		return 0;
 	}
-#if MSVC
-	std::wstring wval = s2ws2(val.c_str());
-#else
-	std::string wval  = val;
-#endif
-	if (RegQueryValueEx(key_handle, wval.c_str(), NULL, &type, bin, &size)) {
-		return 0;
-	}
-	RegCloseKey(key_handle);
-
-	return size;
-}
+} // namespace Registry

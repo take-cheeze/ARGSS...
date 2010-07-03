@@ -36,351 +36,343 @@
 #include "sprite.hxx"
 #include "color.hxx"
 
-////////////////////////////////////////////////////////////
-/// Global Variables
-////////////////////////////////////////////////////////////
-VALUE ARGSS::ASprite::id;
 
-////////////////////////////////////////////////////////////
-/// ARGSS Sprite ruby functions
-////////////////////////////////////////////////////////////
-VALUE ARGSS::ASprite::rinitialize(int argc, VALUE *argv, VALUE self) {
-	if (argc == 1) {
-		Check_Classes_N(argv[0], ARGSS::AViewport::id);
-		rb_iv_set(self, "@viewport", argv[0]);
-	}
-	else if (argc == 0) {
-		rb_iv_set(self, "@viewport", Qnil);
-	}
-	else raise_argn(argc, 1);
-	rb_iv_set(self, "@bitmap", Qnil);
-	rb_iv_set(self, "@src_rect", ARGSS::ARect::New(0, 0, 0, 0));
-	rb_iv_set(self, "@visible", Qtrue);
-	rb_iv_set(self, "@x", INT2NUM(0));
-	rb_iv_set(self, "@y", INT2NUM(0));
-	rb_iv_set(self, "@z", INT2NUM(0));
-	rb_iv_set(self, "@ox", INT2NUM(0));
-	rb_iv_set(self, "@oy", INT2NUM(0));
-	rb_iv_set(self, "@zoom_x", rb_float_new(1.0f));
-	rb_iv_set(self, "@zoom_y", rb_float_new(1.0f));
-	rb_iv_set(self, "@angle", rb_float_new(0.0f));
-	rb_iv_set(self, "@flipx", Qfalse);
-	rb_iv_set(self, "@flipy", Qfalse);
-	rb_iv_set(self, "@bush_depth", INT2NUM(0));
-	rb_iv_set(self, "@opacity", INT2NUM(255));
-	rb_iv_set(self, "@blend_type", INT2NUM(0));
-	rb_iv_set(self, "@color", ARGSS::AColor::New());
-	rb_iv_set(self, "@tone", ARGSS::ATone::New());
-	Sprite::New(self);
-	ARGSS::ARuby::AddObject(self);
-	return self;
-}
-VALUE ARGSS::ASprite::rdispose(VALUE self) {
-	if (!Sprite::IsDisposed(self)) {
-		ARGSS::ASprite::Check(self);
-		Sprite::Dispose(self);
-		ARGSS::ARuby::RemoveObject(self);
-		rb_gc_start();
-	}
-	return self;
-}
-VALUE ARGSS::ASprite::rdisposedQ(VALUE self) {
-	return INT2BOOL(Sprite::IsDisposed(self));
-}
-VALUE ARGSS::ASprite::rflash(VALUE self, VALUE color, VALUE duration) {
-	ARGSS::ASprite::Check(self);
-	if (color == Qnil) {
-		Sprite::Get(self)->Flash(NUM2INT(duration));
-	}
-	else {
-		Sprite::Get(self)->Flash(Color(color), NUM2INT(duration));
-	}
-	return Qnil;
-}
-VALUE ARGSS::ASprite::rupdate(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	Sprite::Get(self)->Update();
-	return Qnil;
-}
-VALUE ARGSS::ASprite::rwidth(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(rb_iv_get(self, "@src_rect"), "@width");
-}
-VALUE ARGSS::ASprite::rheight(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(rb_iv_get(self, "@src_rect"), "@height");
-}
-VALUE ARGSS::ASprite::rviewport(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(self, "@viewport");
-}
-VALUE ARGSS::ASprite::rviewportE(VALUE self, VALUE viewport) {
-	ARGSS::ASprite::Check(self);
-	Check_Classes_N(viewport, ARGSS::AViewport::id);
-	if (viewport != Qnil) ARGSS::AViewport::CheckDisposed(viewport);
-	Sprite::Get(self)->SetViewport(viewport);
-	return rb_iv_set(self, "@viewport", viewport);
-}
-VALUE ARGSS::ASprite::rbitmap(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(self, "@bitmap");
-}
-VALUE ARGSS::ASprite::rbitmapE(VALUE self, VALUE bitmap) {
-	ARGSS::ASprite::Check(self);
-	Check_Classes_N(bitmap, ARGSS::ABitmap::id);
-	if (bitmap != Qnil) {
-		VALUE src_rect = rb_iv_get(self, "@src_rect");
-		rb_iv_set(src_rect, "@x", INT2NUM(0));
-		rb_iv_set(src_rect, "@y", INT2NUM(0));
-		if (!Bitmap::IsDisposed(bitmap)) {
-			rb_iv_set(src_rect, "@width", INT2NUM(Bitmap::Get(bitmap)->GetWidth()));
-			rb_iv_set(src_rect, "@height", INT2NUM(Bitmap::Get(bitmap)->GetHeight()));
+namespace ARGSS
+{
+	namespace ASprite
+	{
+		namespace
+		{
+			////////////////////////////////////////////////////////////
+			/// Global Variables
+			////////////////////////////////////////////////////////////
+			VALUE id;
 		}
-		else {
-			rb_iv_set(src_rect, "@width", INT2NUM(0));
-			rb_iv_set(src_rect, "@height", INT2NUM(0));
+		VALUE& getID() { return id; }
+
+		////////////////////////////////////////////////////////////
+		/// ARGSS Sprite ruby functions
+		////////////////////////////////////////////////////////////
+		VALUE rinitialize(int argc, VALUE *argv, VALUE self) {
+			if (argc == 1) {
+				Check_Classes_N(argv[0], ARGSS::AViewport::getID());
+				rb_iv_set(self, "@viewport", argv[0]);
+			}
+			else if (argc == 0) {
+				rb_iv_set(self, "@viewport", Qnil);
+			}
+			else raise_argn(argc, 1);
+			rb_iv_set(self, "@bitmap", Qnil);
+			rb_iv_set(self, "@src_rect", ARGSS::ARect::New(0, 0, 0, 0));
+			rb_iv_set(self, "@visible", Qtrue);
+			rb_iv_set(self, "@x", INT2NUM(0));
+			rb_iv_set(self, "@y", INT2NUM(0));
+			rb_iv_set(self, "@z", INT2NUM(0));
+			rb_iv_set(self, "@ox", INT2NUM(0));
+			rb_iv_set(self, "@oy", INT2NUM(0));
+			rb_iv_set(self, "@zoom_x", rb_float_new(1.0f));
+			rb_iv_set(self, "@zoom_y", rb_float_new(1.0f));
+			rb_iv_set(self, "@angle", rb_float_new(0.0f));
+			rb_iv_set(self, "@flipx", Qfalse);
+			rb_iv_set(self, "@flipy", Qfalse);
+			rb_iv_set(self, "@bush_depth", INT2NUM(0));
+			rb_iv_set(self, "@opacity", INT2NUM(255));
+			rb_iv_set(self, "@blend_type", INT2NUM(0));
+			rb_iv_set(self, "@color", ARGSS::AColor::New());
+			rb_iv_set(self, "@tone", ARGSS::ATone::New());
+			Sprite::New(self);
+			ARGSS::ARuby::AddObject(self);
+			return self;
 		}
-	}
-	Sprite::Get(self)->SetBitmap(bitmap);
-	return rb_iv_set(self, "@bitmap", bitmap);
-}
-VALUE ARGSS::ASprite::rsrc_rect(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(self, "@src_rect");
-}
-VALUE ARGSS::ASprite::rsrc_rectE(VALUE self, VALUE src_rect) {
-	ARGSS::ASprite::Check(self);
-	Check_Class(src_rect, ARGSS::ARect::id);
-	Sprite::Get(self)->SetSrcRect(src_rect);
-	return rb_iv_set(self, "@src_rect", src_rect);
-}
-VALUE ARGSS::ASprite::rvisible(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(self, "@visible");
-}
-VALUE ARGSS::ASprite::rvisibleE(VALUE self, VALUE visible) {
-	ARGSS::ASprite::Check(self);
-	Sprite::Get(self)->SetVisible(NUM2BOOL(visible));
-	return rb_iv_set(self, "@visible", visible);
-}
-VALUE ARGSS::ASprite::rx(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_to_int(rb_iv_get(self, "@x"));
-}
-VALUE ARGSS::ASprite::rfx(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_Float(rb_iv_get(self, "@x"));
-}
-VALUE ARGSS::ASprite::rxE(VALUE self, VALUE x) {
-	ARGSS::ASprite::Check(self);
-	Sprite::Get(self)->SetX(NUM2INT(x));
-	return rb_iv_set(self, "@x", x);
-}
-VALUE ARGSS::ASprite::ry(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_to_int(rb_iv_get(self, "@y"));
-}
-VALUE ARGSS::ASprite::rfy(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_Float(rb_iv_get(self, "@y"));
-}
-VALUE ARGSS::ASprite::ryE(VALUE self, VALUE y) {
-	ARGSS::ASprite::Check(self);
-	Sprite::Get(self)->SetY(NUM2INT(y));
-	return rb_iv_set(self, "@y", y);
-}
-VALUE ARGSS::ASprite::rz(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(self, "@z");
-}
-VALUE ARGSS::ASprite::rzE(VALUE self, VALUE z) {
-	ARGSS::ASprite::Check(self);
-	Sprite::Get(self)->SetZ(NUM2INT(z));
-	return rb_iv_set(self, "@z", rb_to_int(z));
-}
-VALUE ARGSS::ASprite::rox(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(self, "@ox");
-}
-VALUE ARGSS::ASprite::roxE(VALUE self, VALUE ox) {
-	ARGSS::ASprite::Check(self);
-	Sprite::Get(self)->SetOx(NUM2INT(ox));
-	return rb_iv_set(self, "@ox", ox);
-}
-VALUE ARGSS::ASprite::roy(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(self, "@oy");
-}
-VALUE ARGSS::ASprite::royE(VALUE self, VALUE oy) {
-	ARGSS::ASprite::Check(self);
-	Sprite::Get(self)->SetOy(NUM2INT(oy));
-	return rb_iv_set(self, "@oy", oy);
-}
-VALUE ARGSS::ASprite::rzoom_x(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(self, "@zoom_x");
-}
-VALUE ARGSS::ASprite::rzoom_xE(VALUE self, VALUE zoom_x) {
-	ARGSS::ASprite::Check(self);
-	Sprite::Get(self)->SetZoomX((float)NUM2DBL(zoom_x));
-	return rb_iv_set(self, "@zoom_x", rb_Float(zoom_x));
-}
-VALUE ARGSS::ASprite::rzoom_y(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(self, "@zoom_y");
-}
-VALUE ARGSS::ASprite::rzoom_yE(VALUE self, VALUE zoom_y) {
-	ARGSS::ASprite::Check(self);
-	Sprite::Get(self)->SetZoomY((float)NUM2DBL(zoom_y));
-	return rb_iv_set(self, "@zoom_y", rb_Float(zoom_y));
-}
-VALUE ARGSS::ASprite::rangle(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(self, "@angle");
-}
-VALUE ARGSS::ASprite::rangleE(VALUE self, VALUE angle) {
-	ARGSS::ASprite::Check(self);
-	Sprite::Get(self)->SetAngle((float)NUM2DBL(angle));
-	return rb_iv_set(self, "@angle", rb_Float(angle));
-}
-VALUE ARGSS::ASprite::rmirror(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(self, "@flipx");
-}
-VALUE ARGSS::ASprite::rmirrorE(VALUE self, VALUE mirror) {
-	ARGSS::ASprite::Check(self);
-	Sprite::Get(self)->SetFlipX(NUM2BOOL(mirror));
-	return rb_iv_set(self, "@flipx", mirror);
-}
-VALUE ARGSS::ASprite::rflipx(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(self, "@flipx");
-}
-VALUE ARGSS::ASprite::rflipxE(VALUE self, VALUE flipx) {
-	ARGSS::ASprite::Check(self);
-	Sprite::Get(self)->SetFlipX(NUM2BOOL(flipx));
-	return rb_iv_set(self, "@flipx", flipx);
-}
-VALUE ARGSS::ASprite::rflipy(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(self, "@flipy");
-}
-VALUE ARGSS::ASprite::rflipyE(VALUE self, VALUE flipy) {
-	ARGSS::ASprite::Check(self);
-	Sprite::Get(self)->SetFlipY(NUM2BOOL(flipy));
-	return rb_iv_set(self, "@flipy", flipy);
-}
-VALUE ARGSS::ASprite::rbush_depth(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(self, "@bush_depth");
-}
-VALUE ARGSS::ASprite::rbush_depthE(VALUE self, VALUE bush_depth) {
-	ARGSS::ASprite::Check(self);
-	Sprite::Get(self)->SetBushDepth(NUM2INT(bush_depth));
-	return rb_iv_set(self, "@bush_depth", bush_depth);
-}
-VALUE ARGSS::ASprite::ropacity(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(self, "@opacity");
-}
-VALUE ARGSS::ASprite::ropacityE(VALUE self, VALUE opacity) {
-	ARGSS::ASprite::Check(self);
-	Sprite::Get(self)->SetOpacity(NUM2INT(opacity));
-	return rb_iv_set(self, "@opacity", opacity);
-}
-VALUE ARGSS::ASprite::rblend_type(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(self, "@blend_type");
-}
-VALUE ARGSS::ASprite::rblend_typeE(VALUE self, VALUE blend_type) {
-	ARGSS::ASprite::Check(self);
-	int type = NUM2INT(blend_type);
-	if (type < 0 || type > 3) type = 0;
-	Sprite::Get(self)->SetBlendType(type);
-	return rb_iv_set(self, "@blend_type", INT2NUM(type));
-}
-VALUE ARGSS::ASprite::rcolor(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(self, "@color");
-}
-VALUE ARGSS::ASprite::rcolorE(VALUE self, VALUE color) {
-	ARGSS::ASprite::Check(self);
-	Check_Class(color, ARGSS::AColor::id);
-	Sprite::Get(self)->SetColor(color);
-	return rb_iv_set(self, "@color", color);
-}
-VALUE ARGSS::ASprite::rtone(VALUE self) {
-	ARGSS::ASprite::Check(self);
-	return rb_iv_get(self, "@tone");
-}
-VALUE ARGSS::ASprite::rtoneE(VALUE self, VALUE tone) {
-	ARGSS::ASprite::Check(self);
-	Check_Class(tone, ARGSS::ATone::id);
-	Sprite::Get(self)->SetTone(tone);
-	return rb_iv_set(self, "@tone", tone);
-}
+		VALUE rdispose(VALUE self) {
+			if (!Sprite::IsDisposed(self)) {
+				Check(self);
+				Sprite::Dispose(self);
+				ARGSS::ARuby::RemoveObject(self);
+				rb_gc_start();
+			}
+			return self;
+		}
+		VALUE rdisposedQ(VALUE self) {
+			return INT2BOOL(Sprite::IsDisposed(self));
+		}
+		VALUE rflash(VALUE self, VALUE color, VALUE duration) {
+			Check(self);
+			if (color == Qnil) {
+				Sprite::Get(self).Flash(NUM2INT(duration));
+			}
+			else {
+				Sprite::Get(self).Flash(Color(color), NUM2INT(duration));
+			}
+			return Qnil;
+		}
+		VALUE rupdate(VALUE self) {
+			Check(self);
+			Sprite::Get(self).Update();
+			return Qnil;
+		}
+		VALUE rwidth(VALUE self) {
+			Check(self);
+			return rb_iv_get(rb_iv_get(self, "@src_rect"), "@width");
+		}
+		VALUE rheight(VALUE self) {
+			Check(self);
+			return rb_iv_get(rb_iv_get(self, "@src_rect"), "@height");
+		}
+		VALUE rviewport(VALUE self) {
+			Check(self);
+			return rb_iv_get(self, "@viewport");
+		}
+		VALUE rviewportE(VALUE self, VALUE viewport) {
+			Check(self);
+			Check_Classes_N(viewport, ARGSS::AViewport::getID());
+			if (viewport != Qnil) ARGSS::AViewport::CheckDisposed(viewport);
+			Sprite::Get(self).SetViewport(viewport);
+			return rb_iv_set(self, "@viewport", viewport);
+		}
+		VALUE rbitmap(VALUE self) {
+			Check(self);
+			return rb_iv_get(self, "@bitmap");
+		}
+		VALUE rbitmapE(VALUE self, VALUE bitmap) {
+			Check(self);
+			Check_Classes_N(bitmap, ARGSS::ABitmap::getID());
+			if (bitmap != Qnil) {
+				VALUE src_rect = rb_iv_get(self, "@src_rect");
+				rb_iv_set(src_rect, "@x", INT2NUM(0));
+				rb_iv_set(src_rect, "@y", INT2NUM(0));
+				if (!Bitmap::IsDisposed(bitmap)) {
+					rb_iv_set(src_rect, "@width", INT2NUM(Bitmap::Get(bitmap).GetWidth()));
+					rb_iv_set(src_rect, "@height", INT2NUM(Bitmap::Get(bitmap).GetHeight()));
+				}
+				else {
+					rb_iv_set(src_rect, "@width", INT2NUM(0));
+					rb_iv_set(src_rect, "@height", INT2NUM(0));
+				}
+			}
+			Sprite::Get(self).SetBitmap(bitmap);
+			return rb_iv_set(self, "@bitmap", bitmap);
+		}
+		VALUE rsrc_rect(VALUE self) {
+			Check(self);
+			return rb_iv_get(self, "@src_rect");
+		}
+		VALUE rsrc_rectE(VALUE self, VALUE src_rect) {
+			Check(self);
+			Check_Class(src_rect, ARGSS::ARect::getID());
+			Sprite::Get(self).SetSrcRect(src_rect);
+			return rb_iv_set(self, "@src_rect", src_rect);
+		}
+		VALUE rvisible(VALUE self) {
+			Check(self);
+			return rb_iv_get(self, "@visible");
+		}
+		VALUE rvisibleE(VALUE self, VALUE visible) {
+			Check(self);
+			Sprite::Get(self).SetVisible(NUM2BOOL(visible));
+			return rb_iv_set(self, "@visible", visible);
+		}
+		VALUE rx(VALUE self) {
+			Check(self);
+			return rb_to_int(rb_iv_get(self, "@x"));
+		}
+		VALUE rfx(VALUE self) {
+			Check(self);
+			return rb_Float(rb_iv_get(self, "@x"));
+		}
+		VALUE rxE(VALUE self, VALUE x) {
+			Check(self);
+			Sprite::Get(self).SetX(NUM2INT(x));
+			return rb_iv_set(self, "@x", x);
+		}
+		VALUE ry(VALUE self) {
+			Check(self);
+			return rb_to_int(rb_iv_get(self, "@y"));
+		}
+		VALUE rfy(VALUE self) {
+			Check(self);
+			return rb_Float(rb_iv_get(self, "@y"));
+		}
+		VALUE ryE(VALUE self, VALUE y) {
+			Check(self);
+			Sprite::Get(self).SetY(NUM2INT(y));
+			return rb_iv_set(self, "@y", y);
+		}
+		VALUE rz(VALUE self) {
+			Check(self);
+			return rb_iv_get(self, "@z");
+		}
+		VALUE rzE(VALUE self, VALUE z) {
+			Check(self);
+			Sprite::Get(self).SetZ(NUM2INT(z));
+			return rb_iv_set(self, "@z", rb_to_int(z));
+		}
+		VALUE rox(VALUE self) {
+			Check(self);
+			return rb_iv_get(self, "@ox");
+		}
+		VALUE roxE(VALUE self, VALUE ox) {
+			Check(self);
+			Sprite::Get(self).SetOx(NUM2INT(ox));
+			return rb_iv_set(self, "@ox", ox);
+		}
+		VALUE roy(VALUE self) {
+			Check(self);
+			return rb_iv_get(self, "@oy");
+		}
+		VALUE royE(VALUE self, VALUE oy) {
+			Check(self);
+			Sprite::Get(self).SetOy(NUM2INT(oy));
+			return rb_iv_set(self, "@oy", oy);
+		}
+		VALUE rzoom_x(VALUE self) {
+			Check(self);
+			return rb_iv_get(self, "@zoom_x");
+		}
+		VALUE rzoom_xE(VALUE self, VALUE zoom_x) {
+			Check(self);
+			Sprite::Get(self).SetZoomX((float)NUM2DBL(zoom_x));
+			return rb_iv_set(self, "@zoom_x", rb_Float(zoom_x));
+		}
+		VALUE rzoom_y(VALUE self) {
+			Check(self);
+			return rb_iv_get(self, "@zoom_y");
+		}
+		VALUE rzoom_yE(VALUE self, VALUE zoom_y) {
+			Check(self);
+			Sprite::Get(self).SetZoomY((float)NUM2DBL(zoom_y));
+			return rb_iv_set(self, "@zoom_y", rb_Float(zoom_y));
+		}
+		VALUE rangle(VALUE self) {
+			Check(self);
+			return rb_iv_get(self, "@angle");
+		}
+		VALUE rangleE(VALUE self, VALUE angle) {
+			Check(self);
+			Sprite::Get(self).SetAngle((float)NUM2DBL(angle));
+			return rb_iv_set(self, "@angle", rb_Float(angle));
+		}
+		VALUE rmirror(VALUE self) {
+			Check(self);
+			return rb_iv_get(self, "@flipx");
+		}
+		VALUE rmirrorE(VALUE self, VALUE mirror) {
+			Check(self);
+			Sprite::Get(self).SetFlipX(NUM2BOOL(mirror));
+			return rb_iv_set(self, "@flipx", mirror);
+		}
+		VALUE rflipx(VALUE self) {
+			Check(self);
+			return rb_iv_get(self, "@flipx");
+		}
+		VALUE rflipxE(VALUE self, VALUE flipx) {
+			Check(self);
+			Sprite::Get(self).SetFlipX(NUM2BOOL(flipx));
+			return rb_iv_set(self, "@flipx", flipx);
+		}
+		VALUE rflipy(VALUE self) {
+			Check(self);
+			return rb_iv_get(self, "@flipy");
+		}
+		VALUE rflipyE(VALUE self, VALUE flipy) {
+			Check(self);
+			Sprite::Get(self).SetFlipY(NUM2BOOL(flipy));
+			return rb_iv_set(self, "@flipy", flipy);
+		}
+		VALUE rbush_depth(VALUE self) {
+			Check(self);
+			return rb_iv_get(self, "@bush_depth");
+		}
+		VALUE rbush_depthE(VALUE self, VALUE bush_depth) {
+			Check(self);
+			Sprite::Get(self).SetBushDepth(NUM2INT(bush_depth));
+			return rb_iv_set(self, "@bush_depth", bush_depth);
+		}
+		VALUE ropacity(VALUE self) {
+			Check(self);
+			return rb_iv_get(self, "@opacity");
+		}
+		VALUE ropacityE(VALUE self, VALUE opacity) {
+			Check(self);
+			Sprite::Get(self).SetOpacity(NUM2INT(opacity));
+			return rb_iv_set(self, "@opacity", opacity);
+		}
+		VALUE rblend_type(VALUE self) {
+			Check(self);
+			return rb_iv_get(self, "@blend_type");
+		}
+		VALUE rblend_typeE(VALUE self, VALUE blend_type) {
+			Check(self);
+			int type = NUM2INT(blend_type);
+			if (type < 0 || type > 3) type = 0;
+			Sprite::Get(self).SetBlendType(type);
+			return rb_iv_set(self, "@blend_type", INT2NUM(type));
+		}
+		VALUE rcolor(VALUE self) {
+			Check(self);
+			return rb_iv_get(self, "@color");
+		}
+		VALUE rcolorE(VALUE self, VALUE color) {
+			Check(self);
+			Check_Class(color, ARGSS::AColor::getID());
+			Sprite::Get(self).SetColor(color);
+			return rb_iv_set(self, "@color", color);
+		}
+		VALUE rtone(VALUE self) {
+			Check(self);
+			return rb_iv_get(self, "@tone");
+		}
+		VALUE rtoneE(VALUE self, VALUE tone) {
+			Check(self);
+			Check_Class(tone, ARGSS::ATone::getID());
+			Sprite::Get(self).SetTone(tone);
+			return rb_iv_set(self, "@tone", tone);
+		}
 
-////////////////////////////////////////////////////////////
-/// ARGSS Sprite initialize
-////////////////////////////////////////////////////////////
-void ARGSS::ASprite::Init() {
-	id = rb_define_class("Sprite", rb_cObject);
-	rb_define_method(id, "initialize", RubyFunc(rinitialize), -1);
-	rb_define_method(id, "dispose", RubyFunc(rdispose), 0);
-	rb_define_method(id, "disposed?", RubyFunc(rdisposedQ), 0);
-	rb_define_method(id, "flash", RubyFunc(rflash), 2);
-	rb_define_method(id, "update", RubyFunc(rupdate), 0);
-	rb_define_method(id, "width", RubyFunc(rwidth), 0);
-	rb_define_method(id, "height", RubyFunc(rheight), 0);
-	rb_define_method(id, "viewport", RubyFunc(rviewport), 0);
-	rb_define_method(id, "viewport=", RubyFunc(rviewportE), 1);
-	rb_define_method(id, "bitmap", RubyFunc(rbitmap), 0);
-	rb_define_method(id, "bitmap=", RubyFunc(rbitmapE), 1);
-	rb_define_method(id, "src_rect", RubyFunc(rsrc_rect), 0);
-	rb_define_method(id, "src_rect=", RubyFunc(rsrc_rectE), 1);
-	rb_define_method(id, "visible", RubyFunc(rvisible), 0);
-	rb_define_method(id, "visible=", RubyFunc(rvisibleE), 1);
-	rb_define_method(id, "x", RubyFunc(rx), 0);
-	rb_define_method(id, "fx", RubyFunc(rfx), 0);
-	rb_define_method(id, "x=", RubyFunc(rxE), 1);
-	rb_define_method(id, "y", RubyFunc(ry), 0);
-	rb_define_method(id, "fy", RubyFunc(rfy), 0);
-	rb_define_method(id, "y=", RubyFunc(ryE), 1);
-	rb_define_method(id, "z", RubyFunc(rz), 0);
-	rb_define_method(id, "z=", RubyFunc(rzE), 1);
-	rb_define_method(id, "ox", RubyFunc(rox), 0);
-	rb_define_method(id, "ox=", RubyFunc(roxE), 1);
-	rb_define_method(id, "oy", RubyFunc(roy), 0);
-	rb_define_method(id, "oy=", RubyFunc(royE), 1);
-	rb_define_method(id, "zoom_x", RubyFunc(rzoom_x), 0);
-	rb_define_method(id, "zoom_x=", RubyFunc(rzoom_xE), 1);
-	rb_define_method(id, "zoom_y", RubyFunc(rzoom_y), 0);
-	rb_define_method(id, "zoom_y=", RubyFunc(rzoom_yE), 1);
-	rb_define_method(id, "angle", RubyFunc(rangle), 0);
-	rb_define_method(id, "angle=", RubyFunc(rangleE), 1);
-	rb_define_method(id, "mirror", RubyFunc(rmirror), 0);
-	rb_define_method(id, "mirror=", RubyFunc(rmirrorE), 1);
-	rb_define_method(id, "flipx", RubyFunc(rflipx), 0);
-	rb_define_method(id, "flipx=", RubyFunc(rflipxE), 1);
-	rb_define_method(id, "flipy", RubyFunc(rflipy), 0);
-	rb_define_method(id, "flipy=", RubyFunc(rflipyE), 1);
-	rb_define_method(id, "bush_depth", RubyFunc(rbush_depth), 0);
-	rb_define_method(id, "bush_depth=", RubyFunc(rbush_depthE), 1);
-	rb_define_method(id, "opacity", RubyFunc(ropacity), 0);
-	rb_define_method(id, "opacity=", RubyFunc(ropacityE), 1);
-	rb_define_method(id, "blend_type", RubyFunc(rblend_type), 0);
-	rb_define_method(id, "blend_type=", RubyFunc(rblend_typeE), 1);
-	rb_define_method(id, "color", RubyFunc(rcolor), 0);
-	rb_define_method(id, "color=", RubyFunc(rcolorE), 1);
-	rb_define_method(id, "tone", RubyFunc(rtone), 0);
-	rb_define_method(id, "tone=", RubyFunc(rtoneE), 1);
-}
+		////////////////////////////////////////////////////////////
+		/// ARGSS Sprite initialize
+		////////////////////////////////////////////////////////////
+		void Init() {
+			id = rb_define_class("Sprite", rb_cObject);
+			static FuncTable funcTable =
+			{
+				{ ARGSS_FUNC(initialize), -1 },
+				{ ARGSS_FUNC(dispose), 0 }, { ARGSS_Q(disposed), 0 },
+				{ ARGSS_FUNC(flash), 2 },
+				{ ARGSS_FUNC(update), 0 },
+				{ ARGSS_FUNC(width), 0 },
+				{ ARGSS_FUNC(height), 0 },
+				ARGSS_GETTER_SETTER(viewport),
+				ARGSS_GETTER_SETTER(bitmap),
+				ARGSS_GETTER_SETTER(src_rect),
+				ARGSS_GETTER_SETTER(visible),
+				ARGSS_GETTER_SETTER(x), { ARGSS_FUNC(fx), 0 },
+				ARGSS_GETTER_SETTER(y), { ARGSS_FUNC(fy), 0 },
+				ARGSS_GETTER_SETTER(z),
+				ARGSS_GETTER_SETTER(ox),
+				ARGSS_GETTER_SETTER(oy),
+				ARGSS_GETTER_SETTER(zoom_x),
+				ARGSS_GETTER_SETTER(zoom_y),
+				ARGSS_GETTER_SETTER(angle),
+				ARGSS_GETTER_SETTER(mirror),
+				ARGSS_GETTER_SETTER(flipx),
+				ARGSS_GETTER_SETTER(flipy),
+				ARGSS_GETTER_SETTER(bush_depth),
+				ARGSS_GETTER_SETTER(opacity),
+				ARGSS_GETTER_SETTER(blend_type),
+				ARGSS_GETTER_SETTER(color),
+				ARGSS_GETTER_SETTER(tone),
+			};
+			defineMethods(id, funcTable);
+		}
 
-////////////////////////////////////////////////////////////
-/// Check if sprite isn't disposed
-////////////////////////////////////////////////////////////
-void ARGSS::ASprite::Check(VALUE self) {
-	if (Sprite::IsDisposed(self)) {
-		rb_raise(ARGSS::AError::id, "disposed sprite <%i>", (int)self);
-	}
-}
+		////////////////////////////////////////////////////////////
+		/// Check if sprite isn't disposed
+		////////////////////////////////////////////////////////////
+		void Check(VALUE self) {
+			if (Sprite::IsDisposed(self)) {
+				rb_raise(ARGSS::AError::getID(), "disposed sprite <%i>", (int)self);
+			}
+		}
+	} // namespace ASprite
+} // namespace ARGSS

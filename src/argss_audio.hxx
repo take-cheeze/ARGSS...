@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_AUDIO_H_
-#define _ARGSS_AUDIO_H_
+#ifndef _ARGSS_AUDIO_HXX_
+#define _ARGSS_AUDIO_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -33,9 +33,12 @@
 ////////////////////////////////////////////////////////////
 /// ARGSS Audio namespace
 ////////////////////////////////////////////////////////////
-namespace ARGSS {
-	namespace AAudio {
-		extern VALUE id;
+namespace ARGSS
+{
+	namespace AAudio
+	{
+		VALUE& getID();
+
 		void Init();
 
 		VALUE rbgm_play(int argc, VALUE *argv, VALUE self);
@@ -49,7 +52,7 @@ namespace ARGSS {
 		VALUE rme_fade(VALUE self, VALUE fade);
 		VALUE rse_play(int argc, VALUE *argv, VALUE self);
 		VALUE rse_stop(VALUE self);
-	};
-};
+	} // namespace AAudio
+} // namespace ARGSS
 
 #endif

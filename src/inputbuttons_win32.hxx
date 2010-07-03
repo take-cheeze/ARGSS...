@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _INPUTBUTTONS_WIN32_H_
-#define _INPUTBUTTONS_WIN32_H_
+#ifndef _INPUTBUTTONS_WIN32_HXX_
+#define _INPUTBUTTONS_WIN32_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -37,8 +37,6 @@
 namespace Input
 {
 	void InitButtons();
-
-	extern std::map< int, std::vector<int> > buttons;
 } // namespace Input
 
 #endif

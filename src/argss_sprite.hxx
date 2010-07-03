@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_SPRITE_H_
-#define _ARGSS_SPRITE_H_
+#ifndef _ARGSS_SPRITE_HXX_
+#define _ARGSS_SPRITE_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -37,7 +37,8 @@ namespace ARGSS
 {
 	namespace ASprite
 	{
-		extern VALUE id;
+		VALUE& getID();
+
 		void Init();
 		void Check(VALUE self);
 

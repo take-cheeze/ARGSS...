@@ -1,11 +1,13 @@
-#ifndef _WINDOWUI_QT_H_
-#define _WINDOWUI_QT_H_
+#ifndef _WINDOWUI_QT_HXX_
+#define _WINDOWUI_QT_HXX_
 
 #include <string>
 #include <queue>
-#include <QtOpenGL/QGLWidget> // #include "windows.hxx"
+#include <QtOpenGL/QGLWidget>
+
 #include "event.hxx"
 #include "inputkeys.hxx"
+
 
 class WindowUi : public QGLWidget
 {

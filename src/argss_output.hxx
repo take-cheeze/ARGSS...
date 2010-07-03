@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_OUTPUT_H_
-#define _ARGSS_OUTPUT_H_
+#ifndef _ARGSS_OUTPUT_HXX_
+#define _ARGSS_OUTPUT_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -37,10 +37,6 @@ namespace ARGSS
 {
 	namespace AOutput
 	{
-		extern VALUE id;
-		extern VALUE stdout_id;
-		extern VALUE stderr_id;
-		extern VALUE stdin_id;
 		void Init();
 
 		VALUE rconsole(VALUE self);

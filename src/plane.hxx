@@ -22,16 +22,19 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _PLANE_H_
-#define _PLANE_H_
+#ifndef _PLANE_HXX_
+#define _PLANE_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
 #include <string>
+
+#include "argss_ruby.hxx"
+
 #include "bitmap.hxx"
-#include "tone.hxx"
 #include "drawable.hxx"
+#include "tone.hxx"
 
 ////////////////////////////////////////////////////////////
 /// Plane class
@@ -39,22 +42,22 @@
 class Plane : public Drawable
 {
 public:
-	Plane(unsigned long iid);
+	Plane(VALUE iid);
 	~Plane();
 
-	static bool IsDisposed(unsigned long id);
-	static void New(unsigned long id);
-	static Plane* Get(unsigned long id);
-	static void Dispose(unsigned long id);
+	static bool IsDisposed(VALUE id);
+	static void New(VALUE id);
+	static Plane& Get(VALUE id);
+	static void Dispose(VALUE id);
 
 	void RefreshBitmaps();
 	void Draw(long z);
 	void Draw(long z, Bitmap* dst_bitmap);
 
-	unsigned long GetViewport();
-	void SetViewport(unsigned long nviewport);
-	unsigned long GetBitmap();
-	void SetBitmap(unsigned long nbitmap);
+	VALUE GetViewport();
+	void SetViewport(VALUE nviewport);
+	VALUE GetBitmap();
+	void SetBitmap(VALUE nbitmap);
 	bool GetVisible();
 	void SetVisible(bool nvisible);
 	int GetZ();
@@ -71,10 +74,10 @@ public:
 	void SetOpacity(int nopacity);
 	int GetBlendType();
 	void SetBlendType(int nblend_type);
-	unsigned long GetColor();
-	void SetColor(unsigned long ncolor);
-	unsigned long GetTone();
-	void SetTone(unsigned long ntone);
+	VALUE GetColor();
+	void SetColor(VALUE ncolor);
+	VALUE GetTone();
+	void SetTone(VALUE ntone);
 
 private:
 	void Refresh();
@@ -83,9 +86,9 @@ private:
 	bool needs_refresh;
 	Tone tone_last;
 
-	unsigned long id;
-	unsigned long viewport;
-	unsigned long bitmap;
+	VALUE id;
+	VALUE viewport;
+	VALUE bitmap;
 	bool visible;
 	int z;
 	int ox;
@@ -94,8 +97,8 @@ private:
 	float zoom_y;
 	int opacity;
 	int blend_type;
-	unsigned long color;
-	unsigned long tone;
+	VALUE color;
+	VALUE tone;
 }; // class Plane
 
 #endif

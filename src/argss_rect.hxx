@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_RECT_H_
-#define _ARGSS_RECT_H_
+#ifndef _ARGSS_RECT_HXX_
+#define _ARGSS_RECT_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -37,7 +37,8 @@ namespace ARGSS
 {
 	namespace ARect
 	{
-		extern VALUE id;
+		VALUE& getID();
+
 		void Init();
 		VALUE New(double x, double y, double width, double height);
 

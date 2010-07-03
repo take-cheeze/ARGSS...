@@ -22,18 +22,19 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _SPRITE_H_
-#define _SPRITE_H_
+#ifndef _SPRITE_HXX_
+#define _SPRITE_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
 #include <string>
+
 #include "bitmap.hxx"
 #include "color.hxx"
-#include "tone.hxx"
-#include "rect.hxx"
 #include "drawable.hxx"
+#include "rect.hxx"
+#include "tone.hxx"
 
 ////////////////////////////////////////////////////////////
 /// Sprite class
@@ -41,13 +42,13 @@
 class Sprite : public Drawable
 {
 public:
-	Sprite(unsigned long iid);
+	Sprite(VALUE iid);
 	~Sprite();
 
-	static bool IsDisposed(unsigned long id);
-	static void New(unsigned long id);
-	static Sprite* Get(unsigned long id);
-	static void Dispose(unsigned long id);
+	static bool IsDisposed(VALUE id);
+	static void New(VALUE id);
+	static Sprite& Get(VALUE id);
+	static void Dispose(VALUE id);
 
 	void RefreshBitmaps();
 	void Draw(long z);
@@ -56,12 +57,12 @@ public:
 	void Flash(int duration);
 	void Flash(Color color, int duration);
 	void Update();
-	unsigned long GetViewport();
-	void SetViewport(unsigned long nviewport);
-	unsigned long GetBitmap();
-	void SetBitmap(unsigned long nbitmap);
-	unsigned long GetSrcRect();
-	void SetSrcRect(unsigned long nsrc_rect);
+	VALUE GetViewport();
+	void SetViewport(VALUE nviewport);
+	VALUE GetBitmap();
+	void SetBitmap(VALUE nbitmap);
+	VALUE GetSrcRect();
+	void SetSrcRect(VALUE nsrc_rect);
 	bool GetVisible();
 	void SetVisible(bool nvisible);
 	int GetX();
@@ -90,16 +91,16 @@ public:
 	void SetOpacity(int nopacity);
 	int GetBlendType();
 	void SetBlendType(int nblend_type);
-	unsigned long GetColor();
-	void SetColor(unsigned long ncolor);
-	unsigned long GetTone();
-	void SetTone(unsigned long ntone);
+	VALUE GetColor();
+	void SetColor(VALUE ncolor);
+	VALUE GetTone();
+	void SetTone(VALUE ntone);
 
 private:
-	unsigned long id;
-	unsigned long viewport;
-	unsigned long bitmap;
-	unsigned long src_rect;
+	VALUE id;
+	VALUE viewport;
+	VALUE bitmap;
+	VALUE src_rect;
 	bool visible;
 	int x;
 	int y;
@@ -114,8 +115,8 @@ private:
 	int bush_depth;
 	int opacity;
 	int blend_type;
-	unsigned long color;
-	unsigned long tone;
+	VALUE color;
+	VALUE tone;
 
 	GLuint flash_texture;
 	Color flash_color;

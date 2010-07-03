@@ -1,5 +1,5 @@
-#ifndef _MSGBOX_QT_H_
-#define _MSGBOX_QT_H_
+#ifndef _MSGBOX_QT_HXX_
+#define _MSGBOX_QT_HXX_
 
 #include <string>
 

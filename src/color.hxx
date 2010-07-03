@@ -22,12 +22,14 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _COLOR_H_
-#define _COLOR_H_
+#ifndef _COLOR_HXX_
+#define _COLOR_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include "argss_ruby.hxx"
+
 #include "defines.hxx"
 
 ////////////////////////////////////////////////////////////
@@ -37,12 +39,12 @@ class Color
 {
 public:
 	Color();
-	Color(unsigned long color);
+	Color(VALUE color);
 	Color(int ired, int igreen, int iblue, int ialpha);
 	~Color();
 
-	void Set(unsigned long color);
-	unsigned long GetARGSS();
+	void Set(VALUE color);
+	VALUE GetARGSS();
 	Uint32 GetUint32();
 
 	float red;

@@ -27,141 +27,173 @@
 ////////////////////////////////////////////////////////////
 #include <string>
 
-#include "argss_graphics.hxx"
 #include "argss_color.hxx"
+#include "argss_graphics.hxx"
 
-#include "system.hxx"
 #include "graphics.hxx"
+#include "player.hxx"
+#include "system.hxx"
 
-////////////////////////////////////////////////////////////
-/// Global Variables
-////////////////////////////////////////////////////////////
-VALUE ARGSS::AGraphics::id;
+namespace ARGSS
+{
+	namespace AGraphics
+	{
+		namespace
+		{
+			////////////////////////////////////////////////////////////
+			/// Global Variables
+			////////////////////////////////////////////////////////////
+		 	VALUE id;
+		} // namespace
+		VALUE& getID() { return id; }
 
-////////////////////////////////////////////////////////////
-/// ARGSS Graphics ruby functions
-////////////////////////////////////////////////////////////
-VALUE ARGSS::AGraphics::rupdate(VALUE self) {
-	Graphics::Update();
-	return Qnil;
-}
-VALUE ARGSS::AGraphics::rfreeze(VALUE self) {
-	Graphics::Freeze();
-	return Qnil;
-}
-VALUE ARGSS::AGraphics::rtransition(int argc, VALUE *argv, VALUE self) {
-	if (argc > 3) raise_argn(argc, 3);
-	int duration = 8;
-	std::string filename = "";
-	int vague = 40;
-	if (argc > 0) {
-		Check_Kind(argv[0], rb_cNumeric);
-		duration = NUM2INT(argv[0]);
-	}
-	if (argc > 1) {
-		Check_Type(argv[1], T_STRING);
-		filename = StringValuePtr(argv[1]);
-	}
-	if (argc > 2) {
-		Check_Kind(argv[2], rb_cNumeric);
-		vague = NUM2INT(argv[2]);
-	}
-	Graphics::Transition(duration, filename, vague);
-	return Qnil;
-}
-VALUE ARGSS::AGraphics::rframe_reset(VALUE self) {
-	Graphics::FrameReset();
-	return Qnil;
-}
-VALUE ARGSS::AGraphics::rframe_rate(VALUE self) {
-	return INT2FIX(Graphics::GetFrameRate());
-}
-VALUE ARGSS::AGraphics::rframe_rateE(VALUE self, VALUE framerate) {
-	Check_Kind(framerate, rb_cNumeric);
-	Graphics::SetFrameRate(NUM2INT(framerate));
-	return framerate;
-}
-VALUE ARGSS::AGraphics::rframe_count(VALUE self) {
-	return INT2FIX(Graphics::GetFrameCount());
-}
-VALUE ARGSS::AGraphics::rframe_countE(VALUE self, VALUE framecount) {
-	Check_Kind(framecount, rb_cNumeric);
-	Graphics::SetFrameCount(NUM2INT(framecount));
-	return framecount;
-}
-VALUE ARGSS::AGraphics::rfps(VALUE self) {
-	return INT2FIX( Graphics::getFPS() );
-}
-VALUE ARGSS::AGraphics::rbackcolor(VALUE self) {
-	return Graphics::GetBackColor();
-}
-VALUE ARGSS::AGraphics::rbackcolorE(VALUE self, VALUE backcolor) {
-	Check_Class(backcolor, ARGSS::AColor::id);
-	Graphics::SetBackColor(backcolor);
-	return backcolor;
-}
-VALUE ARGSS::AGraphics::rwait(VALUE self, VALUE duration) {
-	Check_Kind(duration, rb_cNumeric);
-	Graphics::Wait(NUM2INT(duration));
-	return Qnil;
-}
-VALUE ARGSS::AGraphics::rwidth(VALUE self) {
-	return INT2NUM(System::Width);
-}
-VALUE ARGSS::AGraphics::rheight(VALUE self) {
-	return INT2NUM(System::Height);
-}
-VALUE ARGSS::AGraphics::rresize_screen(VALUE self, VALUE width, VALUE height) {
-	Check_Kind(width, rb_cNumeric);
-	Check_Kind(height, rb_cNumeric);
-	Graphics::ResizeScreen(NUM2INT(width), NUM2INT(height));
-	return Qnil;
-}
-VALUE ARGSS::AGraphics::rsnap_to_bitmap(VALUE self) {
-	return Graphics::SnapToBitmap();
-}
-VALUE ARGSS::AGraphics::rfadeout(VALUE self, VALUE duration) {
-	Check_Kind(duration, rb_cNumeric);
-	Graphics::FadeOut(NUM2INT(duration));
-	return Qnil;
-}
-VALUE ARGSS::AGraphics::rfadein(VALUE self, VALUE duration) {
-	Check_Kind(duration, rb_cNumeric);
-	Graphics::FadeIn(NUM2INT(duration));
-	return Qnil;
-}
-VALUE ARGSS::AGraphics::rbrightness(VALUE self) {
-	return INT2FIX(Graphics::GetBrightness());
-}
-VALUE ARGSS::AGraphics::rbrightnessE(VALUE self, VALUE brightness) {
-	Check_Kind(brightness, rb_cNumeric);
-	Graphics::SetBrightness(NUM2INT(brightness));
-	return brightness;
-}
+		////////////////////////////////////////////////////////////
+		/// ARGSS Graphics ruby functions
+		////////////////////////////////////////////////////////////
+		VALUE rupdate(VALUE self)
+		{
+			Graphics::Update();
+			return Qnil;
+		}
+		VALUE rfreeze(VALUE self)
+		{
+			Graphics::Freeze();
+			return Qnil;
+		}
+		VALUE rtransition(int argc, VALUE *argv, VALUE self)
+		{
+			if (argc > 3) raise_argn(argc, 3);
+			int duration = 8;
+			std::string filename = "";
+			int vague = 40;
+			if (argc > 0) {
+				Check_Kind(argv[0], rb_cNumeric);
+				duration = NUM2INT(argv[0]);
+			}
+			if (argc > 1) {
+				Check_Type(argv[1], T_STRING);
+				filename = StringValuePtr(argv[1]);
+			}
+			if (argc > 2) {
+				Check_Kind(argv[2], rb_cNumeric);
+				vague = NUM2INT(argv[2]);
+			}
+			Graphics::Transition(duration, filename, vague);
+			return Qnil;
+		}
+		VALUE rframe_reset(VALUE self)
+		{
+			Graphics::FrameReset();
+			return Qnil;
+		}
+		VALUE rframe_rate(VALUE self)
+		{
+			return INT2FIX(Graphics::GetFrameRate());
+		}
+		VALUE rframe_rateE(VALUE self, VALUE framerate)
+		{
+			Check_Kind(framerate, rb_cNumeric);
+			Graphics::SetFrameRate(NUM2INT(framerate));
+			return framerate;
+		}
+		VALUE rframe_count(VALUE self)
+		{
+			return INT2FIX(Graphics::GetFrameCount());
+		}
+		VALUE rframe_countE(VALUE self, VALUE framecount)
+		{
+			Check_Kind(framecount, rb_cNumeric);
+			Graphics::SetFrameCount(NUM2INT(framecount));
+			return framecount;
+		}
+		VALUE rfps(VALUE self)
+		{
+			return INT2FIX( Graphics::getFPS() );
+		}
+		VALUE rbackcolor(VALUE self)
+		{
+			return Graphics::GetBackColor();
+		}
+		VALUE rbackcolorE(VALUE self, VALUE backcolor)
+		{
+			Check_Class( backcolor, ARGSS::AColor::getID() );
+			Graphics::SetBackColor(backcolor);
+			return backcolor;
+		}
+		VALUE rwait(VALUE self, VALUE duration)
+		{
+			Check_Kind(duration, rb_cNumeric);
+			Graphics::Wait(NUM2INT(duration));
+			return Qnil;
+		}
+		VALUE rwidth(VALUE self)
+		{
+			return INT2NUM( Player::getMainWindow().GetWidth() ); // System::Width);
+		}
+		VALUE rheight(VALUE self)
+		{
+			return INT2NUM( Player::getMainWindow().GetHeight() ); // System::Height);
+		}
+		VALUE rresize_screen(VALUE self, VALUE width, VALUE height)
+		{
+			Check_Kind(width, rb_cNumeric);
+			Check_Kind(height, rb_cNumeric);
+			Graphics::ResizeScreen(NUM2INT(width), NUM2INT(height));
+			return Qnil;
+		}
+		VALUE rsnap_to_bitmap(VALUE self)
+		{
+			return Graphics::SnapToBitmap();
+		}
+		VALUE rfadeout(VALUE self, VALUE duration)
+		{
+			Check_Kind(duration, rb_cNumeric);
+			Graphics::FadeOut(NUM2INT(duration));
+			return Qnil;
+		}
+		VALUE rfadein(VALUE self, VALUE duration)
+		{
+			Check_Kind(duration, rb_cNumeric);
+			Graphics::FadeIn(NUM2INT(duration));
+			return Qnil;
+		}
+		VALUE rbrightness(VALUE self)
+		{
+			return INT2FIX(Graphics::GetBrightness());
+		}
+		VALUE rbrightnessE(VALUE self, VALUE brightness)
+		{
+			Check_Kind(brightness, rb_cNumeric);
+			Graphics::SetBrightness(NUM2INT(brightness));
+			return brightness;
+		}
 
-////////////////////////////////////////////////////////////
-/// ARGSS Graphics initialize
-////////////////////////////////////////////////////////////
-void ARGSS::AGraphics::Init() {
-	id = rb_define_module("Graphics");
-	rb_define_singleton_method(id, "update", RubyFunc(rupdate), 0);
-	rb_define_singleton_method(id, "freeze", RubyFunc(rfreeze), 0);
-	rb_define_singleton_method(id, "transition", RubyFunc(rtransition), -1);
-	rb_define_singleton_method(id, "frame_reset", RubyFunc(rframe_reset), 0);
-	rb_define_singleton_method(id, "frame_rate", RubyFunc(rframe_rate), 0);
-	rb_define_singleton_method(id, "frame_rate=", RubyFunc(rframe_rateE), 1);
-	rb_define_singleton_method(id, "frame_count", RubyFunc(rframe_count), 0);
-	rb_define_singleton_method(id, "frame_count=", RubyFunc(rframe_countE), 1);
-	rb_define_singleton_method(id, "fps", RubyFunc(rfps), 0);
-	rb_define_singleton_method(id, "backcolor", RubyFunc(rbackcolor), 0);
-	rb_define_singleton_method(id, "backcolor=", RubyFunc(rbackcolorE), 1);
-	rb_define_singleton_method(id, "wait", RubyFunc(rwait), 1);
-	rb_define_singleton_method(id, "width", RubyFunc(rwidth), 0);
-	rb_define_singleton_method(id, "height", RubyFunc(rheight), 0);
-	rb_define_singleton_method(id, "resize_screen", RubyFunc(rresize_screen), 2);
-	rb_define_singleton_method(id, "snap_to_bitmap", RubyFunc(rsnap_to_bitmap), 0);
-	rb_define_singleton_method(id, "fadeout", RubyFunc(rfadeout), 1);
-	rb_define_singleton_method(id, "fadein", RubyFunc(rfadein), 1);
-	rb_define_singleton_method(id, "brightness", RubyFunc(rbrightness), 0);
-	rb_define_singleton_method(id, "brightness=", RubyFunc(rbrightnessE), 1);
-}
+		////////////////////////////////////////////////////////////
+		/// ARGSS Graphics initialize
+		////////////////////////////////////////////////////////////
+		void Init()
+		{
+			id = rb_define_module("Graphics");
+			rb_define_singleton_method(id, ARGSS_FUNC(update), 0);
+			rb_define_singleton_method(id, ARGSS_FUNC(freeze), 0);
+			rb_define_singleton_method(id, ARGSS_FUNC(transition), -1);
+			rb_define_singleton_method(id, ARGSS_FUNC(frame_reset), 0);
+			rb_define_singleton_method(id, ARGSS_FUNC(frame_rate), 0);
+			rb_define_singleton_method(id, ARGSS_E(frame_rate), 1);
+			rb_define_singleton_method(id, ARGSS_FUNC(frame_count), 0);
+			rb_define_singleton_method(id, ARGSS_E(frame_count), 1);
+			rb_define_singleton_method(id, ARGSS_FUNC(fps), 0);
+			rb_define_singleton_method(id, ARGSS_FUNC(backcolor), 0);
+			rb_define_singleton_method(id, ARGSS_E(backcolor), 1);
+			rb_define_singleton_method(id, ARGSS_FUNC(wait), 1);
+			rb_define_singleton_method(id, ARGSS_FUNC(width), 0);
+			rb_define_singleton_method(id, ARGSS_FUNC(height), 0);
+			rb_define_singleton_method(id, ARGSS_FUNC(resize_screen), 2);
+			rb_define_singleton_method(id, ARGSS_FUNC(snap_to_bitmap), 0);
+			rb_define_singleton_method(id, ARGSS_FUNC(fadeout), 1);
+			rb_define_singleton_method(id, ARGSS_FUNC(fadein), 1);
+			rb_define_singleton_method(id, ARGSS_FUNC(brightness), 0);
+			rb_define_singleton_method(id, ARGSS_E(brightness), 1);
+		}
+	} // namespace AGraphics
+} // namespace ARGSS

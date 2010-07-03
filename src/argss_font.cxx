@@ -28,178 +28,208 @@
 #include "argss_font.hxx"
 #include "argss_color.hxx"
 
-////////////////////////////////////////////////////////////
-/// Global Variables
-////////////////////////////////////////////////////////////
-VALUE ARGSS::AFont::id;
+namespace ARGSS
+{
+	namespace AFont
+	{
+		namespace
+		{
+			////////////////////////////////////////////////////////////
+			/// Global Variables
+			////////////////////////////////////////////////////////////
+			VALUE id;
+		} // namespace
+		VALUE& getID() { return id; }
 
-////////////////////////////////////////////////////////////
-/// ARGSS Font ruby functions
-////////////////////////////////////////////////////////////
-VALUE ARGSS::AFont::rinitialize(int argc, VALUE *argv, VALUE self) {
-	if (argc > 2) raise_argn(argc, 2);
-	if (argc >= 1) {
-		Check_Types2(argv[0], T_STRING, T_ARRAY);
-		rb_iv_set(self, "@name", argv[0]);
-	}
-	else {
-		rb_iv_set(self, "@name", rb_str_dup(rb_cv_get(ARGSS::AFont::id, "@@default_name")));
-	}
-	if (argc == 2) {
-		Check_Kind(argv[1], rb_cNumeric);
-		rb_iv_set(self, "@size", argv[1]);
-	}
-	else {
-		rb_iv_set(self, "@size", rb_cv_get(ARGSS::AFont::id, "@@default_size"));
-	}
-	rb_iv_set(self, "@bold", rb_cv_get(ARGSS::AFont::id, "@@default_bold"));
-	rb_iv_set(self, "@italic", rb_cv_get(ARGSS::AFont::id, "@@default_italic"));
-	rb_iv_set(self, "@color", ARGSS::AColor::New(rb_cv_get(ARGSS::AFont::id, "@@default_color")));
-	return self;
-}
+		////////////////////////////////////////////////////////////
+		/// ARGSS Font ruby functions
+		////////////////////////////////////////////////////////////
+		VALUE rinitialize(int argc, VALUE *argv, VALUE self)
+		{
+			if (argc > 2) raise_argn(argc, 2);
+			if (argc >= 1) {
+				Check_Types2(argv[0], T_STRING, T_ARRAY);
+				rb_iv_set(self, "@name", argv[0]);
+			}
+			else {
+				rb_iv_set(self, "@name", rb_str_dup(rb_cv_get(id, "@@default_name")));
+			}
+			if (argc == 2) {
+				Check_Kind(argv[1], rb_cNumeric);
+				rb_iv_set(self, "@size", argv[1]);
+			}
+			else {
+				rb_iv_set(self, "@size", rb_cv_get(id, "@@default_size"));
+			}
+			rb_iv_set(self, "@bold", rb_cv_get(id, "@@default_bold"));
+			rb_iv_set(self, "@italic", rb_cv_get(id, "@@default_italic"));
+			rb_iv_set(self, "@color", ARGSS::AColor::New(rb_cv_get(id, "@@default_color")));
+			return self;
+		}
 
-VALUE ARGSS::AFont::rexistQ(VALUE self) {
-	// TODO
-	return Qtrue;
-}
-VALUE ARGSS::AFont::rname(VALUE self) {
-	return rb_iv_get(self, "@name");
-}
-VALUE ARGSS::AFont::rnameE(VALUE self, VALUE name) {
-	Check_Types2(name, T_STRING, T_ARRAY);
-	rb_iv_set(self, "@name", name);
-	return name;
-}
-VALUE ARGSS::AFont::rsize(VALUE self) {
-	return rb_iv_get(self, "@size");
-}
-VALUE ARGSS::AFont::rsizeE(VALUE self, VALUE size) {
-	Check_Kind(size, rb_cNumeric);
-	rb_iv_set(self, "@size", size);
-	return size; 
-}
-VALUE ARGSS::AFont::rbold(VALUE self) {
-	return rb_iv_get(self, "@bold");
-}
-VALUE ARGSS::AFont::rboldE(VALUE self, VALUE bold) {
-	Check_Bool(bold);
-	rb_iv_set(self, "@bold", bold);
-	return bold;
-}
-VALUE ARGSS::AFont::ritalic(VALUE self) {
-	return rb_iv_get(self, "@italic");
-}
-VALUE ARGSS::AFont::ritalicE(VALUE self, VALUE italic) {
-	Check_Bool(italic);
-	rb_iv_set(self, "@italic", italic);
-	return italic;
-}
-VALUE ARGSS::AFont::rcolor(VALUE self) {
-	return rb_iv_get(self, "@color");
-}
-VALUE ARGSS::AFont::rcolorE(VALUE self, VALUE color) {
-	Check_Class(color, ARGSS::AColor::id);
-	return rb_iv_set(self, "@color", color);
-}
-VALUE ARGSS::AFont::rshadow(VALUE self) {
-	return rb_iv_get(self, "@shadow");
-}
-VALUE ARGSS::AFont::rshadowE(VALUE self, VALUE shadow) {
-	Check_Bool(shadow);
-	rb_iv_set(self, "@shadow", shadow);
-	return shadow;
-}
-VALUE ARGSS::AFont::rdefault_name(VALUE self) {
-	return rb_cv_get(ARGSS::AFont::id, "@@default_name");
-}
-VALUE ARGSS::AFont::rdefault_nameE(VALUE self, VALUE default_name) {
-	Check_Types2(default_name, T_STRING, T_ARRAY);
-	rb_cv_set(ARGSS::AFont::id, "@@default_name", default_name);
-	return default_name;
-}
-VALUE ARGSS::AFont::rdefault_size(VALUE self) {
-	return rb_cv_get(ARGSS::AFont::id, "@@default_size");
-}
-VALUE ARGSS::AFont::rdefault_sizeE(VALUE self, VALUE default_size) {
-	Check_Kind(default_size, rb_cNumeric);
-	rb_cv_set(ARGSS::AFont::id, "@@default_size", default_size);
-	return default_size;
-}
-VALUE ARGSS::AFont::rdefault_bold(VALUE self) {
-	return rb_cv_get(ARGSS::AFont::id, "@@default_bold");
-}
-VALUE ARGSS::AFont::rdefault_boldE(VALUE self, VALUE default_bold) {
-	Check_Bool(default_bold);
-	rb_cv_set(ARGSS::AFont::id, "@@default_bold", default_bold);
-	return default_bold;
-}
-VALUE ARGSS::AFont::rdefault_italic(VALUE self) {
-	return rb_cv_get(ARGSS::AFont::id, "@@default_italic");
-}
-VALUE ARGSS::AFont::rdefault_italicE(VALUE self, VALUE default_italic) {
-	Check_Bool(default_italic);
-	rb_cv_set(ARGSS::AFont::id, "@@default_italic", default_italic);
-	return default_italic;
-}
-VALUE ARGSS::AFont::rdefault_color(VALUE self) {
-	return rb_cv_get(ARGSS::AFont::id, "@@default_color");
-}
-VALUE ARGSS::AFont::rdefault_colorE(VALUE self, VALUE default_color) {
-	Check_Class(default_color, ARGSS::AColor::id);
-	rb_cv_set(ARGSS::AFont::id, "@@default_color", default_color);
-	return default_color;
-}
-VALUE ARGSS::AFont::rdefault_shadow(VALUE self) {
-	return rb_cv_get(ARGSS::AFont::id, "@@default_shadow");
-}
-VALUE ARGSS::AFont::rdefault_shadowE(VALUE self, VALUE default_shadow) {
-	Check_Bool(default_shadow);
-	rb_cv_set(ARGSS::AFont::id, "@@default_shadow", default_shadow);
-	return default_shadow;
-}
+		VALUE rexistQ(VALUE self)
+		{
+			// TODO
+			return Qtrue;
+		}
+		VALUE rname(VALUE self)
+		{
+			return rb_iv_get(self, "@name");
+		}
+		VALUE rnameE(VALUE self, VALUE name)
+		{
+			Check_Types2(name, T_STRING, T_ARRAY);
+			rb_iv_set(self, "@name", name);
+			return name;
+		}
+		VALUE rsize(VALUE self)
+		{
+			return rb_iv_get(self, "@size");
+		}
+		VALUE rsizeE(VALUE self, VALUE size)
+		{
+			Check_Kind(size, rb_cNumeric);
+			rb_iv_set(self, "@size", size);
+			return size; 
+		}
+		VALUE rbold(VALUE self)
+		{
+			return rb_iv_get(self, "@bold");
+		}
+		VALUE rboldE(VALUE self, VALUE bold) {
+			Check_Bool(bold);
+			rb_iv_set(self, "@bold", bold);
+			return bold;
+		}
+		VALUE ritalic(VALUE self)
+		{
+			return rb_iv_get(self, "@italic");
+		}
+		VALUE ritalicE(VALUE self, VALUE italic)
+		{
+			Check_Bool(italic);
+			rb_iv_set(self, "@italic", italic);
+			return italic;
+		}
+		VALUE rcolor(VALUE self)
+		{
+			return rb_iv_get(self, "@color");
+		}
+		VALUE rcolorE(VALUE self, VALUE color)
+		{
+			Check_Class( color, ARGSS::AColor::getID() );
+			return rb_iv_set(self, "@color", color);
+		}
+		VALUE rshadow(VALUE self)
+		{
+			return rb_iv_get(self, "@shadow");
+		}
+		VALUE rshadowE(VALUE self, VALUE shadow)
+		{
+			Check_Bool(shadow);
+			rb_iv_set(self, "@shadow", shadow);
+			return shadow;
+		}
+		VALUE rdefault_name(VALUE self)
+		{
+			return rb_cv_get(id, "@@default_name");
+		}
+		VALUE rdefault_nameE(VALUE self, VALUE default_name)
+		{
+			Check_Types2(default_name, T_STRING, T_ARRAY);
+			rb_cv_set(id, "@@default_name", default_name);
+			return default_name;
+		}
+		VALUE rdefault_size(VALUE self)
+		{
+			return rb_cv_get(id, "@@default_size");
+		}
+		VALUE rdefault_sizeE(VALUE self, VALUE default_size) {
+			Check_Kind(default_size, rb_cNumeric);
+			rb_cv_set(id, "@@default_size", default_size);
+			return default_size;
+		}
+		VALUE rdefault_bold(VALUE self) {
+			return rb_cv_get(id, "@@default_bold");
+		}
+		VALUE rdefault_boldE(VALUE self, VALUE default_bold) {
+			Check_Bool(default_bold);
+			rb_cv_set(id, "@@default_bold", default_bold);
+			return default_bold;
+		}
+		VALUE rdefault_italic(VALUE self) {
+			return rb_cv_get(id, "@@default_italic");
+		}
+		VALUE rdefault_italicE(VALUE self, VALUE default_italic) {
+			Check_Bool(default_italic);
+			rb_cv_set(id, "@@default_italic", default_italic);
+			return default_italic;
+		}
+		VALUE rdefault_color(VALUE self)
+		{
+			return rb_cv_get(id, "@@default_color");
+		}
+		VALUE rdefault_colorE(VALUE self, VALUE default_color)
+		{
+			Check_Class( default_color, ARGSS::AColor::getID() );
+			rb_cv_set(id, "@@default_color", default_color);
+			return default_color;
+		}
+		VALUE rdefault_shadow(VALUE self)
+		{
+			return rb_cv_get(id, "@@default_shadow");
+		}
+		VALUE rdefault_shadowE(VALUE self, VALUE default_shadow)
+		{
+			Check_Bool(default_shadow);
+			rb_cv_set(id, "@@default_shadow", default_shadow);
+			return default_shadow;
+		}
 
-////////////////////////////////////////////////////////////
-/// ARGSS Font initialize
-////////////////////////////////////////////////////////////
-void ARGSS::AFont::Init() {
-	id = rb_define_class("Font", rb_cObject);
-	rb_define_method(id, "initialize", RubyFunc(rinitialize), -1);
-	rb_define_method(id, "exist?", RubyFunc(rexistQ), 0);
-	rb_define_method(id, "name", RubyFunc(rname), 0);
-	rb_define_method(id, "name=", RubyFunc(rnameE), 1);
-	rb_define_method(id, "size", RubyFunc(rsize), 0);
-	rb_define_method(id, "size=", RubyFunc(rsizeE), 1);
-	rb_define_method(id, "bold", RubyFunc(rbold), 0);
-	rb_define_method(id, "bold=", RubyFunc(rboldE), 1);
-	rb_define_method(id, "italic", RubyFunc(ritalic), 0);
-	rb_define_method(id, "italic=", RubyFunc(ritalicE), 1);
-	rb_define_method(id, "color", RubyFunc(rcolor), 0);
-	rb_define_method(id, "color=", RubyFunc(rcolorE), 1);
-	rb_define_method(id, "shadow", RubyFunc(rshadow), 0);
-	rb_define_method(id, "shadow=", RubyFunc(rshadowE), 1);
-	rb_define_singleton_method(id, "default_name", RubyFunc(rdefault_name), 0);
-	rb_define_singleton_method(id, "default_name=", RubyFunc(rdefault_nameE), 1);
-	rb_define_singleton_method(id, "default_size", RubyFunc(rdefault_size), 0);
-	rb_define_singleton_method(id, "default_size=", RubyFunc(rdefault_sizeE), 1);
-	rb_define_singleton_method(id, "default_bold", RubyFunc(rdefault_bold), 0);
-	rb_define_singleton_method(id, "default_bold=", RubyFunc(rdefault_boldE), 1);
-	rb_define_singleton_method(id, "default_italic", RubyFunc(rdefault_italic), 0);
-	rb_define_singleton_method(id, "default_italic=", RubyFunc(rdefault_italicE), 1);
-	rb_define_singleton_method(id, "default_color", RubyFunc(rdefault_color), 0);
-	rb_define_singleton_method(id, "default_color=", RubyFunc(rdefault_colorE), 1);
-	rb_define_singleton_method(id, "default_shadow", RubyFunc(rdefault_shadow), 0);
-	rb_define_singleton_method(id, "default_shadow=", RubyFunc(rdefault_shadowE), 1);
-	rb_cv_set(id, "@@default_name", rb_str_new2("Arial"));
-	rb_cv_set(id, "@@default_size", INT2NUM(22));
-	rb_cv_set(id, "@@default_bold", Qfalse);
-	rb_cv_set(id, "@@default_italic", Qfalse);
-	rb_cv_set(id, "@@default_color", ARGSS::AColor::New(255, 255, 255, 255));
-	rb_cv_set(id, "@@default_shadow", Qfalse);
-}
+		////////////////////////////////////////////////////////////
+		/// ARGSS Font initialize
+		////////////////////////////////////////////////////////////
+		void Init()
+		{
+			id = rb_define_class("Font", rb_cObject);
+			static FuncTable funcTable =
+			{
+				{ ARGSS_FUNC(initialize), -1 },
+				{ ARGSS_Q(exist), 0 },
+				ARGSS_GETTER_SETTER(name),
+				ARGSS_GETTER_SETTER(size),
+				ARGSS_GETTER_SETTER(bold),
+				ARGSS_GETTER_SETTER(italic),
+				ARGSS_GETTER_SETTER(color),
+				ARGSS_GETTER_SETTER(shadow),
+			};
+			defineMethods(id, funcTable);
+			rb_define_singleton_method(id, ARGSS_FUNC(default_name), 0);
+			rb_define_singleton_method(id, ARGSS_E(default_name), 1);
+			rb_define_singleton_method(id, ARGSS_FUNC(default_size), 0);
+			rb_define_singleton_method(id, ARGSS_E(default_size), 1);
+			rb_define_singleton_method(id, ARGSS_FUNC(default_bold), 0);
+			rb_define_singleton_method(id, ARGSS_E(default_bold), 1);
+			rb_define_singleton_method(id, ARGSS_FUNC(default_italic), 0);
+			rb_define_singleton_method(id, ARGSS_E(default_italic), 1);
+			rb_define_singleton_method(id, ARGSS_FUNC(default_color), 0);
+			rb_define_singleton_method(id, ARGSS_E(default_color), 1);
+			rb_define_singleton_method(id, ARGSS_FUNC(default_shadow), 0);
+			rb_define_singleton_method(id, ARGSS_E(default_shadow), 1);
+			rb_cv_set(id, "@@default_name", rb_str_new2("Arial"));
+			rb_cv_set(id, "@@default_size", INT2NUM(22));
+			rb_cv_set(id, "@@default_bold", Qfalse);
+			rb_cv_set(id, "@@default_italic", Qfalse);
+			rb_cv_set(id, "@@default_color", ARGSS::AColor::New(255, 255, 255, 255));
+			rb_cv_set(id, "@@default_shadow", Qfalse);
+		}
 
-////////////////////////////////////////////////////////////
-/// ARGSS Font new ruby instance
-////////////////////////////////////////////////////////////
-VALUE ARGSS::AFont::New() {
-	return rb_class_new_instance(0, 0, id);
-}
+		////////////////////////////////////////////////////////////
+		/// ARGSS Font new ruby instance
+		////////////////////////////////////////////////////////////
+		VALUE New()
+		{
+			return rb_class_new_instance(0, 0, id);
+		}
+	} // namespace AFont
+} // namespace ARGSS

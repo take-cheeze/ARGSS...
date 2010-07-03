@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_TABLE_H_
-#define _ARGSS_TABLE_H_
+#ifndef _ARGSS_TABLE_HXX_
+#define _ARGSS_TABLE_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -36,7 +36,8 @@ namespace ARGSS
 {
 	namespace ATable
 	{
-		extern VALUE id;
+		VALUE& getID();
+
 		void Init();
 		VALUE New(int xsize);
 		VALUE New(int xsize, int ysize);

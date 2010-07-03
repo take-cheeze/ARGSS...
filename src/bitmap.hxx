@@ -22,14 +22,18 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _BITMAP_H_
-#define _BITMAP_H_
+#ifndef _BITMAP_HXX_
+#define _BITMAP_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <boost/smart_ptr.hpp>
+#include <memory>
+
 #include <map>
 #include <string>
+
 #include <GL/gl.h>
 
 #include "argss_ruby.hxx"
@@ -47,24 +51,24 @@ class Bitmap
 public:
 	Bitmap();
 	Bitmap(int iwidth, int iheight);
-	Bitmap(unsigned long iid, std::string const& filename);
-	Bitmap(unsigned long iid, int iwidth, int iheight);
-	Bitmap(Bitmap* source, Rect src_rect);
+	Bitmap(VALUE iid, std::string const& filename);
+	Bitmap(VALUE iid, int iwidth, int iheight);
+	Bitmap(Bitmap& source, Rect src_rect);
 	~Bitmap();
 	
-	static bool IsDisposed(unsigned long id);
-	static void New(unsigned long id, std::string const& filename);
-	static void New(unsigned long id, int width, int height);
-	static Bitmap* Get(unsigned long id);
-	static void Dispose(unsigned long id);
+	static bool IsDisposed(VALUE id);
+	static void New(VALUE id, std::string const& filename);
+	static void New(VALUE id, int width, int height);
+	static Bitmap& Get(VALUE id);
+	static void Dispose(VALUE id);
 	static void RefreshBitmaps();
 	static void DisposeBitmaps();
 
-	int GetWidth();
-	int GetHeight();
-	void Copy(int x, int y, Bitmap* source, Rect src_rect);
-	void Blit(int x, int y, Bitmap* source, Rect src_rect, int opacity);
-	void StretchBlit(Rect dst_rect, Bitmap* src_bitmap, Rect src_rect, int opacity);
+	int GetWidth() const;
+	int GetHeight() const;
+	void Copy(int x, int y, Bitmap& source, Rect src_rect);
+	void Blit(int x, int y, Bitmap& source, Rect src_rect, int opacity);
+	void StretchBlit(Rect dst_rect, Bitmap& src_bitmap, Rect src_rect, int opacity);
 	void FillRect(Rect rect, Color color);
 	void Clear();
 	void Clear(Color color);
@@ -86,9 +90,9 @@ public:
 	void OpacityChange(int opacity, int bush_depth = 0);
 	void Flip(bool flipx, bool flipy);
 	void Zoom(double zoom_x, double zoom_y);
-	Bitmap* Resample(int scalew, int scaleh, Rect src_rect);
+	std::auto_ptr< Bitmap > Resample(int scalew, int scaleh, Rect src_rect);
 	void Rotate(float angle);
-	
+
 	Rect GetRect();
 
 	void Changed();
@@ -97,7 +101,7 @@ public:
 	Uint32* GetPixels();
 
 protected:
-	unsigned long id;
+	VALUE id;
 
 	GLuint gl_bitmap;
 	long width;
@@ -106,7 +110,7 @@ protected:
 	std::vector<Uint32> pixels;
 
 private:
-	static std::map<unsigned long, Bitmap*> bitmaps;
+	static std::map< VALUE, boost::shared_ptr< Bitmap > > bitmaps;
 }; // class Bitmap
 
 #endif

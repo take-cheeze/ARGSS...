@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _TEXT_H_
-#define _TEXT_H_
+#ifndef _TEXT_HXX_
+#define _TEXT_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -32,6 +32,7 @@
 #include <map>
 #include <ft2build.h>
 #include FT_FREETYPE_H
+
 #include "bitmap.hxx"
 #include "color.hxx"
 #include "rect.hxx"
@@ -42,12 +43,9 @@
 namespace Text
 {
 	void Init();
-	Bitmap* Draw(std::string const& text, std::string const& font, Color color, int size, bool bold, bool italic, bool shadow);
+	std::auto_ptr< Bitmap > Draw(std::string const& text, std::string const& font, Color color, int size, bool bold, bool italic, bool shadow);
 	Rect RectSize(std::string const& text, std::string const& font, int size);
 	FT_Face GetFont(std::string const& name);
-
-	extern FT_Library library;
-	extern std::map<std::string, FT_Face> fonts;
 } // namespace Text
 
 #endif

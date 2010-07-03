@@ -59,7 +59,7 @@ namespace Player
 	////////////////////////////////////////////////////////////
 	void Init()
 	{
-		main_window = new WindowUi(System::Width, System::Height, System::Title, true, RUN_FULLSCREEN);
+		main_window = new WindowUi(System::getDefaultWidth(), System::getDefaultHeight(), System::getTitle(), true, RUN_FULLSCREEN);
 
 		focus = true;
 		alt_pressing = false;
@@ -134,7 +134,7 @@ namespace Player
 		bool toggle = !getMainWindow().IsFullscreen();
 		getMainWindow().Dispose();
 		delete main_window;
-		main_window = new WindowUi(System::Width, System::Height, System::Title, true, toggle);
+		main_window = new WindowUi(System::getDefaultWidth(), System::getDefaultHeight(), System::getTitle(), true, toggle);
 		Graphics::InitOpenGL();
 		Graphics::RefreshAll();
 	}

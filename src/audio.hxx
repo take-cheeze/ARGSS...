@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _AUDIO_H_
-#define _AUDIO_H_
+#ifndef _AUDIO_HXX_
+#define _AUDIO_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -53,16 +53,6 @@ namespace Audio
 	void ME_Fade(int fade);
 	void SE_Play(std::string const& file, int volume, int pitch);
 	void SE_Stop();
-
-	extern Mix_Music* bgm;
-	extern int bgm_volume;
-	extern bool bgm_playing;
-	extern Mix_Chunk* bgs;
-	extern int bgs_channel;
-	extern Mix_Music* me;
-	extern bool me_playing;
-	extern std::map<int, Mix_Chunk*> sounds;
-	extern std::map<int, Mix_Chunk*>::iterator it_sounds;
 } // namespace Audio
 
 #endif

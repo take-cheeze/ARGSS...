@@ -25,9 +25,6 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#include <cassert>
-#include <cstdarg>
-
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -44,6 +41,16 @@
 
 namespace ARGSS
 {
+	void defineMethodsImplement(VALUE klassID, FuncTableElement const* table, unsigned int elmNum)
+	{
+		for(unsigned int i = 0; i < elmNum; i++) {
+			FuncTableElement const& elm = table[i];
+
+			rb_define_method(klassID, elm.name, elm.func, elm.argc);
+			// std::cout << elm.name << std::endl;
+		}
+	}
+
 	namespace ARuby
 	{
 		////////////////////////////////////////////////////////////
@@ -80,8 +87,8 @@ namespace ARGSS
 			protected_objects = rb_hash_new();
 			rb_gc_register_address(&protected_objects);
 
-			rb_define_global_function("load_data", RubyFunc(rload_data), 1);
-			rb_define_global_function("save_data", RubyFunc(rsave_data), 2);
+			rb_define_global_function(ARGSS_FUNC(load_data), 1);
+			rb_define_global_function(ARGSS_FUNC(save_data), 2);
 		}
 
 		////////////////////////////////////////////////////////////
@@ -105,7 +112,7 @@ namespace ARGSS
  */
 			VALUE require_wrap(VALUE arg)
 			{
-				return rb_require( slasher(System::ScriptsPath).c_str() );
+				return rb_require( slasher(System::getScriptsPath()).c_str() );
 			}
 			void checkError(int error)
 			{
@@ -137,7 +144,7 @@ namespace ARGSS
 			VALUE result;
 
 			std::string
-				target = slasher(System::ScriptsPath),
+				target = slasher(System::getScriptsPath()),
 				suffix = target.substr( target.find_last_of('.') + 1 );
 
 			if( suffix == "rxdata" ) { // if (SCRIPTS_ZLIB) {
@@ -223,9 +230,9 @@ void Check_Types2(VALUE x, VALUE t1, VALUE t2)
 {
 	struct types *type = builtin_types;
 	if (x == Qundef) rb_bug("undef leaked to the Ruby space");
-	if ((unsigned long)TYPE(x) != t1 && (unsigned long)TYPE(x) != t2) {
+	if ((VALUE)TYPE(x) != t1 && (VALUE)TYPE(x) != t2) {
 		while (type->type >= 0) {
-			if ((unsigned long)type->type == t1) {
+			if ((VALUE)type->type == t1) {
 				const char *etype;
 				if (NIL_P(x)) etype = "nil";
 				else if (FIXNUM_P(x)) etype = "Fixnum";

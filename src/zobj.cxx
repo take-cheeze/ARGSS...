@@ -30,7 +30,7 @@
 ////////////////////////////////////////////////////////////
 /// Constructor
 ////////////////////////////////////////////////////////////
-ZObj::ZObj(long iz, unsigned long icreation, unsigned long iid) {
+ZObj::ZObj(long iz, VALUE icreation, VALUE iid) {
 	z = iz;
 	creation = icreation;
 	id = iid;
@@ -50,9 +50,9 @@ void ZObj::SetZ(long nz) {
 long ZObj::GetZ() {
 	return z;
 }
-unsigned long ZObj::GetCreation(){
+VALUE ZObj::GetCreation(){
 	return creation;
 }
-unsigned long ZObj::GetId() {
+VALUE ZObj::GetId() {
 	return id;
 }

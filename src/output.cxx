@@ -39,199 +39,203 @@
 #include "msgbox.hxx"
 #include "graphics.hxx"
 
-////////////////////////////////////////////////////////////
-/// Global Variables
-////////////////////////////////////////////////////////////
-int Output::output_type;
-std::string Output::filename;
 
-////////////////////////////////////////////////////////////
-/// Output Initialize
-////////////////////////////////////////////////////////////
-void Output::Init()
+namespace Output
 {
-	output_type = OUTPUT_TYPE;
-	filename = OUTPUT_FILE;
-}
+	////////////////////////////////////////////////////////////
+	/// Global Variables
+	////////////////////////////////////////////////////////////
+	int output_type;
+	std::string filename;
 
-////////////////////////////////////////////////////////////
-/// Output Error
-////////////////////////////////////////////////////////////
-void Output::Error(const char* fmt, ...)
-{
-	va_list args;
-	va_start(args, fmt);
-
-	char str[256];
-#ifdef MSVC
-	vsprintf_s(str, 256, fmt, args);
-#else
-	vsprintf(str, fmt, args);
-#endif
-	Output::ErrorStr( std::string(str) );
-
-	va_end(args);
-}
-void Output::ErrorStr(std::string const& err)
-{
-	PostStr(err);
-	if (Console::Active()) {
-		Post("\nARGSS will close now. Press any key...");
-#ifdef MSVC
-		_getch();
-#else
-		std::cin.get();
-#endif
+	////////////////////////////////////////////////////////////
+	/// Output Initialize
+	////////////////////////////////////////////////////////////
+	void Init()
+	{
+		output_type = OUTPUT_TYPE;
+		filename = OUTPUT_FILE;
 	}
-	Player::Exit();
-	exit(EXIT_FAILURE);
-}
 
-////////////////////////////////////////////////////////////
-/// Output Warning
-////////////////////////////////////////////////////////////
-void Output::Warning(const char* fmt, ...)
-{
-	va_list args;
-	va_start(args, fmt);
+	////////////////////////////////////////////////////////////
+	/// Output Error
+	////////////////////////////////////////////////////////////
+	void Error(const char* fmt, ...)
+	{
+		va_list args;
+		va_start(args, fmt);
 
-	char str[256];
-#ifdef MSVC
-	vsprintf_s(str, 256, fmt, args);
-#else
-	vsprintf(str, fmt, args);
-#endif
-	Output::WarningStr( std::string(str) );
+		char str[256];
+	#ifdef MSVC
+		vsprintf_s(str, 256, fmt, args);
+	#else
+		vsprintf(str, fmt, args);
+	#endif
+		ErrorStr( std::string(str) );
 
-	va_end(args);
-}
-void Output::WarningStr(std::string const& warn)
-{
-	PostStr(warn);
-}
+		va_end(args);
+	}
+	void ErrorStr(std::string const& err)
+	{
+		PostStr(err);
+		if (Console::Active()) {
+			Post("\nARGSS will close now. Press any key...");
+	#ifdef MSVC
+			_getch();
+	#else
+			std::cin.get();
+	#endif
+		}
+		Player::Exit();
+		exit(EXIT_FAILURE);
+	}
 
-////////////////////////////////////////////////////////////
-/// Output Post message 
-////////////////////////////////////////////////////////////
-void Output::Post(const char* fmt, ...)
-{
-	va_list args;
-	va_start(args, fmt);
+	////////////////////////////////////////////////////////////
+	/// Output Warning
+	////////////////////////////////////////////////////////////
+	void Warning(const char* fmt, ...)
+	{
+		va_list args;
+		va_start(args, fmt);
 
-	char str[256];
-#ifdef MSVC
-	vsprintf_s(str, 256, fmt, args);
-#else
-	vsprintf(str, fmt, args);
-#endif
-	Output::PostStr( std::string(str) );
+		char str[256];
+	#ifdef MSVC
+		vsprintf_s(str, 256, fmt, args);
+	#else
+		vsprintf(str, fmt, args);
+	#endif
+		WarningStr( std::string(str) );
 
-	va_end(args);
-}
-void Output::PostStr(std::string const& msg)
-{
-	Graphics::TimerWait();
-	switch(output_type) {
-	case 1:
-		if (Console::Active()) Console::Write(msg);
-		break;
-	case 2:
+		va_end(args);
+	}
+	void WarningStr(std::string const& warn)
+	{
+		PostStr(warn);
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Output Post message 
+	////////////////////////////////////////////////////////////
+	void Post(const char* fmt, ...)
+	{
+		va_list args;
+		va_start(args, fmt);
+
+		char str[256];
+	#ifdef MSVC
+		vsprintf_s(str, 256, fmt, args);
+	#else
+		vsprintf(str, fmt, args);
+	#endif
+		PostStr( std::string(str) );
+
+		va_end(args);
+	}
+	void PostStr(std::string const& msg)
+	{
+		Graphics::TimerWait();
+		switch(output_type) {
+		case 1:
+			if (Console::Active()) Console::Write(msg);
+			break;
+		case 2:
+			if (!Console::Active()) Console::Init();
+			Console::Write(msg);
+			break;
+		case 3:
+			MsgBox::OK(msg, System::getTitle());
+			break;
+		case 4:
+			PostFile(msg);
+			break;
+		case 5:
+			if (Console::Active()) Console::Write(msg);
+			else PostFile(msg);
+			break;
+		case 6:
+			if (Console::Active()) Console::Write(msg);
+			else MsgBox::OK(msg, System::getTitle());
+		}
+		Graphics::TimerContinue();
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Output File
+	////////////////////////////////////////////////////////////
+	void PostFile(std::string const& msg)
+	{
+		std::ofstream file;
+		file.open(filename.c_str(), std::ios::out | std::ios::app);
+		file << msg;
+		file.close();
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Output Console
+	////////////////////////////////////////////////////////////
+	void Console()
+	{
 		if (!Console::Active()) Console::Init();
-		Console::Write(msg);
-		break;
-	case 3:
-		MsgBox::OK(msg, System::Title);
-		break;
-	case 4:
-		PostFile(msg);
-		break;
-	case 5:
-		if (Console::Active()) Console::Write(msg);
-		else PostFile(msg);
-		break;
-	case 6:
-		if (Console::Active()) Console::Write(msg);
-		else MsgBox::OK(msg, System::Title);
+		output_type = 2;
 	}
-	Graphics::TimerContinue();
-}
 
-////////////////////////////////////////////////////////////
-/// Output File
-////////////////////////////////////////////////////////////
-void Output::PostFile(std::string const& msg)
-{
-	std::ofstream file;
-	file.open(filename.c_str(), std::ios::out | std::ios::app);
-	file << msg;
-	file.close();
-}
-
-////////////////////////////////////////////////////////////
-/// Output Console
-////////////////////////////////////////////////////////////
-void Output::Console()
-{
-	if (!Console::Active()) Console::Init();
-	output_type = 2;
-}
-
-////////////////////////////////////////////////////////////
-/// Output Console
-////////////////////////////////////////////////////////////
-void Output::MsgBox()
-{
-	if (Console::Active()) Console::Free();
-	output_type = 3;
-}
-
-////////////////////////////////////////////////////////////
-/// Output Console
-////////////////////////////////////////////////////////////
-void Output::File(std::string const& name)
-{
-	if (Console::Active()) Console::Free();
-	output_type = 4;
-	filename = name;
-}
-
-////////////////////////////////////////////////////////////
-/// Output Console
-////////////////////////////////////////////////////////////
-void Output::None()
-{
-	if (Console::Active()) Console::Free();
-	output_type = 0;
-}
-
-////////////////////////////////////////////////////////////
-/// Output Console
-////////////////////////////////////////////////////////////
-std::string Output::Gets()
-{
-	char string[256] = "\0";
-	if (Console::Active()) {
-#ifdef MSVC
-		gets_s(string, 256);
-#else
-		return std::string( fgets(string, 256, stdin) );
-#endif
+	////////////////////////////////////////////////////////////
+	/// Output Console
+	////////////////////////////////////////////////////////////
+	void MsgBox()
+	{
+		if (Console::Active()) Console::Free();
+		output_type = 3;
 	}
-	return string;
-}
 
-////////////////////////////////////////////////////////////
-/// Output Console
-////////////////////////////////////////////////////////////
-std::string Output::Getc()
-{
-	std::string chr = "";
-	if (Console::Active()) {
-#ifdef MSVC
-		chr += _getch();
-#else
-		chr += std::cin.get();
-#endif
+	////////////////////////////////////////////////////////////
+	/// Output Console
+	////////////////////////////////////////////////////////////
+	void File(std::string const& name)
+	{
+		if (Console::Active()) Console::Free();
+		output_type = 4;
+		filename = name;
 	}
-	return chr;
-}
+
+	////////////////////////////////////////////////////////////
+	/// Output Console
+	////////////////////////////////////////////////////////////
+	void None()
+	{
+		if (Console::Active()) Console::Free();
+		output_type = 0;
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Output Console
+	////////////////////////////////////////////////////////////
+	std::string Gets()
+	{
+		char string[256] = "\0";
+		if (Console::Active()) {
+	#ifdef MSVC
+			gets_s(string, 256);
+	#else
+			return std::string( fgets(string, 256, stdin) );
+	#endif
+		}
+		return string;
+	}
+
+	////////////////////////////////////////////////////////////
+	/// Output Console
+	////////////////////////////////////////////////////////////
+	std::string Getc()
+	{
+		std::string chr = "";
+		if (Console::Active()) {
+	#ifdef MSVC
+			chr += _getch();
+	#else
+			chr += std::cin.get();
+	#endif
+		}
+		return chr;
+	}
+} // namespace Output

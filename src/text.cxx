@@ -53,7 +53,7 @@ namespace Text
 	////////////////////////////////////////////////////////////
 	/// Draw text
 	////////////////////////////////////////////////////////////
-	Bitmap* Draw(std::string const& text, std::string const& font, Color color, int size, bool bold, bool italic, bool shadow)
+	std::auto_ptr< Bitmap > Draw(std::string const& text, std::string const& font, Color color, int size, bool bold, bool italic, bool shadow)
 	{
 		FT_Face face = GetFont(font);
 
@@ -61,12 +61,12 @@ namespace Text
 
 		err = FT_Set_Pixel_Sizes(face, size, size);
 		if (err) {
-			rb_raise(ARGSS::AError::id, "couldn't set font(%s) size %d.\n%d\n", font.c_str(), size, err);
+			rb_raise(ARGSS::AError::getID(), "couldn't set font(%s) size %d.\n%d\n", font.c_str(), size, err);
 		}
 
 		err = FT_Select_Charmap(face, FT_ENCODING_UNICODE);
 		if (err) {
-			rb_raise(ARGSS::AError::id, "couldn't set font(%s) charmap.\n%d\n", font.c_str(), err);
+			rb_raise(ARGSS::AError::getID(), "couldn't set font(%s) charmap.\n%d\n", font.c_str(), err);
 		}
 
 		FT_Matrix matrix;
@@ -86,13 +86,13 @@ namespace Text
 
 			err = FT_Load_Char(face, text[i], FT_LOAD_TARGET_NORMAL);
 			if (err) {
-				rb_raise(ARGSS::AError::id, "couldn't load font(%s) char '%c'.\n%d\n", font.c_str(), text[i], err);
+				rb_raise(ARGSS::AError::getID(), "couldn't load font(%s) char '%c'.\n%d\n", font.c_str(), text[i], err);
 			}
 
 			FT_Glyph glyph;
 			err = FT_Get_Glyph(face->glyph, &glyph);
 			if (err) {
-				rb_raise(ARGSS::AError::id, "couldn't get font(%s) char '%c'.\n%d\n", font.c_str(), text[i], err);
+				rb_raise(ARGSS::AError::getID(), "couldn't get font(%s) char '%c'.\n%d\n", font.c_str(), text[i], err);
 			}
 
 			FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 1);
@@ -116,7 +116,7 @@ namespace Text
 		}
 		min_y = (int)(((float)min_y + 0.5f) / 2.0f);
 
-		Bitmap* text_bmp = new Bitmap(width, height);
+		std::auto_ptr< Bitmap > text_bmp( new Bitmap(width, height) );
 		Uint8* dst_pixels = (Uint8*)text_bmp->GetPixels();
 		for (unsigned int i = 0; i < glyphs.size(); i++) {
 
@@ -159,12 +159,12 @@ namespace Text
 
 		err = FT_Set_Pixel_Sizes(face, size, size);
 		if (err) {
-			rb_raise(ARGSS::AError::id, "couldn't set font(%s) size %d.\n%d\n", font.c_str(), size, err);
+			rb_raise(ARGSS::AError::getID(), "couldn't set font(%s) size %d.\n%d\n", font.c_str(), size, err);
 		}
 
 		err = FT_Select_Charmap(face, FT_ENCODING_UNICODE);
 		if (err) {
-			rb_raise(ARGSS::AError::id, "couldn't set font(%s) charmap.\n%d\n", font.c_str(), err);
+			rb_raise(ARGSS::AError::getID(), "couldn't set font(%s) charmap.\n%d\n", font.c_str(), err);
 		}
 
 		int width = 0;
@@ -173,13 +173,13 @@ namespace Text
 		for (unsigned int i = 0; i < text.length(); i++) {
 			err = FT_Load_Char(face, text[i], FT_LOAD_TARGET_NORMAL);
 			if (err) {
-				rb_raise(ARGSS::AError::id, "couldn't load font(%s) char '%c'.\n%d\n", font.c_str(), text[i], err);
+				rb_raise(ARGSS::AError::getID(), "couldn't load font(%s) char '%c'.\n%d\n", font.c_str(), text[i], err);
 			}
 
 			FT_Glyph glyph;
 			err = FT_Get_Glyph(face->glyph, &glyph);
 			if (err) {
-				rb_raise(ARGSS::AError::id, "couldn't get font(%s) char '%c'.\n%d\n", font.c_str(), text[i], err);
+				rb_raise(ARGSS::AError::getID(), "couldn't get font(%s) char '%c'.\n%d\n", font.c_str(), text[i], err);
 			}
 
 			FT_BBox bbox;
@@ -204,7 +204,7 @@ namespace Text
 		if (fonts.count(path) == 0) {
 			FT_Error err = FT_New_Face(library, path.c_str(), 0, &fonts[path]);
 			if (err) {
-				rb_raise(ARGSS::AError::id, "couldn't load font %s.\n%d\n", name.c_str(), err);
+				rb_raise(ARGSS::AError::getID(), "couldn't load font %s.\n%d\n", name.c_str(), err);
 			}
 		}
 		return fonts[path];

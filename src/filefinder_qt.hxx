@@ -1,6 +1,6 @@
 
-#ifndef _FILEFINDER_QT_H_
-#define _FILEFINDER_QT_H_
+#ifndef _FILEFINDER_QT_HXX_
+#define _FILEFINDER_QT_HXX_
 
 #include <string>
 
@@ -10,11 +10,6 @@ namespace FileFinder
 	std::string FindImage(std::string const& name);
 	std::string FindMusic(std::string const& name);
 	std::string FindFont(std::string const& name);
-
-/*
-	extern std::string fonts_path;
-	extern std::string rtp_paths[3];
- */
 } // namespace FileFinder
 
 #endif

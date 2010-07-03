@@ -22,26 +22,29 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ZOBJ_H_
-#define _ZOBJ_H_
+#ifndef _ZOBJ_HXX_
+#define _ZOBJ_HXX_
+
+
+#include "argss_ruby.hxx"
 
 ////////////////////////////////////////////////////////////
 /// ZObj class
 ////////////////////////////////////////////////////////////
 class ZObj {
 public:
-	ZObj(long iz, unsigned long icreation, unsigned long iid);
+	ZObj(long iz, VALUE icreation, VALUE iid);
 	~ZObj();
 
 	void SetZ(long n);
 	long GetZ();
-	unsigned long GetCreation();
-	unsigned long GetId();
+	VALUE GetCreation();
+	VALUE GetId();
 
 private:
 	long z;
-	unsigned long creation;
-	unsigned long id;
+	VALUE creation;
+	VALUE id;
 }; // class ZObj
 
 #endif

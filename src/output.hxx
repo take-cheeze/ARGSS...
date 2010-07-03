@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _OUTPUT_H_
-#define _OUTPUT_H_
+#ifndef _OUTPUT_HXX_
+#define _OUTPUT_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -52,9 +52,6 @@ namespace Output
 
 	std::string Gets();
 	std::string Getc();
-
-	extern int output_type;
-	extern std::string filename;
 } // namespace Output
 
 #endif

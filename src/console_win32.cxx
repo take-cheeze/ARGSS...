@@ -85,7 +85,7 @@ bool Console::Active() {
 /// Write message to console
 ////////////////////////////////////////////////////////////
 void Console::Write(std::string msg) {
-	unsigned long n;
+	VALUE n;
 	HANDLE out;
 	out = GetStdHandle(STD_OUTPUT_HANDLE);
 	WriteConsoleA(out, msg.c_str(), msg.size(), &n, NULL);

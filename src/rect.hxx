@@ -22,12 +22,13 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _RECT_H_
-#define _RECT_H_
+#ifndef _RECT_HXX_
+#define _RECT_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include "argss_ruby.hxx"
 
 ////////////////////////////////////////////////////////////
 /// Rect class
@@ -36,15 +37,15 @@ class Rect
 {
 public:
 	Rect();
-	Rect(unsigned long rect);
+	Rect(VALUE rect);
 	Rect(int ix, int iy, int iwidth, int iheight);
 	~Rect();
-	
+
 	bool operator!=(const Rect& other) const;
 
 	void Set(int nx, int ny, int nwidth, int nheight);
 
-	unsigned long GetARGSS();
+	VALUE GetARGSS();
 	void Adjust(int awidth, int aheight);
 	bool IsOutOfBounds(int awidth, int aheight);
 

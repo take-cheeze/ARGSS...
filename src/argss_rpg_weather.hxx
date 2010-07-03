@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_RPG_WEATHER_H_
-#define _ARGSS_RPG_WEATHER_H_
+#ifndef _ARGSS_RPG_WEATHER_HXX_
+#define _ARGSS_RPG_WEATHER_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -39,7 +39,6 @@ namespace ARGSS
 	{
 		namespace AWeather
 		{
-			extern VALUE id;
 			void Init();
 
 			VALUE rinitialize(int argc, VALUE* argv, VALUE self);

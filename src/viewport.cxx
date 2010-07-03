@@ -38,58 +38,58 @@
 ////////////////////////////////////////////////////////////
 /// Constructor
 ////////////////////////////////////////////////////////////
-Viewport::Viewport(VALUE iid) {
-	id = iid;
-	rect = rb_iv_get(id, "@rect");
-	visible = true;
-	z = 0;
-	ox = 0;
-	oy = 0;
-	color = rb_iv_get(id, "@color");
-	tone = rb_iv_get(id, "@tone");
-	flash_duration = 0;
-	disposing = false;
-
-	dst_rect = Rect(rect);
-
+Viewport::Viewport(VALUE iid)
+: id(iid)
+, rect(rb_iv_get(id, "@rect"))
+, visible(true)
+, z(0)
+, ox(0)
+, oy(0)
+, color(rb_iv_get(id, "@color"))
+, tone(rb_iv_get(id, "@tone"))
+, flash_duration(0)
+, disposing(false)
+, dst_rect(Rect(rect))
+{
 	Graphics::RegisterZObj(0, id);
 }
 
 ////////////////////////////////////////////////////////////
 /// Destructor
 ////////////////////////////////////////////////////////////
-Viewport::~Viewport() {
-
+Viewport::~Viewport()
+{
 }
 
 ////////////////////////////////////////////////////////////
 /// Class Is Viewport Disposed?
 ////////////////////////////////////////////////////////////
-bool Viewport::IsDisposed(VALUE id) {
-	return Graphics::drawableMap().count(id) == 0;
+bool Viewport::IsDisposed(VALUE id)
+{
+	return Graphics::countDrawable(id) == 0;
 }
 
 ////////////////////////////////////////////////////////////
 /// Class New Viewport
 ////////////////////////////////////////////////////////////
-void Viewport::New(VALUE id) {
-	Graphics::drawableMap()[id] = new Viewport(id);
+void Viewport::New(VALUE id)
+{
+	Graphics::insertDrawable( id, boost::shared_ptr< Drawable >( new Viewport(id) ) );
 }
 
 ////////////////////////////////////////////////////////////
 /// Class Get Viewport
 ////////////////////////////////////////////////////////////
-Viewport* Viewport::Get(VALUE id) {
-	return (Viewport*)Graphics::drawableMap()[id];
+Viewport& Viewport::Get(VALUE id)
+{
+	return dynamic_cast< Viewport& >( Graphics::getDrawable(id) );
 }
 
 ////////////////////////////////////////////////////////////
 /// Class Dispose Viewport
 ////////////////////////////////////////////////////////////
-void Viewport::Dispose(unsigned long id) {
-	delete Graphics::drawableMap()[id];
-	std::map<unsigned long, Drawable*>::iterator it = Graphics::drawableMap().find(id);
-	Graphics::drawableMap().erase(it);
+void Viewport::Dispose(VALUE id) {
+	Graphics::eraseDrawable(id);
 
 	Graphics::RemoveZObj(id);
 }
@@ -112,7 +112,7 @@ void Viewport::Draw(long z) {
 	if (dst_rect.x < -dst_rect.width || dst_rect.x > Player::GetWidth() || dst_rect.y < -dst_rect.height || dst_rect.y > Player::GetHeight()) return;
 
 	for(it_zlist = zlist.begin(); it_zlist != zlist.end(); it_zlist++) {
-		Graphics::drawableMap()[it_zlist->GetId()]->Draw(it_zlist->GetZ());
+		Graphics::getDrawable( it_zlist->GetId() ).Draw(it_zlist->GetZ());
 	}
 }
 
@@ -192,14 +192,14 @@ void Viewport::SetTone(VALUE ntone) {
 ////////////////////////////////////////////////////////////
 /// Register ZObj
 ////////////////////////////////////////////////////////////
-void Viewport::RegisterZObj(long z, unsigned long id)
+void Viewport::RegisterZObj(long z, VALUE id)
 {
 	Graphics::incrementCreation(); // creation += 1;
 	ZObj zobj(z, Graphics::getCreation(), id);
 	zlist.push_back(zobj);
 	zlist.sort(Graphics::SortZObj);
 }
-void Viewport::RegisterZObj(long z, unsigned long id, bool multiz) {
+void Viewport::RegisterZObj(long z, VALUE id, bool multiz) {
 	ZObj zobj(z, 999999, id);
 	zlist.push_back(zobj);
 	zlist.sort(Graphics::SortZObj);
@@ -211,9 +211,9 @@ void Viewport::RegisterZObj(long z, unsigned long id, bool multiz) {
 struct remove_zobj_id : public std::binary_function<ZObj, ZObj, bool> {
 	remove_zobj_id(VALUE val) : id(val) {}
 	bool operator () (ZObj &obj) const {return obj.GetId() == id;}
-	unsigned long id;
+	VALUE id;
 };
-void Viewport::RemoveZObj(unsigned long id) {
+void Viewport::RemoveZObj(VALUE id) {
 	if (disposing) return;
 	zlist.remove_if (remove_zobj_id(id));
 }
@@ -221,7 +221,7 @@ void Viewport::RemoveZObj(unsigned long id) {
 ////////////////////////////////////////////////////////////
 /// Update ZObj Z
 ////////////////////////////////////////////////////////////
-void Viewport::UpdateZObj(unsigned long id, long z) {
+void Viewport::UpdateZObj(VALUE id, long z) {
 	for(it_zlist = zlist.begin(); it_zlist != zlist.end(); it_zlist++) {
 		if (it_zlist->GetId() == id) {
 			it_zlist->SetZ(z);

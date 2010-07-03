@@ -26,18 +26,16 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #include "tone.hxx"
-#include "argss_ruby.hxx"
 
 ////////////////////////////////////////////////////////////
 /// Constructor
 ////////////////////////////////////////////////////////////
-Tone::Tone() {
-	red = 0;
-	green = 0;
-	blue = 0;
-	gray = 0;
+Tone::Tone()
+{
+	red = green = blue = gray = 0.0;
 }
-Tone::Tone(VALUE tone) {
+Tone::Tone(VALUE tone)
+{
 	red = NUM2DBL(rb_iv_get(tone, "@red"));
 	green = NUM2DBL(rb_iv_get(tone, "@green"));
 	blue = NUM2DBL(rb_iv_get(tone, "@blue"));

@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _FILEFINDER_WIN32_H_
-#define _FILEFINDER_WIN32_H_
+#ifndef _FILEFINDER_WIN32_HXX_
+#define _FILEFINDER_WIN32_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -39,9 +39,6 @@ namespace FileFinder
 	std::string FindImage(std::string name);
 	std::string FindMusic(std::string name);
 	std::string FindFont(std::string name);
-
-	extern std::string fonts_path;
-	extern std::string rtp_paths[3];
 } // namespace FileFinder
 
 #endif

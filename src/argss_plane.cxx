@@ -36,202 +36,227 @@
 
 #include "plane.hxx"
 
-////////////////////////////////////////////////////////////
-/// Global Variables
-////////////////////////////////////////////////////////////
-VALUE ARGSS::APlane::id;
+namespace ARGSS
+{
+	namespace APlane
+	{
+		namespace
+		{
+			////////////////////////////////////////////////////////////
+			/// Global Variables
+			////////////////////////////////////////////////////////////
+			VALUE id;
+		}
 
-////////////////////////////////////////////////////////////
-/// ARGSS Plane ruby functions
-////////////////////////////////////////////////////////////
-VALUE ARGSS::APlane::rinitialize(int argc, VALUE *argv, VALUE self) {
-	if (argc == 1) {
-		Check_Classes_N(argv[0], ARGSS::AViewport::id);
-		rb_iv_set(self, "@viewport", argv[0]);
-	}
-	else if (argc == 0) {
-		rb_iv_set(self, "@viewport", Qnil);
-	}
-	else raise_argn(argc, 1);
-	rb_iv_set(self, "@bitmap", Qnil);
-	rb_iv_set(self, "@visible", Qtrue);
-	rb_iv_set(self, "@z", INT2NUM(0));
-	rb_iv_set(self, "@ox", INT2NUM(0));
-	rb_iv_set(self, "@oy", INT2NUM(0));
-	rb_iv_set(self, "@zoom_x", rb_float_new(1.0f));
-	rb_iv_set(self, "@zoom_y", rb_float_new(1.0f));
-	rb_iv_set(self, "@opacity", INT2NUM(255));
-	rb_iv_set(self, "@blend_type", INT2NUM(0));
-	rb_iv_set(self, "@color", ARGSS::AColor::New());
-	rb_iv_set(self, "@tone", ARGSS::ATone::New());
-	Plane::New(self);
-	ARGSS::ARuby::AddObject(self);
-	return self;
-}
-VALUE ARGSS::APlane::rdispose(VALUE self) {
-	if (!Plane::IsDisposed(self)) {
-		ARGSS::APlane::CheckDisposed(self);
-		Plane::Dispose(self);
-		ARGSS::ARuby::RemoveObject(self);
-		rb_gc_start();
-	}
-	return self;
-}
-VALUE ARGSS::APlane::rdisposedQ(VALUE self) {
-	return INT2BOOL(Plane::IsDisposed(self));
-}
-VALUE ARGSS::APlane::rviewport(VALUE self) {
-	ARGSS::APlane::CheckDisposed(self);
-	return rb_iv_get(self, "@viewport");
-}
-VALUE ARGSS::APlane::rviewportE(VALUE self, VALUE viewport) {
-	ARGSS::APlane::CheckDisposed(self);
-	Check_Classes_N(viewport, ARGSS::AViewport::id);
-	Plane::Get(self)->SetViewport(viewport);
-	return rb_iv_set(self, "@viewport", viewport);
-}
-VALUE ARGSS::APlane::rbitmap(VALUE self) {
-	ARGSS::APlane::CheckDisposed(self);
-	return rb_iv_get(self, "@bitmap");
-}
-VALUE ARGSS::APlane::rbitmapE(VALUE self, VALUE bitmap) {
-	ARGSS::APlane::CheckDisposed(self);
-	Check_Classes_N(bitmap, ARGSS::ABitmap::id);
-	Plane::Get(self)->SetBitmap(bitmap);
-	return rb_iv_set(self, "@bitmap", bitmap);
-}
-VALUE ARGSS::APlane::rvisible(VALUE self) {
-	ARGSS::APlane::CheckDisposed(self);
-	return rb_iv_get(self, "@visible");
-}
-VALUE ARGSS::APlane::rvisibleE(VALUE self, VALUE visible) {
-	ARGSS::APlane::CheckDisposed(self);
-	Plane::Get(self)->SetVisible(NUM2BOOL(visible));
-	return rb_iv_set(self, "@visible", visible);
-}
-VALUE ARGSS::APlane::rz(VALUE self) {
-	ARGSS::APlane::CheckDisposed(self);
-	return rb_iv_get(self, "@z");
-}
-VALUE ARGSS::APlane::rzE(VALUE self, VALUE z) {
-	ARGSS::APlane::CheckDisposed(self);
-	Plane::Get(self)->SetZ(NUM2INT(z));
-	return rb_iv_set(self, "@z", z);
-}
-VALUE ARGSS::APlane::rox(VALUE self) {
-	ARGSS::APlane::CheckDisposed(self);
-	return rb_iv_get(self, "@ox");
-}
-VALUE ARGSS::APlane::roxE(VALUE self, VALUE ox) {
-	ARGSS::APlane::CheckDisposed(self);
-	Plane::Get(self)->SetOx(NUM2INT(ox));
-	return rb_iv_set(self, "@ox", ox);
-}
-VALUE ARGSS::APlane::roy(VALUE self) {
-	ARGSS::APlane::CheckDisposed(self);
-	return rb_iv_get(self, "@oy");
-}
-VALUE ARGSS::APlane::royE(VALUE self, VALUE oy) {
-	ARGSS::APlane::CheckDisposed(self);
-	Plane::Get(self)->SetOy(NUM2INT(oy));
-	return rb_iv_set(self, "@oy", oy);
-}
-VALUE ARGSS::APlane::rzoom_x(VALUE self) {
-	ARGSS::APlane::CheckDisposed(self);
-	return rb_iv_get(self, "@zoom_x");
-}
-VALUE ARGSS::APlane::rzoom_xE(VALUE self, VALUE zoom_x) {
-	ARGSS::APlane::CheckDisposed(self);
-	Plane::Get(self)->SetZoomX((float)NUM2DBL(zoom_x));
-	return rb_iv_set(self, "@zoom_x", zoom_x);
-}
-VALUE ARGSS::APlane::rzoom_y(VALUE self) {
-	ARGSS::APlane::CheckDisposed(self);
-	return rb_iv_get(self, "@zoom_y");
-}
-VALUE ARGSS::APlane::rzoom_yE(VALUE self, VALUE zoom_y) {
-	ARGSS::APlane::CheckDisposed(self);
-	Plane::Get(self)->SetZoomY((float)NUM2DBL(zoom_y));
-	return rb_iv_set(self, "@zoom_y", zoom_y);
-}
-VALUE ARGSS::APlane::ropacity(VALUE self) {
-	ARGSS::APlane::CheckDisposed(self);
-	return rb_iv_get(self, "@opacity");
-}
-VALUE ARGSS::APlane::ropacityE(VALUE self, VALUE opacity) {
-	ARGSS::APlane::CheckDisposed(self);
-	Plane::Get(self)->SetOpacity(NUM2INT(opacity));
-	return rb_iv_set(self, "@opacity", opacity);
-}
-VALUE ARGSS::APlane::rblend_type(VALUE self) {
-	ARGSS::APlane::CheckDisposed(self);
-	return rb_iv_get(self, "@blend_type");
-}
-VALUE ARGSS::APlane::rblend_typeE(VALUE self, VALUE blend_type) {
-	ARGSS::APlane::CheckDisposed(self);
-	Plane::Get(self)->SetBlendType(NUM2INT(blend_type));
-	return rb_iv_set(self, "@blend_type", blend_type);
-}
-VALUE ARGSS::APlane::rcolor(VALUE self) {
-	ARGSS::APlane::CheckDisposed(self);
-	return rb_iv_get(self, "@color");
-}
-VALUE ARGSS::APlane::rcolorE(VALUE self, VALUE color) {
-	ARGSS::APlane::CheckDisposed(self);
-	Check_Class(color, ARGSS::AColor::id);
-	Plane::Get(self)->SetColor(color);
-	return rb_iv_set(self, "@color", color);
-}
-VALUE ARGSS::APlane::rtone(VALUE self) {
-	ARGSS::APlane::CheckDisposed(self);
-	return rb_iv_get(self, "@tone");
-}
-VALUE ARGSS::APlane::rtoneE(VALUE self, VALUE tone) {
-	ARGSS::APlane::CheckDisposed(self);
-	Check_Class(tone, ARGSS::ATone::id);
-	Plane::Get(self)->SetTone(tone);
-	return rb_iv_set(self, "@tone", tone);
-}
+		////////////////////////////////////////////////////////////
+		/// ARGSS Plane ruby functions
+		////////////////////////////////////////////////////////////
+		VALUE rinitialize(int argc, VALUE *argv, VALUE self)
+		{
+			if (argc == 1) {
+				Check_Classes_N(argv[0], ARGSS::AViewport::getID());
+				rb_iv_set(self, "@viewport", argv[0]);
+			}
+			else if (argc == 0) {
+				rb_iv_set(self, "@viewport", Qnil);
+			}
+			else raise_argn(argc, 1);
+			rb_iv_set(self, "@bitmap", Qnil);
+			rb_iv_set(self, "@visible", Qtrue);
+			rb_iv_set(self, "@z", INT2NUM(0));
+			rb_iv_set(self, "@ox", INT2NUM(0));
+			rb_iv_set(self, "@oy", INT2NUM(0));
+			rb_iv_set(self, "@zoom_x", rb_float_new(1.0f));
+			rb_iv_set(self, "@zoom_y", rb_float_new(1.0f));
+			rb_iv_set(self, "@opacity", INT2NUM(255));
+			rb_iv_set(self, "@blend_type", INT2NUM(0));
+			rb_iv_set(self, "@color", ARGSS::AColor::New());
+			rb_iv_set(self, "@tone", ARGSS::ATone::New());
+			Plane::New(self);
+			ARGSS::ARuby::AddObject(self);
+			return self;
+		}
+		VALUE rdispose(VALUE self)
+		{
+			if (!Plane::IsDisposed(self)) {
+				CheckDisposed(self);
+				Plane::Dispose(self);
+				ARGSS::ARuby::RemoveObject(self);
+				rb_gc_start();
+			}
+			return self;
+		}
+		VALUE rdisposedQ(VALUE self)
+		{
+			return INT2BOOL(Plane::IsDisposed(self));
+		}
+		VALUE rviewport(VALUE self)
+		{
+			CheckDisposed(self);
+			return rb_iv_get(self, "@viewport");
+		}
+		VALUE rviewportE(VALUE self, VALUE viewport)
+		{
+			CheckDisposed(self);
+			Check_Classes_N(viewport, ARGSS::AViewport::getID());
+			Plane::Get(self).SetViewport(viewport);
+			return rb_iv_set(self, "@viewport", viewport);
+		}
+		VALUE rbitmap(VALUE self)
+		{
+			CheckDisposed(self);
+			return rb_iv_get(self, "@bitmap");
+		}
+		VALUE rbitmapE(VALUE self, VALUE bitmap)
+		{
+			CheckDisposed(self);
+			Check_Classes_N(bitmap, ARGSS::ABitmap::getID());
+			Plane::Get(self).SetBitmap(bitmap);
+			return rb_iv_set(self, "@bitmap", bitmap);
+		}
+		VALUE rvisible(VALUE self)
+		{
+			CheckDisposed(self);
+			return rb_iv_get(self, "@visible");
+		}
+		VALUE rvisibleE(VALUE self, VALUE visible)
+		{
+			CheckDisposed(self);
+			Plane::Get(self).SetVisible(NUM2BOOL(visible));
+			return rb_iv_set(self, "@visible", visible);
+		}
+		VALUE rz(VALUE self)
+		{
+			CheckDisposed(self);
+			return rb_iv_get(self, "@z");
+		}
+		VALUE rzE(VALUE self, VALUE z)
+		{
+			CheckDisposed(self);
+			Plane::Get(self).SetZ(NUM2INT(z));
+			return rb_iv_set(self, "@z", z);
+		}
+		VALUE rox(VALUE self)
+		{
+			CheckDisposed(self);
+			return rb_iv_get(self, "@ox");
+		}
+		VALUE roxE(VALUE self, VALUE ox)
+		{
+			CheckDisposed(self);
+			Plane::Get(self).SetOx(NUM2INT(ox));
+			return rb_iv_set(self, "@ox", ox);
+		}
+		VALUE roy(VALUE self)
+		{
+			CheckDisposed(self);
+			return rb_iv_get(self, "@oy");
+		}
+		VALUE royE(VALUE self, VALUE oy)
+		{
+			CheckDisposed(self);
+			Plane::Get(self).SetOy(NUM2INT(oy));
+			return rb_iv_set(self, "@oy", oy);
+		}
+		VALUE rzoom_x(VALUE self)
+		{
+			CheckDisposed(self);
+			return rb_iv_get(self, "@zoom_x");
+		}
+		VALUE rzoom_xE(VALUE self, VALUE zoom_x)
+		{
+			CheckDisposed(self);
+			Plane::Get(self).SetZoomX((float)NUM2DBL(zoom_x));
+			return rb_iv_set(self, "@zoom_x", zoom_x);
+		}
+		VALUE rzoom_y(VALUE self) {
+			CheckDisposed(self);
+			return rb_iv_get(self, "@zoom_y");
+		}
+		VALUE rzoom_yE(VALUE self, VALUE zoom_y) {
+			CheckDisposed(self);
+			Plane::Get(self).SetZoomY((float)NUM2DBL(zoom_y));
+			return rb_iv_set(self, "@zoom_y", zoom_y);
+		}
+		VALUE ropacity(VALUE self) {
+			CheckDisposed(self);
+			return rb_iv_get(self, "@opacity");
+		}
+		VALUE ropacityE(VALUE self, VALUE opacity) {
+			CheckDisposed(self);
+			Plane::Get(self).SetOpacity(NUM2INT(opacity));
+			return rb_iv_set(self, "@opacity", opacity);
+		}
+		VALUE rblend_type(VALUE self)
+		{
+			CheckDisposed(self);
+			return rb_iv_get(self, "@blend_type");
+		}
+		VALUE rblend_typeE(VALUE self, VALUE blend_type)
+		{
+			CheckDisposed(self);
+			Plane::Get(self).SetBlendType(NUM2INT(blend_type));
+			return rb_iv_set(self, "@blend_type", blend_type);
+		}
+		VALUE rcolor(VALUE self)
+		{
+			CheckDisposed(self);
+			return rb_iv_get(self, "@color");
+		}
+		VALUE rcolorE(VALUE self, VALUE color)
+		{
+			CheckDisposed(self);
+			Check_Class(color, ARGSS::AColor::getID());
+			Plane::Get(self).SetColor(color);
+			return rb_iv_set(self, "@color", color);
+		}
+		VALUE rtone(VALUE self)
+		{
+			CheckDisposed(self);
+			return rb_iv_get(self, "@tone");
+		}
+		VALUE rtoneE(VALUE self, VALUE tone)
+		{
+			CheckDisposed(self);
+			Check_Class(tone, ARGSS::ATone::getID());
+			Plane::Get(self).SetTone(tone);
+			return rb_iv_set(self, "@tone", tone);
+		}
 
-////////////////////////////////////////////////////////////
-/// ARGSS Plane initialize
-////////////////////////////////////////////////////////////
-void ARGSS::APlane::Init() {
-	id = rb_define_class("Plane", rb_cObject);
-	rb_define_method(id, "initialize", RubyFunc(rinitialize), -1);
-	rb_define_method(id, "dispose", RubyFunc(rdispose), 0);
-	rb_define_method(id, "disposed?", RubyFunc(rdisposedQ), 0);
-	rb_define_method(id, "viewport", RubyFunc(rviewport), 0);
-	rb_define_method(id, "viewport=", RubyFunc(rviewportE), 1);
-	rb_define_method(id, "bitmap", RubyFunc(rbitmap), 0);
-	rb_define_method(id, "bitmap=", RubyFunc(rbitmapE), 1);
-	rb_define_method(id, "visible", RubyFunc(rvisible), 0);
-	rb_define_method(id, "visible=", RubyFunc(rvisibleE), 1);
-	rb_define_method(id, "z", RubyFunc(rz), 0);
-	rb_define_method(id, "z=", RubyFunc(rzE), 1);
-	rb_define_method(id, "ox", RubyFunc(rox), 0);
-	rb_define_method(id, "ox=", RubyFunc(roxE), 1);
-	rb_define_method(id, "oy", RubyFunc(roy), 0);
-	rb_define_method(id, "oy=", RubyFunc(royE), 1);
-	rb_define_method(id, "zoom_x", RubyFunc(rzoom_x), 0);
-	rb_define_method(id, "zoom_x=", RubyFunc(rzoom_xE), 1);
-	rb_define_method(id, "zoom_y", RubyFunc(rzoom_y), 0);
-	rb_define_method(id, "zoom_y=", RubyFunc(rzoom_yE), 1);
-	rb_define_method(id, "opacity", RubyFunc(ropacity), 0);
-	rb_define_method(id, "opacity=", RubyFunc(ropacityE), 1);
-	rb_define_method(id, "blend_type", RubyFunc(rblend_type), 0);
-	rb_define_method(id, "blend_type=", RubyFunc(rblend_typeE), 1);
-	rb_define_method(id, "color", RubyFunc(rcolor), 0);
-	rb_define_method(id, "color=", RubyFunc(rcolorE), 1);
-	rb_define_method(id, "tone", RubyFunc(rtone), 0);
-	rb_define_method(id, "tone=", RubyFunc(rtoneE), 1);
-}
+		////////////////////////////////////////////////////////////
+		/// ARGSS Plane initialize
+		////////////////////////////////////////////////////////////
+		void Init()
+		{
+			id = rb_define_class("Plane", rb_cObject);
+			static FuncTable funcTable =
+			{
+				{ ARGSS_FUNC(initialize), -1 },
+				{ ARGSS_FUNC(dispose), 0 }, { ARGSS_Q(disposed), 0 },
+				ARGSS_GETTER_SETTER(viewport),
+				ARGSS_GETTER_SETTER(bitmap),
+				ARGSS_GETTER_SETTER(visible),
+				ARGSS_GETTER_SETTER(z),
+				ARGSS_GETTER_SETTER(ox),
+				ARGSS_GETTER_SETTER(oy),
+				ARGSS_GETTER_SETTER(zoom_x),
+				ARGSS_GETTER_SETTER(zoom_y),
+				ARGSS_GETTER_SETTER(opacity),
+				ARGSS_GETTER_SETTER(blend_type),
+				ARGSS_GETTER_SETTER(color),
+				ARGSS_GETTER_SETTER(tone),
+			};
+			defineMethods(id, funcTable);
+		}
 
-////////////////////////////////////////////////////////////
-/// Check if plane isn't disposed
-////////////////////////////////////////////////////////////
-void ARGSS::APlane::CheckDisposed(VALUE self) {
-	if (Plane::IsDisposed(self)) {
-		rb_raise(ARGSS::AError::id, "disposed plane <%i>", (int)self);
-	}
-}
+		////////////////////////////////////////////////////////////
+		/// Check if plane isn't disposed
+		////////////////////////////////////////////////////////////
+		void CheckDisposed(VALUE self)
+		{
+			if (Plane::IsDisposed(self)) {
+				rb_raise(ARGSS::AError::getID(), "disposed plane <%i>", (int)self);
+			}
+		}
+	} // namespace APlane
+} // namespace ARGSS

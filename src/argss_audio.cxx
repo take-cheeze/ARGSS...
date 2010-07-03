@@ -26,131 +26,154 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #include <string>
+
 #include "argss_audio.hxx"
+
 #include "audio.hxx"
 
-////////////////////////////////////////////////////////////
-/// Global Variables
-////////////////////////////////////////////////////////////
-VALUE ARGSS::AAudio::id;
 
-////////////////////////////////////////////////////////////
-/// ARGSS Audio ruby functions
-////////////////////////////////////////////////////////////
-VALUE ARGSS::AAudio::rbgm_play(int argc, VALUE *argv, VALUE self) {
-	if (argc == 0) raise_argn(argc, 1);
-	else if (argc > 3) raise_argn(argc, 3);
-	Check_Type(argv[0], T_STRING);
-	int volume = 100;
-	int pitch = 100;
-	if (argc > 1) {
-		Check_Kind(argv[1], rb_cNumeric);
-		volume = NUM2INT(argv[1]);
-		if (argc > 2) {
-			Check_Kind(argv[2], rb_cNumeric);
-			pitch = NUM2INT(argv[2]);
-		}
-	}
-	Audio::BGM_Play(StringValuePtr(argv[0]), volume, pitch);
-	return Qnil;
-}
-VALUE ARGSS::AAudio::rbgm_stop(VALUE self) {
-	Audio::BGM_Stop();
-	return Qnil;
-}
-VALUE ARGSS::AAudio::rbgm_fade(VALUE self, VALUE fade) {
-	Check_Kind(fade, rb_cNumeric);
-	Audio::BGM_Fade(NUM2INT(fade));
-	return Qnil;
-}
-VALUE ARGSS::AAudio::rbgs_play(int argc, VALUE *argv, VALUE self) {
-	if (argc == 0) raise_argn(argc, 1);
-	else if (argc > 3) raise_argn(argc, 3);
-	Check_Type(argv[0], T_STRING);
-	int volume = 100;
-	int pitch = 100;
-	if (argc > 1) {
-		Check_Kind(argv[1], rb_cNumeric);
-		volume = NUM2INT(argv[1]);
-		if (argc > 2) {
-			Check_Kind(argv[2], rb_cNumeric);
-			pitch = NUM2INT(argv[2]);
-		}
-	}
-	Audio::BGS_Play(StringValuePtr(argv[0]), volume, pitch);
-	return Qnil;
-}
-VALUE ARGSS::AAudio::rbgs_stop(VALUE self) {
-	Audio::BGS_Stop();
-	return Qnil;
-}
-VALUE ARGSS::AAudio::rbgs_fade(VALUE self, VALUE fade) {
-	Check_Kind(fade, rb_cNumeric);
-	Audio::BGS_Fade(NUM2INT(fade));
-	return Qnil;
-}
-VALUE ARGSS::AAudio::rme_play(int argc, VALUE *argv, VALUE self) {
-	if (argc == 0) raise_argn(argc, 1);
-	else if (argc > 3) raise_argn(argc, 3);
-	Check_Type(argv[0], T_STRING);
-	int volume = 100;
-	int pitch = 100;
-	if (argc > 1) {
-		Check_Kind(argv[1], rb_cNumeric);
-		volume = NUM2INT(argv[1]);
-		if (argc > 2) {
-			Check_Kind(argv[2], rb_cNumeric);
-			pitch = NUM2INT(argv[2]);
-		}
-	}
-	Audio::ME_Play(StringValuePtr(argv[0]), volume, pitch);
-	return Qnil;
-}
-VALUE ARGSS::AAudio::rme_stop(VALUE self) {
-	Audio::ME_Stop();
-	return Qnil;
-}
-VALUE ARGSS::AAudio::rme_fade(VALUE self, VALUE fade) {
-	Check_Kind(fade, rb_cNumeric);
-	Audio::ME_Fade(NUM2INT(fade));
-	return Qnil;
-}
-VALUE ARGSS::AAudio::rse_play(int argc, VALUE *argv, VALUE self) {
-	if (argc == 0) raise_argn(argc, 1);
-	else if (argc > 3) raise_argn(argc, 3);
-	Check_Type(argv[0], T_STRING);
-	int volume = 100;
-	int pitch = 100;
-	if (argc > 1) {
-		Check_Kind(argv[1], rb_cNumeric);
-		volume = NUM2INT(argv[1]);
-		if (argc > 2) {
-			Check_Kind(argv[2], rb_cNumeric);
-			pitch = NUM2INT(argv[2]);
-		}
-	}
-	Audio::SE_Play(StringValuePtr(argv[0]), volume, pitch);
-	return Qnil;
-}
-VALUE ARGSS::AAudio::rse_stop(VALUE self) {
-	Audio::SE_Stop();
-	return Qnil;
-}
+namespace ARGSS
+{
+	namespace AAudio
+	{
+		namespace
+		{
+			////////////////////////////////////////////////////////////
+			/// Global Variables
+			////////////////////////////////////////////////////////////
+			VALUE id;
+		} // namespace
+		VALUE& getID() { return id; }
 
-////////////////////////////////////////////////////////////
-/// ARGSS Audio initialize
-////////////////////////////////////////////////////////////
-void ARGSS::AAudio::Init() {
-	id = rb_define_module("Audio");
-	rb_define_singleton_method(id, "bgm_play", RubyFunc(rbgm_play), -1);
-	rb_define_singleton_method(id, "bgm_stop", RubyFunc(rbgm_stop), 0);
-	rb_define_singleton_method(id, "bgm_fade", RubyFunc(rbgm_fade), 1);
-	rb_define_singleton_method(id, "bgs_play", RubyFunc(rbgs_play), -1);
-	rb_define_singleton_method(id, "bgs_stop", RubyFunc(rbgs_stop), 0);
-	rb_define_singleton_method(id, "bgs_fade", RubyFunc(rbgs_fade), 1);
-	rb_define_singleton_method(id, "me_play", RubyFunc(rme_play), -1);
-	rb_define_singleton_method(id, "me_stop", RubyFunc(rme_stop), 0);
-	rb_define_singleton_method(id, "me_fade", RubyFunc(rme_fade), 1);
-	rb_define_singleton_method(id, "se_play", RubyFunc(rse_play), -1);
-	rb_define_singleton_method(id, "se_stop", RubyFunc(rse_stop), 0);
-}
+		////////////////////////////////////////////////////////////
+		/// ARGSS Audio ruby functions
+		////////////////////////////////////////////////////////////
+		VALUE rbgm_play(int argc, VALUE *argv, VALUE self)
+		{
+			if (argc == 0) raise_argn(argc, 1);
+			else if (argc > 3) raise_argn(argc, 3);
+			Check_Type(argv[0], T_STRING);
+			int volume = 100;
+			int pitch = 100;
+			if (argc > 1) {
+				Check_Kind(argv[1], rb_cNumeric);
+				volume = NUM2INT(argv[1]);
+				if (argc > 2) {
+					Check_Kind(argv[2], rb_cNumeric);
+					pitch = NUM2INT(argv[2]);
+				}
+			}
+			Audio::BGM_Play(StringValuePtr(argv[0]), volume, pitch);
+			return Qnil;
+		}
+		VALUE rbgm_stop(VALUE self)
+		{
+			Audio::BGM_Stop();
+			return Qnil;
+		}
+		VALUE rbgm_fade(VALUE self, VALUE fade)
+		{
+			Check_Kind(fade, rb_cNumeric);
+			Audio::BGM_Fade(NUM2INT(fade));
+			return Qnil;
+		}
+		VALUE rbgs_play(int argc, VALUE *argv, VALUE self)
+		{
+			if (argc == 0) raise_argn(argc, 1);
+			else if (argc > 3) raise_argn(argc, 3);
+			Check_Type(argv[0], T_STRING);
+			int volume = 100;
+			int pitch = 100;
+			if (argc > 1) {
+				Check_Kind(argv[1], rb_cNumeric);
+				volume = NUM2INT(argv[1]);
+				if (argc > 2) {
+					Check_Kind(argv[2], rb_cNumeric);
+					pitch = NUM2INT(argv[2]);
+				}
+			}
+			Audio::BGS_Play(StringValuePtr(argv[0]), volume, pitch);
+			return Qnil;
+		}
+		VALUE rbgs_stop(VALUE self)
+		{
+			Audio::BGS_Stop();
+			return Qnil;
+		}
+		VALUE rbgs_fade(VALUE self, VALUE fade)
+		{
+			Check_Kind(fade, rb_cNumeric);
+			Audio::BGS_Fade(NUM2INT(fade));
+			return Qnil;
+		}
+		VALUE rme_play(int argc, VALUE *argv, VALUE self)
+		{
+			if (argc == 0) raise_argn(argc, 1);
+			else if (argc > 3) raise_argn(argc, 3);
+			Check_Type(argv[0], T_STRING);
+			int volume = 100;
+			int pitch = 100;
+			if (argc > 1) {
+				Check_Kind(argv[1], rb_cNumeric);
+				volume = NUM2INT(argv[1]);
+				if (argc > 2) {
+					Check_Kind(argv[2], rb_cNumeric);
+					pitch = NUM2INT(argv[2]);
+				}
+			}
+			Audio::ME_Play(StringValuePtr(argv[0]), volume, pitch);
+			return Qnil;
+		}
+		VALUE rme_stop(VALUE self) {
+			Audio::ME_Stop();
+			return Qnil;
+		}
+		VALUE rme_fade(VALUE self, VALUE fade) {
+			Check_Kind(fade, rb_cNumeric);
+			Audio::ME_Fade(NUM2INT(fade));
+			return Qnil;
+		}
+		VALUE rse_play(int argc, VALUE *argv, VALUE self)
+		{
+			if (argc == 0) raise_argn(argc, 1);
+			else if (argc > 3) raise_argn(argc, 3);
+			Check_Type(argv[0], T_STRING);
+			int volume = 100;
+			int pitch = 100;
+			if (argc > 1) {
+				Check_Kind(argv[1], rb_cNumeric);
+				volume = NUM2INT(argv[1]);
+				if (argc > 2) {
+					Check_Kind(argv[2], rb_cNumeric);
+					pitch = NUM2INT(argv[2]);
+				}
+			}
+			Audio::SE_Play(StringValuePtr(argv[0]), volume, pitch);
+			return Qnil;
+		}
+		VALUE rse_stop(VALUE self)
+		{
+			Audio::SE_Stop();
+			return Qnil;
+		}
+
+		////////////////////////////////////////////////////////////
+		/// ARGSS Audio initialize
+		////////////////////////////////////////////////////////////
+		void Init()
+		{
+			id = rb_define_module("Audio");
+			rb_define_singleton_method(id, ARGSS_FUNC(bgm_play), -1);
+			rb_define_singleton_method(id, ARGSS_FUNC(bgm_stop), 0);
+			rb_define_singleton_method(id, ARGSS_FUNC(bgm_fade), 1);
+			rb_define_singleton_method(id, ARGSS_FUNC(bgs_play), -1);
+			rb_define_singleton_method(id, ARGSS_FUNC(bgs_stop), 0);
+			rb_define_singleton_method(id, ARGSS_FUNC(bgs_fade), 1);
+			rb_define_singleton_method(id, ARGSS_FUNC(me_play), -1);
+			rb_define_singleton_method(id, ARGSS_FUNC(me_stop), 0);
+			rb_define_singleton_method(id, ARGSS_FUNC(me_fade), 1);
+			rb_define_singleton_method(id, ARGSS_FUNC(se_play), -1);
+			rb_define_singleton_method(id, ARGSS_FUNC(se_stop), 0);
+		}
+	} // namespace AAudio
+} // namespace ARGSS

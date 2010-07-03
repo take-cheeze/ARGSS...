@@ -27,12 +27,12 @@
 ////////////////////////////////////////////////////////////
 #include <string>
 
-#include "argss_window_xp.hxx"
-#include "argss_viewport.hxx"
 #include "argss_bitmap.hxx"
 #include "argss_color.hxx"
-#include "argss_rect.hxx"
 #include "argss_error.hxx"
+#include "argss_rect.hxx"
+#include "argss_viewport.hxx"
+#include "argss_window_xp.hxx"
 
 #include "window_xp.hxx"
 
@@ -48,10 +48,13 @@ namespace ARGSS
 {
 	namespace AWindow
 	{
-		////////////////////////////////////////////////////////////
-		/// Global Variables
-		////////////////////////////////////////////////////////////
-		VALUE id;
+		namespace
+		{
+			////////////////////////////////////////////////////////////
+			/// Global Variables
+			////////////////////////////////////////////////////////////
+			VALUE id;
+		} // namespace
 
 		////////////////////////////////////////////////////////////
 		/// ARGSS Window ruby functions
@@ -59,7 +62,7 @@ namespace ARGSS
 		VALUE rinitialize(int argc, VALUE *argv, VALUE self)
 		{
 			if (argc == 1) {
-				Check_Classes_N(argv[0], ARGSS::AViewport::id);
+				Check_Classes_N(argv[0], ARGSS::AViewport::getID());
 				rb_iv_set(self, "@viewport", argv[0]);
 			}
 			else if (argc == 0) {
@@ -115,7 +118,7 @@ namespace ARGSS
 		VALUE rviewportE(VALUE self, VALUE viewport)
 		{
 			CheckDisposed(self);
-			Check_Classes_N(viewport, ARGSS::AViewport::id);
+			Check_Classes_N(viewport, ARGSS::AViewport::getID());
 			Window::Get(self)->SetViewport(viewport);
 			return rb_iv_set(self, "@viewport", viewport);
 		}
@@ -127,7 +130,7 @@ namespace ARGSS
 		VALUE rwindowskinE(VALUE self, VALUE windowskin)
 		{
 			CheckDisposed(self);
-			Check_Classes_N(windowskin, ARGSS::ABitmap::id);
+			Check_Classes_N(windowskin, ARGSS::ABitmap::getID());
 			Window::Get(self)->SetWindowskin(windowskin);
 			return rb_iv_set(self, "@windowskin", windowskin);
 		}
@@ -139,7 +142,7 @@ namespace ARGSS
 		VALUE rcontentsE(VALUE self, VALUE contents)
 		{
 			CheckDisposed(self);
-			Check_Classes_N(contents, ARGSS::ABitmap::id);
+			Check_Classes_N(contents, ARGSS::ABitmap::getID());
 			Window::Get(self)->SetContents(contents);
 			return rb_iv_set(self, "@contents", contents);
 		}
@@ -161,7 +164,7 @@ namespace ARGSS
 		VALUE rcursor_rectE(VALUE self, VALUE cursor_rect)
 		{
 			CheckDisposed(self);
-			Check_Class(cursor_rect, ARGSS::ARect::id);
+			Check_Class(cursor_rect, ARGSS::ARect::getID());
 			Window::Get(self)->SetCursorRect(cursor_rect);
 			return rb_iv_set(self, "@cursor_rect", cursor_rect);
 		}
@@ -332,48 +335,31 @@ namespace ARGSS
 		void Init()
 		{
 			id = rb_define_class("Window", rb_cObject);
-			rb_define_method(id, "initialize", RubyFunc(rinitialize), -1);
-			rb_define_method(id, "dispose", RubyFunc(rdispose), 0);
-			rb_define_method(id, "disposed?", RubyFunc(rdisposedQ), 0);
-			rb_define_method(id, "update", RubyFunc(rupdate), 0);
-			rb_define_method(id, "viewport", RubyFunc(rviewport), 0);
-			rb_define_method(id, "viewport=", RubyFunc(rviewportE), 1);
-			rb_define_method(id, "windowskin", RubyFunc(rwindowskin), 0);
-			rb_define_method(id, "windowskin=", RubyFunc(rwindowskinE), 1);
-			rb_define_method(id, "contents", RubyFunc(rcontents), 0);
-			rb_define_method(id, "contents=", RubyFunc(rcontentsE), 1);
-			rb_define_method(id, "stretch", RubyFunc(rstretch), 0);
-			rb_define_method(id, "stretch=", RubyFunc(rstretchE), 1);
-			rb_define_method(id, "cursor_rect", RubyFunc(rcursor_rect), 0);
-			rb_define_method(id, "cursor_rect=", RubyFunc(rcursor_rectE), 1);
-			rb_define_method(id, "active", RubyFunc(ractive), 0);
-			rb_define_method(id, "active=", RubyFunc(ractiveE), 1);
-			rb_define_method(id, "visible", RubyFunc(rvisible), 0);
-			rb_define_method(id, "visible=", RubyFunc(rvisibleE), 1);
-			rb_define_method(id, "pause", RubyFunc(rpause), 0);
-			rb_define_method(id, "pause=", RubyFunc(rpauseE), 1);
-			rb_define_method(id, "x", RubyFunc(rx), 0);
-			rb_define_method(id, "fx", RubyFunc(rx), 0);
-			rb_define_method(id, "x=", RubyFunc(rxE), 1);
-			rb_define_method(id, "y", RubyFunc(ry), 0);
-			rb_define_method(id, "fy", RubyFunc(ry), 0);
-			rb_define_method(id, "y=", RubyFunc(ryE), 1);
-			rb_define_method(id, "width", RubyFunc(rwidth), 0);
-			rb_define_method(id, "width=", RubyFunc(rwidthE), 1);
-			rb_define_method(id, "height", RubyFunc(rheight), 0);
-			rb_define_method(id, "height=", RubyFunc(rheightE), 1);
-			rb_define_method(id, "z", RubyFunc(rz), 0);
-			rb_define_method(id, "z=", RubyFunc(rzE), 1);
-			rb_define_method(id, "ox", RubyFunc(rox), 0);
-			rb_define_method(id, "ox=", RubyFunc(roxE), 1);
-			rb_define_method(id, "oy", RubyFunc(roy), 0);
-			rb_define_method(id, "oy=", RubyFunc(royE), 1);
-			rb_define_method(id, "opacity", RubyFunc(ropacity), 0);
-			rb_define_method(id, "opacity=", RubyFunc(ropacityE), 1);
-			rb_define_method(id, "back_opacity", RubyFunc(rback_opacity), 0);
-			rb_define_method(id, "back_opacity=", RubyFunc(rback_opacityE), 1);
-			rb_define_method(id, "contents_opacity", RubyFunc(rcontents_opacity), 0);
-			rb_define_method(id, "contents_opacity=", RubyFunc(rcontents_opacityE), 1);
+			static FuncTable funcTable =
+			{
+				{ ARGSS_FUNC(initialize), -1 },
+				{ ARGSS_FUNC(dispose), 0 }, { ARGSS_Q(disposed), 0 },
+				{ ARGSS_FUNC(update), 0 },
+				ARGSS_GETTER_SETTER(viewport),
+				ARGSS_GETTER_SETTER(windowskin),
+				ARGSS_GETTER_SETTER(contents),
+				ARGSS_GETTER_SETTER(stretch),
+				ARGSS_GETTER_SETTER(cursor_rect),
+				ARGSS_GETTER_SETTER(active),
+				ARGSS_GETTER_SETTER(visible),
+				ARGSS_GETTER_SETTER(pause),
+				ARGSS_GETTER_SETTER(x), { "fx", RubyFunc(rx), 0 },
+				ARGSS_GETTER_SETTER(y), { "fy", RubyFunc(ry), 0 },
+				ARGSS_GETTER_SETTER(width),
+				ARGSS_GETTER_SETTER(height),
+				ARGSS_GETTER_SETTER(z),
+				ARGSS_GETTER_SETTER(ox),
+				ARGSS_GETTER_SETTER(oy),
+				ARGSS_GETTER_SETTER(opacity),
+				ARGSS_GETTER_SETTER(back_opacity),
+				ARGSS_GETTER_SETTER(contents_opacity),
+			};
+			defineMethods(id, funcTable);
 		}
 
 		////////////////////////////////////////////////////////////
@@ -382,7 +368,7 @@ namespace ARGSS
 		void CheckDisposed(VALUE self)
 		{
 			if (Window::IsDisposed(self)) {
-				rb_raise(ARGSS::AError::id, "disposed window <%i>", (int)self);
+				rb_raise(ARGSS::AError::getID(), "disposed window <%i>", (int)self);
 			}
 		}
 	} // namespace AWindow

@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_RPG_CACHE_H_
-#define _ARGSS_RPG_CACHE_H_
+#ifndef _ARGSS_RPG_CACHE_HXX_
+#define _ARGSS_RPG_CACHE_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -39,7 +39,8 @@ namespace ARGSS
 	{
 		namespace ACache
 		{
-			extern VALUE id;
+			VALUE& getID();
+
 			void Init();
 
 			VALUE rload_bitmap(int argc, VALUE* argv, VALUE self);

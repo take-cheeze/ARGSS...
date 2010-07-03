@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_PLANE_H_
-#define _ARGSS_PLANE_H_
+#ifndef _ARGSS_PLANE_HXX_
+#define _ARGSS_PLANE_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -37,7 +37,6 @@ namespace ARGSS
 {
 	namespace APlane
 	{
-		extern VALUE id;
 		void Init();
 		void CheckDisposed(VALUE self);
 

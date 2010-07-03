@@ -31,19 +31,22 @@
 ////////////////////////////////////////////////////////////
 /// Constructor
 ////////////////////////////////////////////////////////////
-Color::Color() {
+Color::Color()
+{
 	red = 0.0f;
 	green = 0.0f;
 	blue = 0.0f;
 	alpha = 0.0f;
 }
-Color::Color(VALUE color) {
+Color::Color(VALUE color)
+{
 	red = (float)NUM2DBL(rb_iv_get(color, "@red"));
 	green = (float)NUM2DBL(rb_iv_get(color, "@green"));
 	blue = (float)NUM2DBL(rb_iv_get(color, "@blue"));
 	alpha = (float)NUM2DBL(rb_iv_get(color, "@alpha"));
 }
-Color::Color(int ired, int igreen, int iblue, int ialpha) {
+Color::Color(int ired, int igreen, int iblue, int ialpha)
+{
 	red = (float)ired;
 	green = (float)igreen;
 	blue = (float)iblue;
@@ -53,12 +56,15 @@ Color::Color(int ired, int igreen, int iblue, int ialpha) {
 ////////////////////////////////////////////////////////////
 /// Destructor
 ////////////////////////////////////////////////////////////
-Color::~Color() { }
+Color::~Color()
+{
+}
 
 ////////////////////////////////////////////////////////////
 /// Set
 ////////////////////////////////////////////////////////////
-void Color::Set(VALUE color) {
+void Color::Set(VALUE color)
+{
 	red = (float)NUM2DBL(rb_iv_get(color, "@red"));
 	green = (float)NUM2DBL(rb_iv_get(color, "@green"));
 	blue = (float)NUM2DBL(rb_iv_get(color, "@blue"));
@@ -68,22 +74,25 @@ void Color::Set(VALUE color) {
 ////////////////////////////////////////////////////////////
 /// Get ARGSS
 ////////////////////////////////////////////////////////////
-unsigned long Color::GetARGSS() {
+VALUE Color::GetARGSS()
+{
 	VALUE args[4] = {rb_float_new(red), rb_float_new(green), rb_float_new(blue), rb_float_new(alpha)};
-	return rb_class_new_instance(4, args, ARGSS::AColor::id);
+	return rb_class_new_instance(4, args, ARGSS::AColor::getID());
 }
 
 ////////////////////////////////////////////////////////////
 /// Get Uint32
 ////////////////////////////////////////////////////////////
-Uint32 Color::GetUint32() {
+Uint32 Color::GetUint32()
+{
 	return ((Uint8)red) + (((Uint8)green) << 8) + (((Uint8)blue) << 16) + (((Uint8)alpha) << 24); 
 }
 
 ////////////////////////////////////////////////////////////
 /// Static create Color from Uint32
 ////////////////////////////////////////////////////////////
-Color Color::NewUint32(Uint32 color) {
+Color Color::NewUint32(Uint32 color)
+{
 	int r = (color & 0x000000ff);
 	int g = (color & 0x0000ff00) >> 8;
 	int b = (color & 0x00ff0000) >> 16;

@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_GRAPHICS_H_
-#define _ARGSS_GRAPHICS_H_
+#ifndef _ARGSS_GRAPHICS_HXX_
+#define _ARGSS_GRAPHICS_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -37,7 +37,8 @@ namespace ARGSS
 {
 	namespace AGraphics
 	{
-		extern VALUE id;
+		VALUE& getID();
+
 		void Init();
 
 		VALUE rupdate(VALUE self);

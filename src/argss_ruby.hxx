@@ -22,15 +22,17 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_RUBY_H_
-#define _ARGSS_RUBY_H_
+#ifndef _ARGSS_RUBY_HXX_
+#define _ARGSS_RUBY_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
 #include <vector>
-extern "C" {
-	#include "ruby.h"
+
+extern "C"
+{
+	#include <ruby.h>
 }
 
 ////////////////////////////////////////////////////////////
@@ -39,6 +41,21 @@ extern "C" {
 namespace ARGSS
 {
 	typedef VALUE (*RubyFunc)(...);
+	struct FuncTableElement { char const* name; RubyFunc func; unsigned int argc; };
+	typedef FuncTableElement FuncTable[];
+
+	#define ARGSS_FUNC(name) #name, RubyFunc(r##name)
+	#define ARGSS_E(name) #name "=", RubyFunc(r##name##E)
+	#define ARGSS_Q(name) #name "?", RubyFunc(r##name##Q)
+
+	#define ARGSS_GETTER_SETTER(name) { ARGSS_FUNC(name), 0 }, { ARGSS_E(name), 1 }
+
+	void defineMethodsImplement(VALUE klassID, FuncTableElement const* table, unsigned int elmNum);
+	template< unsigned int ElmNum >
+	void defineMethods(VALUE klassID, FuncTableElement const (&table)[ElmNum])
+	{
+		defineMethodsImplement(klassID, table, ElmNum);
+	}
 
 	namespace ARuby
 	{
@@ -47,7 +64,6 @@ namespace ARGSS
 
 		void AddObject(VALUE id);
 		void RemoveObject(VALUE id);
-		extern VALUE protected_objects;
 
 		VALUE rload_data(VALUE self, VALUE filename);
 		VALUE rsave_data(VALUE self, VALUE obj, VALUE filename);

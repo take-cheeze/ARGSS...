@@ -25,16 +25,24 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <boost/format.hpp>
+#include <string>
+
 #include "argss_rect.hxx"
+
 
 namespace ARGSS
 {
 	namespace ARect
 	{
-		////////////////////////////////////////////////////////////
-		/// Global Variables
-		////////////////////////////////////////////////////////////
-		VALUE id;
+		namespace
+		{
+			////////////////////////////////////////////////////////////
+			/// Global Variables
+			////////////////////////////////////////////////////////////
+			VALUE id;
+		} // namespace
+		VALUE& getID() { return id; }
 
 		////////////////////////////////////////////////////////////
 		/// ARGSS Rect ruby functions
@@ -97,20 +105,13 @@ namespace ARGSS
 			return self;
 		}
 		VALUE rinspect(VALUE self) {
-			char str[255];
-			long n;
-		#ifdef MSVC
-			n = sprintf_s(str, 255, "(%i, %i, %i, %i)",  NUM2INT(rb_iv_get(self, "@x")),
-														 NUM2INT(rb_iv_get(self, "@y")),
-														 NUM2INT(rb_iv_get(self, "@width")),
-														 NUM2INT(rb_iv_get(self, "@height")));
-		#else
-			n = sprintf(str, "(%i, %i, %i, %i)",  NUM2INT(rb_iv_get(self, "@x")),
-												  NUM2INT(rb_iv_get(self, "@y")),
-												  NUM2INT(rb_iv_get(self, "@width")),
-												  NUM2INT(rb_iv_get(self, "@height")));
-		#endif
-			return rb_str_new(str, n);
+			std::string str = (boost::format("(%d, %d, %d, %d)")
+				% NUM2INT(rb_iv_get(self, "@x"))
+				% NUM2INT(rb_iv_get(self, "@y"))
+				% NUM2INT(rb_iv_get(self, "@width" ))
+				% NUM2INT(rb_iv_get(self, "@height"))
+			).str();
+			return rb_str_new( str.c_str(), str.length() );
 		}
 		VALUE rdump(int argc, VALUE* argv, VALUE self) {
 			if (argc > 1) raise_argn(argc, 1);
@@ -129,19 +130,19 @@ namespace ARGSS
 		////////////////////////////////////////////////////////////
 		void Init() {
 			id = rb_define_class("Rect", rb_cObject);
-			rb_define_method(id, "initialize", RubyFunc(rinitialize), 4);
-			rb_define_method(id, "set", RubyFunc(rset), 4);
-			rb_define_method(id, "x", RubyFunc(rx), 0);
-			rb_define_method(id, "x=", RubyFunc(rxE), 1);
-			rb_define_method(id, "y", RubyFunc(ry), 0);
-			rb_define_method(id, "y=", RubyFunc(ryE), 1);
-			rb_define_method(id, "width", RubyFunc(rwidth), 0);
-			rb_define_method(id, "width=", RubyFunc(rwidthE), 1);
-			rb_define_method(id, "height", RubyFunc(rheight), 0);
-			rb_define_method(id, "height=", RubyFunc(rheightE), 1);
-			rb_define_method(id, "empty", RubyFunc(rempty), 0);
-			rb_define_method(id, "inspect", RubyFunc(rinspect), 0);
-			rb_define_method(id, "_dump", RubyFunc(rdump), -1);
+			static FuncTable funcTable =
+			{
+				{ ARGSS_FUNC(initialize), 4 },
+				{ ARGSS_FUNC(set), 4 },
+				ARGSS_GETTER_SETTER(x),
+				ARGSS_GETTER_SETTER(y),
+				ARGSS_GETTER_SETTER(width),
+				ARGSS_GETTER_SETTER(height),
+				{ ARGSS_FUNC(empty), 0 },
+				{ ARGSS_FUNC(inspect), 0 },
+				{ "_dump", RubyFunc(rdump), -1 },
+			};
+			defineMethods(id, funcTable);
 			rb_define_singleton_method(id, "_load", RubyFunc(rload), 1);
 		}
 

@@ -76,7 +76,7 @@ void Rect::Set(int nx, int ny, int nwidth, int nheight) {
 ////////////////////////////////////////////////////////////
 VALUE Rect::GetARGSS() {
 	VALUE args[4] = {INT2NUM(x), INT2NUM(y), INT2NUM(width), INT2NUM(height)};
-	return rb_class_new_instance(4, args, ARGSS::ARect::id);
+	return rb_class_new_instance(4, args, ARGSS::ARect::getID());
 }
 ////////////////////////////////////////////////////////////
 /// Adjust Rect

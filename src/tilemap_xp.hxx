@@ -22,15 +22,16 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _TILEMAP_XP_H_
-#define _TILEMAP_XP_H_
+#ifndef _TILEMAP_XP_HXX_
+#define _TILEMAP_XP_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#include <string>
 #include <map>
+#include <string>
 #include <vector>
+
 #include "bitmap.hxx"
 #include "drawable.hxx"
 
@@ -40,14 +41,14 @@
 class Tilemap : public Drawable
 {
 public:
-	Tilemap(unsigned long iid);
+	Tilemap(VALUE iid);
 	~Tilemap();
 
 	static void Init();
-	static bool IsDisposed(unsigned long id);
-	static void New(unsigned long id);
-	static Tilemap* Get(unsigned long id);
-	static void Dispose(unsigned long id);
+	static bool IsDisposed(VALUE id);
+	static void New(VALUE id);
+	static Tilemap& Get(VALUE id);
+	static void Dispose(VALUE id);
 
 	void RefreshBitmaps();
 	void Draw(long z);
@@ -55,16 +56,16 @@ public:
 	void RefreshData();
 
 	void Update();
-	unsigned long GetViewport();
-	void SetViewport(unsigned long nviewport);
-	unsigned long GetTileset();
-	void SetTileset(unsigned long ntileset);
-	unsigned long GetMapData();
-	void SetMapData(unsigned long nmap_data);
-	unsigned long GetFlashData();
-	void SetFlashData(unsigned long nflash_data);
-	unsigned long GetPriorities();
-	void SetPriorities(unsigned long npriorities);
+	VALUE GetViewport();
+	void SetViewport(VALUE nviewport);
+	VALUE GetTileset();
+	void SetTileset(VALUE ntileset);
+	VALUE GetMapData();
+	void SetMapData(VALUE nmap_data);
+	VALUE GetFlashData();
+	void SetFlashData(VALUE nflash_data);
+	VALUE GetPriorities();
+	void SetPriorities(VALUE npriorities);
 	bool GetVisible();
 	void SetVisible(bool nvisible);
 	int GetOx();
@@ -73,20 +74,20 @@ public:
 	void SetOy(int noy);
 
 private:
-	unsigned long id;
-	unsigned long viewport;
-	unsigned long tileset;
-	unsigned long autotiles;
-	unsigned long map_data;
-	unsigned long flash_data;
-	unsigned long priorities;
+	VALUE id;
+	VALUE viewport;
+	VALUE tileset;
+	VALUE autotiles;
+	VALUE map_data;
+	VALUE flash_data;
+	VALUE priorities;
 	bool visible;
 	int ox;
 	int oy;
 	int autotile_frame;
 	int autotile_time;
 
-	std::map<unsigned long, std::map<int, std::map<int, Bitmap*> > > autotiles_cache;
+	std::map<VALUE, std::map<int, std::map<int, Bitmap*> > > autotiles_cache;
 	static int autotiles_id[6][8][4];
 
 	struct TileData {

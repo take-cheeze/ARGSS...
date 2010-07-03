@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_INPUT_H_
-#define _ARGSS_INPUT_H_
+#ifndef _ARGSS_INPUT_HXX_
+#define _ARGSS_INPUT_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -37,7 +37,6 @@ namespace ARGSS
 {
 	namespace AInput
 	{
-		extern VALUE id;
 		void Init();
 
 		VALUE rupdate(VALUE self);

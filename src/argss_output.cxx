@@ -31,80 +31,94 @@
 
 #include "output.hxx"
 
-////////////////////////////////////////////////////////////
-/// Global Variables
-////////////////////////////////////////////////////////////
-VALUE ARGSS::AOutput::id;
-VALUE ARGSS::AOutput::stdout_id;
-VALUE ARGSS::AOutput::stderr_id;
-VALUE ARGSS::AOutput::stdin_id;
+namespace ARGSS
+{
+	namespace AOutput
+	{
+		namespace
+		{
+			////////////////////////////////////////////////////////////
+			/// Global Variables
+			////////////////////////////////////////////////////////////
+			VALUE id;
+			VALUE stdout_id;
+			VALUE stderr_id;
+			VALUE stdin_id;
+		}
 
-////////////////////////////////////////////////////////////
-/// ARGSS Output ruby functions
-////////////////////////////////////////////////////////////
-VALUE ARGSS::AOutput::rconsole(VALUE self) {
-	Output::Console();
-	return Qnil;
-}
-VALUE ARGSS::AOutput::rmsgbox(VALUE self) {
-	Output::MsgBox();
-	return Qnil;
-}
-VALUE ARGSS::AOutput::rfile(VALUE self, VALUE file) {
-	Output::File(StringValuePtr(file));
-	return Qnil;
-}
-VALUE ARGSS::AOutput::rnone(VALUE self) {
-	Output::None();
-	return Qnil;
-}
+		////////////////////////////////////////////////////////////
+		/// ARGSS Output ruby functions
+		////////////////////////////////////////////////////////////
+		VALUE rconsole(VALUE self) {
+			Output::Console();
+			return Qnil;
+		}
+		VALUE rmsgbox(VALUE self) {
+			Output::MsgBox();
+			return Qnil;
+		}
+		VALUE rfile(VALUE self, VALUE file) {
+			Output::File(StringValuePtr(file));
+			return Qnil;
+		}
+		VALUE rnone(VALUE self) {
+			Output::None();
+			return Qnil;
+		}
 
-////////////////////////////////////////////////////////////
-/// ARGSS Stdout, Stderr and Stdin
-////////////////////////////////////////////////////////////
-VALUE ARGSS::AOutput::rstdout_write(VALUE self, VALUE str) {
-	if (TYPE(str) != T_STRING) str = rb_obj_as_string(str);
-	if (RSTRING_LEN(str) == 0) return INT2FIX(0);
-	Output::PostStr(StringValuePtr(str));
-	return INT2FIX(RSTRING_LEN(str));
-}
-VALUE ARGSS::AOutput::rstderr_write(VALUE self, VALUE str) {
-	if (TYPE(str) != T_STRING) str = rb_obj_as_string(str);
-	if (RSTRING_LEN(str) == 0) return INT2FIX(0);
-	//Output::ErrorStr(StringValuePtr(str));
-	return INT2FIX(RSTRING_LEN(str));
-}
-VALUE ARGSS::AOutput::stdin_gets(int argc, VALUE *argv, VALUE self) {
-	std::string str = Output::Gets();
-	return rb_str_new(str.c_str(), str.length());
-}
-VALUE ARGSS::AOutput::stdin_getc(int argc, VALUE *argv, VALUE self) {
-	std::string str = Output::Getc();
-	return rb_str_new(str.c_str(), str.length());
-}
+		////////////////////////////////////////////////////////////
+		/// ARGSS Stdout, Stderr and Stdin
+		////////////////////////////////////////////////////////////
+		VALUE rstdout_write(VALUE self, VALUE str)
+		{
+			if (TYPE(str) != T_STRING) str = rb_obj_as_string(str);
+			if (RSTRING_LEN(str) == 0) return INT2FIX(0);
+			Output::PostStr(StringValuePtr(str));
+			return INT2FIX(RSTRING_LEN(str));
+		}
+		VALUE rstderr_write(VALUE self, VALUE str)
+		{
+			if (TYPE(str) != T_STRING) str = rb_obj_as_string(str);
+			if (RSTRING_LEN(str) == 0) return INT2FIX(0);
+			//Output::ErrorStr(StringValuePtr(str));
+			return INT2FIX(RSTRING_LEN(str));
+		}
+		VALUE stdin_gets(int argc, VALUE *argv, VALUE self)
+		{
+			std::string str = Output::Gets();
+			return rb_str_new(str.c_str(), str.length());
+		}
+		VALUE stdin_getc(int argc, VALUE *argv, VALUE self)
+		{
+			std::string str = Output::Getc();
+			return rb_str_new(str.c_str(), str.length());
+		}
 
-////////////////////////////////////////////////////////////
-/// ARGSS Output initialize
-////////////////////////////////////////////////////////////
-void ARGSS::AOutput::Init() {
-	id = rb_define_module("Output");
-	rb_define_singleton_method(id, "console", RubyFunc(rconsole), 0);
-	rb_define_singleton_method(id, "msgbox", RubyFunc(rmsgbox), 0);
-	rb_define_singleton_method(id, "file", RubyFunc(rfile), 1);
-	rb_define_singleton_method(id, "none", RubyFunc(rnone), 0);  
+		////////////////////////////////////////////////////////////
+		/// ARGSS Output initialize
+		////////////////////////////////////////////////////////////
+		void Init()
+		{
+			id = rb_define_module("Output");
+			rb_define_singleton_method(id, ARGSS_FUNC(console), 0);
+			rb_define_singleton_method(id, ARGSS_FUNC(msgbox), 0);
+			rb_define_singleton_method(id, ARGSS_FUNC(file), 1);
+			rb_define_singleton_method(id, ARGSS_FUNC(none), 0);  
 
-	stdout_id = rb_define_class_under(id, "Stdout", rb_cObject);
-	rb_define_method(stdout_id, "write", RubyFunc(rstdout_write), 1);
-	stderr_id = rb_define_class_under(id, "Stderr", rb_cObject);
-	rb_define_method(stderr_id, "write", RubyFunc(rstderr_write), 1);
+			stdout_id = rb_define_class_under(id, "Stdout", rb_cObject);
+			rb_define_method(stdout_id, "write", RubyFunc(rstdout_write), 1);
+			stderr_id = rb_define_class_under(id, "Stderr", rb_cObject);
+			rb_define_method(stderr_id, "write", RubyFunc(rstderr_write), 1);
 
-	rb_gv_set("$stdout", rb_class_new_instance(0, 0, stdout_id));
-	rb_gv_set("$stderr", rb_class_new_instance(0, 0, stderr_id));
+			rb_gv_set("$stdout", rb_class_new_instance(0, 0, stdout_id));
+			rb_gv_set("$stderr", rb_class_new_instance(0, 0, stderr_id));
 
-	stdin_id = rb_define_class_under(id, "Stdin", rb_cObject);
-	rb_define_method(stdin_id, "gets", RubyFunc(stdin_gets), -1);
-	rb_define_method(stdin_id, "getc", RubyFunc(stdin_getc), -1);
-	rb_define_global_function("getc", RubyFunc(stdin_getc), 0);
+			stdin_id = rb_define_class_under(id, "Stdin", rb_cObject);
+			rb_define_method(stdin_id, "gets", RubyFunc(stdin_gets), -1);
+			rb_define_method(stdin_id, "getc", RubyFunc(stdin_getc), -1);
+			rb_define_global_function("getc", RubyFunc(stdin_getc), 0);
 
-	rb_gv_set("$stdin", rb_class_new_instance(0, 0, stdin_id));
-}
+			rb_gv_set("$stdin", rb_class_new_instance(0, 0, stdin_id));
+		}
+	} // namespace AOutput
+} // namespace ARGSS

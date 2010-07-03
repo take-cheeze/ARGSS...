@@ -26,27 +26,35 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #include <string>
-#include "input.hxx"
-#include "inputbuttons.hxx"
+
 #include "argss_ruby.hxx"
 #include "argss_input.hxx"
-#include "player.hxx"
+
+#include "input.hxx"
+#include "inputbuttons.hxx"
 #include "output.hxx"
+#include "player.hxx"
 
 namespace Input
 {
-	////////////////////////////////////////////////////////////
-	/// Global Variables
-	////////////////////////////////////////////////////////////
-	std::vector<int> press_time;
-	std::vector<bool> triggered;
-	std::vector<bool> repeated;
-	std::vector<bool> released;
-	int dir4;
-	int dir8;
-	int start_repeat_time;
-	int repeat_time;
-	std::vector< std::vector<int> > dirkeys;
+	namespace
+	{
+		////////////////////////////////////////////////////////////
+		/// Global Variables
+		////////////////////////////////////////////////////////////
+		std::vector<int> press_time;
+		std::vector<bool> triggered;
+		std::vector<bool> repeated;
+		std::vector<bool> released;
+		int dir4;
+		int dir8;
+		int start_repeat_time;
+		int repeat_time;
+		std::vector< std::vector<int> > dirkeys;
+	} // namespace
+
+	int& getDir4() { return dir4; }
+	int& getDir8() { return dir8; }
 
 	////////////////////////////////////////////////////////////
 	/// Initialize
@@ -167,9 +175,9 @@ namespace Input
 	bool IsPressed(VALUE button) {
 		if (NUM2INT(button) < 1000) {
 			int key = NUM2INT(button);
-			if (buttons.count(key) == 0) return false;
-			for (unsigned int i = 0; i < buttons[key].size(); i++) {
-				if (press_time[buttons[key][i]] > 0) return true;
+			if (getButtons().count(key) == 0) return false;
+			for (unsigned int i = 0; i < getButtons()[key].size(); i++) {
+				if (press_time[getButtons()[key][i]] > 0) return true;
 			}
 			return false;
 		}
@@ -182,9 +190,9 @@ namespace Input
 	bool IsTriggered(VALUE button) {
 		if (NUM2INT(button) < 1000) {
 			int key = NUM2INT(button);
-			if (buttons.count(key) == 0) return false;
-			for (unsigned int i = 0; i < buttons[key].size(); i++) {
-				if (triggered[buttons[key][i]]) return true;
+			if (getButtons().count(key) == 0) return false;
+			for (unsigned int i = 0; i < getButtons()[key].size(); i++) {
+				if (triggered[getButtons()[key][i]]) return true;
 			}
 			return false;
 		}
@@ -197,10 +205,10 @@ namespace Input
 	bool IsRepeated(VALUE button) {
 		if (NUM2INT(button) < 1000) {
 			int key = NUM2INT(button);
-			if (buttons.count(key) == 0) return false;
-			std::vector<int> a = buttons[key];
-			for (unsigned int i = 0; i < buttons[key].size(); i++) {
-				if (repeated[buttons[key][i]]) return true;
+			if (getButtons().count(key) == 0) return false;
+			std::vector<int> a = getButtons()[key];
+			for (unsigned int i = 0; i < getButtons()[key].size(); i++) {
+				if (repeated[getButtons()[key][i]]) return true;
 			}
 			return false;
 		}
@@ -213,9 +221,9 @@ namespace Input
 	bool IsReleased(VALUE button) {
 		if (NUM2INT(button) < 1000) {
 			int key = NUM2INT(button);
-			if (buttons.count(key) == 0) return false;
-			for (unsigned int i = 0; i < buttons[key].size(); i++) {
-				if (released[buttons[key][i]]) return true;
+			if (getButtons().count(key) == 0) return false;
+			for (unsigned int i = 0; i < getButtons()[key].size(); i++) {
+				if (released[getButtons()[key][i]]) return true;
 			}
 			return false;
 		}

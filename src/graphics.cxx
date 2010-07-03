@@ -25,7 +25,10 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <boost/format.hpp>
+
 #include <iostream>
+#include <map>
 #include <string>
 
 #include <GL/gl.h>
@@ -54,8 +57,8 @@ namespace Graphics
 		Color backcolor;
 		int brightness;
 		double framerate_interval;
-		std::map<unsigned long, Drawable*> drawable_map;
-		std::map<unsigned long, Drawable*>::iterator it_drawable_map;
+		std::map< VALUE, boost::shared_ptr< Drawable > > drawable_map;
+		std::map< VALUE, boost::shared_ptr< Drawable > >::iterator it_drawable_map;
 		std::list<ZObj> zlist;
 		std::list<ZObj>::iterator it_zlist;
 		long creation;
@@ -65,7 +68,26 @@ namespace Graphics
 	}
 
 	int getFPS() { return fps; }
-	std::map<unsigned long, Drawable*>& drawableMap() { return drawable_map; }
+	Drawable& getDrawable(VALUE id)
+	{
+		assert( drawable_map.find(id) != drawable_map.end() );
+		return *( drawable_map.find(id)->second );
+	}
+	bool insertDrawable(VALUE id, boost::shared_ptr< Drawable > const& ptr)
+	{
+		return drawable_map.insert(
+			std::map< VALUE, boost::shared_ptr< Drawable > >::value_type(id, ptr)
+		).second;
+	}
+	void eraseDrawable(VALUE id)
+	{
+		assert( drawable_map.find(id) != drawable_map.end() );
+		drawable_map.erase( drawable_map.find(id) );
+	}
+	unsigned int countDrawable(VALUE id)
+	{
+		return drawable_map.count(id);
+	}
 	void incrementCreation() { creation++; }
 	long getCreation() { return creation; }
 
@@ -121,9 +143,6 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void Exit()
 	{
-		for (it_drawable_map = drawable_map.begin(); it_drawable_map != drawable_map.end(); it_drawable_map++) {
-			delete it_drawable_map->second;
-		}
 		drawable_map.clear();
 		Bitmap::DisposeBitmaps();
 	}
@@ -193,14 +212,8 @@ namespace Graphics
 				next_tics_fps += 1000;
 				fps = frames;
 				frames = 0;
-				
-				char title[255];
-	#ifdef MSVC
-				sprintf_s(title, 255, "%s - %d FPS", System::Title.c_str(), fps);
-	#else
-				sprintf(title, "%s - %d FPS", System::Title.c_str(), fps);
-	#endif
-				Player::getMainWindow().SetTitle(title);
+
+				Player::getMainWindow().SetTitle( ( boost::format("%s - %d FPS") % System::getTitle() % fps ).str() );
 			}
 		}
 		else {
@@ -387,7 +400,7 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	/// Register ZObj
 	////////////////////////////////////////////////////////////
-	void RegisterZObj(long z, unsigned long id)
+	void RegisterZObj(long z, VALUE id)
 	{
 		creation += 1;
 		ZObj zobj(z, creation, id);
@@ -395,7 +408,7 @@ namespace Graphics
 		zlist.push_back(zobj);
 		zlist.sort(SortZObj);
 	}
-	void RegisterZObj(long z, unsigned long id, bool multiz)
+	void RegisterZObj(long z, VALUE id, bool multiz)
 	{
 		ZObj zobj(z, 999999, id);
 		zlist.push_back(zobj);
@@ -409,9 +422,9 @@ namespace Graphics
 	{
 		remove_zobj_id(VALUE val) : id(val) {}
 		bool operator () (ZObj &obj) const {return obj.GetId() == id;}
-		unsigned long id;
+		VALUE id;
 	};
-	void RemoveZObj(unsigned long id)
+	void RemoveZObj(VALUE id)
 	{
 		zlist.remove_if (remove_zobj_id(id));
 	}
@@ -419,7 +432,7 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	/// Update ZObj Z
 	////////////////////////////////////////////////////////////
-	void UpdateZObj(unsigned long id, long z)
+	void UpdateZObj(VALUE id, long z)
 	{
 		for(it_zlist = zlist.begin(); it_zlist != zlist.end(); it_zlist++) {
 			if (it_zlist->GetId() == id) {

@@ -22,18 +22,22 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _GRAPHICS_H_
-#define _GRAPHICS_H_
+#ifndef _GRAPHICS_HXX_
+#define _GRAPHICS_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <boost/smart_ptr.hpp>
+
 #include <string>
 #include <list>
-#include <map>
+
+#include "argss_ruby.hxx"
+
+#include "color.hxx"
 #include "drawable.hxx"
 #include "zobj.hxx"
-#include "color.hxx"
 
 ////////////////////////////////////////////////////////////
 /// Graphics namespace
@@ -54,46 +58,32 @@ namespace Graphics
 	void FrameReset();
 	void Wait(int duration);
 	void ResizeScreen(int width, int height);
-	unsigned long SnapToBitmap();
+	VALUE SnapToBitmap();
 	void FadeOut(int duration);
 	void FadeIn(int duration);
 	int GetFrameRate();
 	void SetFrameRate(int nframerate);
 	int GetFrameCount();
 	void SetFrameCount(int nframecount);
-	unsigned long GetBackColor();
-	void SetBackColor(unsigned long nbackcolor);
+	VALUE GetBackColor();
+	void SetBackColor(VALUE nbackcolor);
 	int GetBrightness();
 	void SetBrightness(int nbrightness);
 
 	bool SortZObj(ZObj &first, ZObj &second);
-	void RegisterZObj(long z, unsigned long id);
-	void RegisterZObj(long z, unsigned long id, bool multiz);
-	void RemoveZObj(unsigned long id);
-	void UpdateZObj(unsigned long id, long z);
+	void RegisterZObj(long z, VALUE id);
+	void RegisterZObj(long z, VALUE id, bool multiz);
+	void RemoveZObj(VALUE id);
+	void UpdateZObj(VALUE id, long z);
+
+	Drawable& getDrawable(VALUE id);
+	unsigned int countDrawable(VALUE id);
+	bool insertDrawable(VALUE id, boost::shared_ptr< Drawable > const& ptr);
+	void eraseDrawable(VALUE id);
 
 	int getFPS();
-	std::map<unsigned long, Drawable*>& drawableMap();
 	void incrementCreation();
 	long getCreation();
-/*
-	extern int fps;
-	extern int framerate;
-	extern int framecount;
-	extern Color backcolor;
-	extern int brightness;
-	extern double framerate_interval;
-	extern long creation;
-	extern long last_tics;
-	extern long last_tics_wait;
-	extern long next_tics_fps;
-
-	extern std::map<unsigned long, Drawable*> drawable_map;
-	extern std::map<unsigned long, Drawable*>::iterator it_drawable_map;
-
-	extern std::list<ZObj> zlist;
-	extern std::list<ZObj>::iterator it_zlist;
- */
 } // namespace Graphics
 
 #endif

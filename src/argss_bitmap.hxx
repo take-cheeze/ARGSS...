@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_BITMAP_H_
-#define _ARGSS_BITMAP_H_
+#ifndef _ARGSS_BITMAP_HXX_
+#define _ARGSS_BITMAP_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -37,9 +37,10 @@ namespace ARGSS
 {
 	namespace ABitmap
 	{
-		extern VALUE id;
+		VALUE& getID();
+
 		void Init();
-		void CheckDisposed(unsigned long self);
+		void CheckDisposed(VALUE self);
 
 		VALUE rinitialize(int argc, VALUE* argv, VALUE self);
 		VALUE rdispose(VALUE self);

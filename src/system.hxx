@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _SYS_H_
-#define _SYS_H_
+#ifndef _SYS_HXX_
+#define _SYS_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -35,13 +35,15 @@
 ////////////////////////////////////////////////////////////
 namespace System
 {
-	extern std::string ScriptsPath;
-	extern std::string Title;
-	extern std::string RTPS[3];
-	extern int Width;
-	extern int Height;
-
 	void Init();
+
+	std::string const& getScriptsPath();
+	std::string const& getTitle();
+
+	int getDefaultWidth ();
+	int getDefaultHeight();
+
+	std::string& getRTP(int index);
 } // namespace System
 
 #endif

@@ -6,7 +6,7 @@ SRC_DIR = ../../src
 SRC_CXX = $(wildcard $(SRC_DIR)/*.cxx)
 OBJS_DIR = ./objs
 OBJS_CXX = $(subst $(SRC_DIR), $(OBJS_DIR), $(SRC_CXX:.cxx=.o))
-NO_WIN32_OBJS = $(subst $(OBJS_DIR)/registry.o, , $(patsubst $(OBJS_DIR)/%_win32.o, , $(OBJS_CXX)))
+NO_WIN32_OBJS = $(patsubst $(OBJS_DIR)/%_win32.o, , $(OBJS_CXX))
 OBJS = $(NO_WIN32_OBJS) $(wildcard src/SOIL/projects/makefile/obj/*.o)
 
 LINUX_SRC_DIR = src
@@ -19,7 +19,7 @@ CC  = $(COMPILER_PREFIX) gcc
 LD  = g++
 
 CFLAGS = \
-	-Wall -Werror -Os -pg -g3 \
+	-Wall -Os -pg -g3 \
 	-I$(SRC_DIR) \
 	$(shell sdl-config --cflags) \
 	$(shell pkg-config gl --cflags) \
@@ -27,6 +27,7 @@ CFLAGS = \
 	-I../../dependencies \
 	-Isrc/SOIL/src \
 	-Isrc \
+	-I/usr/include/wine/windows \
 
 CFLAGS += -D_FORTIFY_SOURCE=1 -fstack-protector-all
 CXXFLAGS = $(CFLAGS) -I/usr/include/qt4
@@ -36,7 +37,7 @@ LIBS = \
 	$(shell sdl-config --libs) \
 	$(shell pkg-config gl --libs) \
 	$(shell freetype-config --libs) \
-	-lSDL_mixer -lQtGui -lQtCore -lQtOpenGL \
+	-lSDL_mixer -lQtGui -lQtCore -lQtOpenGL -lwine \
 
 # ruby version things
 
