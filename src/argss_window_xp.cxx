@@ -107,7 +107,7 @@ namespace ARGSS
 		VALUE rupdate(VALUE self)
 		{
 			CheckDisposed(self);
-			Window::Get(self)->Update();
+			Window::Get(self).Update();
 			return Qnil;
 		}
 		VALUE rviewport(VALUE self)
@@ -119,7 +119,7 @@ namespace ARGSS
 		{
 			CheckDisposed(self);
 			Check_Classes_N(viewport, ARGSS::AViewport::getID());
-			Window::Get(self)->SetViewport(viewport);
+			Window::Get(self).SetViewport(viewport);
 			return rb_iv_set(self, "@viewport", viewport);
 		}
 		VALUE rwindowskin(VALUE self)
@@ -131,7 +131,7 @@ namespace ARGSS
 		{
 			CheckDisposed(self);
 			Check_Classes_N(windowskin, ARGSS::ABitmap::getID());
-			Window::Get(self)->SetWindowskin(windowskin);
+			Window::Get(self).SetWindowskin(windowskin);
 			return rb_iv_set(self, "@windowskin", windowskin);
 		}
 		VALUE rcontents(VALUE self)
@@ -143,7 +143,7 @@ namespace ARGSS
 		{
 			CheckDisposed(self);
 			Check_Classes_N(contents, ARGSS::ABitmap::getID());
-			Window::Get(self)->SetContents(contents);
+			Window::Get(self).SetContents(contents);
 			return rb_iv_set(self, "@contents", contents);
 		}
 		VALUE rstretch(VALUE self)
@@ -154,7 +154,7 @@ namespace ARGSS
 		VALUE rstretchE(VALUE self, VALUE stretch)
 		{
 			CheckDisposed(self);
-			Window::Get(self)->SetStretch(NUM2BOOL(stretch));
+			Window::Get(self).SetStretch(NUM2BOOL(stretch));
 			return rb_iv_set(self, "@stretch", stretch);
 		}
 		VALUE rcursor_rect(VALUE self) {
@@ -165,7 +165,7 @@ namespace ARGSS
 		{
 			CheckDisposed(self);
 			Check_Class(cursor_rect, ARGSS::ARect::getID());
-			Window::Get(self)->SetCursorRect(cursor_rect);
+			Window::Get(self).SetCursorRect(cursor_rect);
 			return rb_iv_set(self, "@cursor_rect", cursor_rect);
 		}
 		VALUE ractive(VALUE self)
@@ -176,7 +176,7 @@ namespace ARGSS
 		VALUE ractiveE(VALUE self, VALUE active)
 		{
 			CheckDisposed(self);
-			Window::Get(self)->SetActive(NUM2BOOL(active));
+			Window::Get(self).SetActive(NUM2BOOL(active));
 			return rb_iv_set(self, "@active", active);
 		}
 		VALUE rvisible(VALUE self)
@@ -187,7 +187,7 @@ namespace ARGSS
 		VALUE rvisibleE(VALUE self, VALUE visible)
 		{
 			CheckDisposed(self);
-			Window::Get(self)->SetVisible(NUM2BOOL(visible));
+			Window::Get(self).SetVisible(NUM2BOOL(visible));
 			return rb_iv_set(self, "@visible", visible);
 		}
 		VALUE rpause(VALUE self)
@@ -198,7 +198,7 @@ namespace ARGSS
 		VALUE rpauseE(VALUE self, VALUE pause)
 		{
 			CheckDisposed(self);
-			Window::Get(self)->SetPause(NUM2BOOL(pause));
+			Window::Get(self).SetPause(NUM2BOOL(pause));
 			return rb_iv_set(self, "@pause", pause);
 		}
 		VALUE rx(VALUE self)
@@ -214,7 +214,7 @@ namespace ARGSS
 		VALUE rxE(VALUE self, VALUE x)
 		{
 			CheckDisposed(self);
-			Window::Get(self)->SetX(NUM2INT(x));
+			Window::Get(self).SetX(NUM2INT(x));
 			return rb_iv_set(self, "@x", x);
 		}
 		VALUE ry(VALUE self)
@@ -230,7 +230,7 @@ namespace ARGSS
 		VALUE ryE(VALUE self, VALUE y)
 		{
 			CheckDisposed(self);
-			Window::Get(self)->SetY(NUM2INT(y));
+			Window::Get(self).SetY(NUM2INT(y));
 			return rb_iv_set(self, "@y", y);
 		}
 		VALUE rwidth(VALUE self)
@@ -243,7 +243,7 @@ namespace ARGSS
 			CheckDisposed(self);
 			int w = NUM2INT(width);
 			if (w < 0) w = 0;
-			Window::Get(self)->SetWidth(w);
+			Window::Get(self).SetWidth(w);
 			return rb_iv_set(self, "@width", INT2NUM(w));
 		}
 		VALUE rheight(VALUE self)
@@ -256,7 +256,7 @@ namespace ARGSS
 			CheckDisposed(self);
 			int h = NUM2INT(height);
 			if (h < 0) h = 0;
-			Window::Get(self)->SetHeight(h);
+			Window::Get(self).SetHeight(h);
 			return rb_iv_set(self, "@height", INT2NUM(h));
 		}
 		VALUE rz(VALUE self)
@@ -267,7 +267,7 @@ namespace ARGSS
 		VALUE rzE(VALUE self, VALUE z)
 		{
 			CheckDisposed(self);
-			Window::Get(self)->SetZ(NUM2INT(z));
+			Window::Get(self).SetZ(NUM2INT(z));
 			return rb_iv_set(self, "@z", z);
 		}
 		VALUE rox(VALUE self)
@@ -278,7 +278,7 @@ namespace ARGSS
 		VALUE roxE(VALUE self, VALUE ox)
 		{
 			CheckDisposed(self);
-			Window::Get(self)->SetOx(NUM2INT(ox));
+			Window::Get(self).SetOx(NUM2INT(ox));
 			return rb_iv_set(self, "@ox", ox);
 		}
 		VALUE roy(VALUE self)
@@ -289,7 +289,7 @@ namespace ARGSS
 		VALUE royE(VALUE self, VALUE oy)
 		{
 			CheckDisposed(self);
-			Window::Get(self)->SetOy(NUM2INT(oy));
+			Window::Get(self).SetOy(NUM2INT(oy));
 			return rb_iv_set(self, "@oy", oy);
 		}
 		VALUE ropacity(VALUE self)
@@ -301,7 +301,7 @@ namespace ARGSS
 		{
 			CheckDisposed(self);
 			opacity = CapOpacityValue(NUM2INT(opacity));
-			Window::Get(self)->SetOpacity(opacity);
+			Window::Get(self).SetOpacity(opacity);
 			return rb_iv_set(self, "@opacity", INT2NUM(opacity));
 		}
 		VALUE rback_opacity(VALUE self)
@@ -313,7 +313,7 @@ namespace ARGSS
 		{
 			CheckDisposed(self);
 			back_opacity = CapOpacityValue(NUM2INT(back_opacity));
-			Window::Get(self)->SetBackOpacity(back_opacity);
+			Window::Get(self).SetBackOpacity(back_opacity);
 			return rb_iv_set(self, "@back_opacity", INT2NUM(back_opacity));
 		}
 		VALUE rcontents_opacity(VALUE self)
@@ -325,7 +325,7 @@ namespace ARGSS
 		{
 			CheckDisposed(self);
 			contents_opacity = CapOpacityValue(NUM2INT(contents_opacity));
-			Window::Get(self)->SetContentsOpacity(contents_opacity);
+			Window::Get(self).SetContentsOpacity(contents_opacity);
 			return rb_iv_set(self, "@contents_opacity", INT2NUM(contents_opacity));
 		}
 
