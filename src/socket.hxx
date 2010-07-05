@@ -24,7 +24,7 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
-#include "buffer.hxx"
+// #include "buffer.hxx"
 #ifdef WIN32
 	#define WIN32_LEAN_AND_MEAN
 	#include <Windows.h>
@@ -36,16 +36,20 @@
 	#include <netdb.h>
 	#include <unistd.h>
 #endif
+
 #include <string>
+#include <vector>
+
+#include <stdint.h>
 
 class Socket
 {
 public:
 	Socket();
-	void Connect(std::string const& host, unsigned short port);
-	void Listen(unsigned short port, int maxclients = SOMAXCONN);
-	Buffer Receive();
-	void Send(Buffer buffer);
+	void Connect(std::string const& host, uint16_t port);
+	void Listen(uint16_t port, int maxclients = SOMAXCONN);
+	std::vector< uint8_t > Receive(); // Buffer Receive();
+	void Send(std::vector< uint8_t > const& buffer); // void Send(Buffer buffer);
 	void Shutdown();
 	~Socket();
 private:

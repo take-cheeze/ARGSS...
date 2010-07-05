@@ -47,20 +47,20 @@ public:
 	void Dispose();
 	void SwapBuffers();
 	void Resize(long nwidth, long nheight);
-	void SetTitle(std::string title);
+	void setTitle(std::string title);
 	void ToggleFullscreen();
-	long GetWidth();
-	long GetHeight();
+	long getWidth();
+	long getHeight();
 
-	bool GetEvent(Event& evnt);
+	bool getEvent(Event& evnt);
 	int ProccesEvents(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	bool IsFullscreen();
-	std::vector<bool> GetKeyStates();
-	bool GetMouseFocus();
-	int GetMouseWheel();
-	int GetMousePosX();
-	int GetMousePosY();
+	std::vector<bool> getKeyStates();
+	bool getMouseFocus();
+	int getMouseWheel();
+	int getMousePosX();
+	int getMousePosY();
 
 private:
 	Input::Keys::InputKey VK2IK(int vk);

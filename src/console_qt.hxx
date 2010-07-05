@@ -6,8 +6,8 @@
 namespace Console
 {
 	void Init();
-	void SetTitle(char* title);
-	void SetLines(int lines);
+	void setTitle(char* title);
+	void setLines(int lines);
 	void Free();
 	bool Active();
 	void Write(std::string const& msg);

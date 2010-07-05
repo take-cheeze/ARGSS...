@@ -49,7 +49,7 @@ Viewport::Viewport(VALUE iid)
 , tone(rb_iv_get(id, "@tone"))
 , flash_duration(0)
 , disposing(false)
-, dst_rect(Rect(rect))
+, dstRect(Rect(rect))
 {
 	Graphics::RegisterZObj(0, id);
 }
@@ -78,9 +78,9 @@ void Viewport::New(VALUE id)
 }
 
 ////////////////////////////////////////////////////////////
-/// Class Get Viewport
+/// Class get Viewport
 ////////////////////////////////////////////////////////////
-Viewport& Viewport::Get(VALUE id)
+Viewport& Viewport::get(VALUE id)
 {
 	return dynamic_cast< Viewport& >( Graphics::getDrawable(id) );
 }
@@ -107,12 +107,12 @@ void Viewport::RefreshBitmaps() {
 void Viewport::Draw(long z) {
 	if (!visible) return;
 
-	dst_rect = Rect(rect);
+	dstRect = Rect(rect);
 
-	if (dst_rect.x < -dst_rect.width || dst_rect.x > Player::GetWidth() || dst_rect.y < -dst_rect.height || dst_rect.y > Player::GetHeight()) return;
+	if (dstRect.x < -dstRect.width || dstRect.x > Player::getWidth() || dstRect.y < -dstRect.height || dstRect.y > Player::getHeight()) return;
 
 	for(it_zlist = zlist.begin(); it_zlist != zlist.end(); it_zlist++) {
-		Graphics::getDrawable( it_zlist->GetId() ).Draw(it_zlist->GetZ());
+		Graphics::getDrawable( it_zlist->getId() ).Draw(it_zlist->getZ());
 	}
 }
 
@@ -145,47 +145,50 @@ void Viewport::Flash(Color color, int duration){
 ////////////////////////////////////////////////////////////
 /// Properties
 ////////////////////////////////////////////////////////////
-VALUE Viewport::GetRect() {
+VALUE Viewport::getRect() {
 	return rect;
 }
-void Viewport::SetRect(VALUE nrect) {
+void Viewport::setRect(VALUE nrect) {
 	rect = nrect;
 }
-bool Viewport::GetVisible() {
+bool Viewport::getVisible() {
 	return visible;
 }
-void Viewport::SetVisible(bool nvisible) {
+void Viewport::setVisible(bool nvisible) {
 	visible = nvisible;
 }
-int Viewport::GetZ() {
+int Viewport::getZ() {
 	return z;
 }
-void Viewport::SetZ(int nz) {
+void Viewport::setZ(int nz) {
 	if (z != nz) Graphics::UpdateZObj(id, nz);
 	z = nz;
 }
-int Viewport::GetOx() {
+int Viewport::getOx() {
 	return ox;
 }
-void Viewport::SetOx(int nox) {
+void Viewport::setOx(int nox) {
 	ox = nox;
 }
-int Viewport::GetOy() {
+int Viewport::getOy() {
 	return oy;
 }
-void Viewport::SetOy(int noy) {
+void Viewport::setOy(int noy) {
 	oy = noy;
 }
-VALUE Viewport::GetColor() {
+VALUE Viewport::getColor() {
 	return color;
 }
-void Viewport::SetColor(VALUE ncolor) {
+void Viewport::setColor(VALUE ncolor)
+{
 	color = ncolor;
 }
-VALUE Viewport::GetTone() {
+VALUE Viewport::getTone()
+{
 	return tone;
 }
-void Viewport::SetTone(VALUE ntone) {
+void Viewport::setTone(VALUE ntone)
+{
 	tone = ntone;
 }
 
@@ -194,12 +197,13 @@ void Viewport::SetTone(VALUE ntone) {
 ////////////////////////////////////////////////////////////
 void Viewport::RegisterZObj(long z, VALUE id)
 {
-	Graphics::incrementCreation(); // creation += 1;
+	Graphics::incrementCreation();
 	ZObj zobj(z, Graphics::getCreation(), id);
 	zlist.push_back(zobj);
 	zlist.sort(Graphics::SortZObj);
 }
-void Viewport::RegisterZObj(long z, VALUE id, bool multiz) {
+void Viewport::RegisterZObj(long z, VALUE id, bool multiz)
+{
 	ZObj zobj(z, 999999, id);
 	zlist.push_back(zobj);
 	zlist.sort(Graphics::SortZObj);
@@ -208,12 +212,14 @@ void Viewport::RegisterZObj(long z, VALUE id, bool multiz) {
 ////////////////////////////////////////////////////////////
 /// Remove ZObj
 ////////////////////////////////////////////////////////////
-struct remove_zobj_id : public std::binary_function<ZObj, ZObj, bool> {
+struct remove_zobj_id : public std::binary_function<ZObj, ZObj, bool>
+{
 	remove_zobj_id(VALUE val) : id(val) {}
-	bool operator () (ZObj &obj) const {return obj.GetId() == id;}
+	bool operator () (ZObj &obj) const {return obj.getId() == id;}
 	VALUE id;
 };
-void Viewport::RemoveZObj(VALUE id) {
+void Viewport::RemoveZObj(VALUE id)
+{
 	if (disposing) return;
 	zlist.remove_if (remove_zobj_id(id));
 }
@@ -221,19 +227,13 @@ void Viewport::RemoveZObj(VALUE id) {
 ////////////////////////////////////////////////////////////
 /// Update ZObj Z
 ////////////////////////////////////////////////////////////
-void Viewport::UpdateZObj(VALUE id, long z) {
+void Viewport::UpdateZObj(VALUE id, long z)
+{
 	for(it_zlist = zlist.begin(); it_zlist != zlist.end(); it_zlist++) {
-		if (it_zlist->GetId() == id) {
-			it_zlist->SetZ(z);
+		if (it_zlist->getId() == id) {
+			it_zlist->setZ(z);
 			break;
 		}
 	}
 	zlist.sort(Graphics::SortZObj);
-}
-
-////////////////////////////////////////////////////////////
-/// Get Viewport Rect
-////////////////////////////////////////////////////////////
-Rect Viewport::GetViewportRect() {
-	return dst_rect;
 }

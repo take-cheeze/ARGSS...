@@ -25,6 +25,7 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <iostream>
 #include <string>
 
 #include "argss_bitmap.hxx"
@@ -51,100 +52,113 @@ namespace ARGSS
 			////////////////////////////////////////////////////////////
 			/// ARGSS RPG::Cache ruby functions
 			////////////////////////////////////////////////////////////
-			VALUE rload_bitmap(int argc, VALUE* argv, VALUE self) {
+			VALUE rload_bitmap(int argc, VALUE* argv, VALUE self)
+			{
 				if (argc > 3) raise_argn(argc, 3);
 				else if (argc < 2) raise_argn(argc, 2);
-				VALUE hue = argv[2];
-				if (argc == 2) hue = INT2NUM(0);
-				VALUE path = rb_str_concat(rb_str_dup(argv[0]), argv[1]);
+
+				// std::cout << RSTRING_PTR( argv[0] ) << " : " << RSTRING_PTR( argv[1] ) << std::endl;
+
+				VALUE hue = (argc == 2) ? INT2NUM(0) : argv[2];
+				VALUE path = rb_str_concat( rb_str_dup(argv[0]), argv[1] );
 				VALUE cache = rb_iv_get(id, "@cache");
 				VALUE cache_path;
 				if ((rb_funcall(cache, rb_intern("include?"), 1, path) == Qfalse) ||
 					(ARGSS::ABitmap::rdisposedQ(rb_hash_aref(cache, path)) == Qtrue)) {
-					if (RSTRING_LEN(argv[0]) > 0) {
+					if ( RSTRING_LEN(argv[1]) > 0 ) {
 						cache_path = rb_hash_aset(cache, path, rb_class_new_instance(1, &path, ARGSS::ABitmap::getID()));
-					}
-					else {
+					} else {
 						VALUE args[2] = {INT2NUM(32), INT2NUM(32)};
 						cache_path = rb_hash_aset(cache, path, rb_class_new_instance(2, args, ARGSS::ABitmap::getID()));
 					}
-				}
-				else {
-					cache_path = rb_hash_aref(cache, path);
-				}
+				} else cache_path = rb_hash_aref(cache, path);
+
 				if (hue == INT2NUM(0)) {
 					return cache_path;
-				}
-				else {
+				} else {
 					VALUE key = rb_ary_new3(2, path, hue);
 					VALUE cache_key;
 					if ((rb_funcall(cache, rb_intern("include?"), 1, key) == Qfalse) ||
 						(ARGSS::ABitmap::rdisposedQ(rb_hash_aref(cache, key)) == Qtrue)) {
 						cache_key = rb_hash_aset(cache, key, rb_obj_clone(cache_path));
 						ARGSS::ABitmap::rhue_change(cache_key, hue);
-					}
-					else {
+					} else {
 						cache_key = rb_hash_aref(cache, key);
 					}
 					return cache_key;
 				}
 			}
-			VALUE ranimation(VALUE self, VALUE filename, VALUE hue) {
+			VALUE ranimation(VALUE self, VALUE filename, VALUE hue)
+			{
 				VALUE args[3] = {rb_str_new2("Graphics/Animations/"), filename, hue};
 				return rload_bitmap(3, args, self);
 			}
-			VALUE rautotile(VALUE self, VALUE filename) {
+			VALUE rautotile(VALUE self, VALUE filename)
+			{
 				VALUE args[3] = {rb_str_new2("Graphics/Autotiles/"), filename, INT2NUM(0)};
 				return rload_bitmap(3, args, self);
 			}
-			VALUE rbattleback(VALUE self, VALUE filename) {
+			VALUE rbattleback(VALUE self, VALUE filename)
+			{
 				VALUE args[3] = {rb_str_new2("Graphics/Battlebacks/"), filename, INT2NUM(0)};
 				return rload_bitmap(3, args, self);
 			}
-			VALUE rbattler(VALUE self, VALUE filename, VALUE hue) {
+			VALUE rbattler(VALUE self, VALUE filename, VALUE hue)
+			{
 				VALUE args[3] = {rb_str_new2("Graphics/Battlers/"), filename, hue};
 				return rload_bitmap(3, args, self);
 			}
-			VALUE rcharacter(VALUE self, VALUE filename, VALUE hue) {
+			VALUE rcharacter(VALUE self, VALUE filename, VALUE hue)
+			{
 				VALUE args[3] = {rb_str_new2("Graphics/Characters/"), filename, hue};
 				return rload_bitmap(3, args, self);
 			}
-			VALUE rfog(VALUE self, VALUE filename, VALUE hue) {
+			VALUE rfog(VALUE self, VALUE filename, VALUE hue)
+			{
 				VALUE args[3] = {rb_str_new2("Graphics/Fogs/"), filename, hue};
 				return rload_bitmap(3, args, self);
 			}
-			VALUE rgameover(VALUE self, VALUE filename) {
+			VALUE rgameover(VALUE self, VALUE filename)
+			{
 				VALUE args[3] = {rb_str_new2("Graphics/Gameovers/"), filename, INT2NUM(0)};
 				return rload_bitmap(3, args, self);
 			}
-			VALUE ricon(VALUE self, VALUE filename) {
+			VALUE ricon(VALUE self, VALUE filename)
+			{
 				VALUE args[3] = {rb_str_new2("Graphics/Icons/"), filename, INT2NUM(0)};
 				return rload_bitmap(3, args, self);
 			}
-			VALUE rpanorama(VALUE self, VALUE filename, VALUE hue) {
+			VALUE rpanorama(VALUE self, VALUE filename, VALUE hue)
+			{
 				VALUE args[3] = {rb_str_new2("Graphics/Panoramas/"), filename, hue};
 				return rload_bitmap(3, args, self);
 			}
-			VALUE rpicture(VALUE self, VALUE filename) {
+			VALUE rpicture(VALUE self, VALUE filename)
+			{
 				VALUE args[3] = {rb_str_new2("Graphics/Pictures/"), filename, INT2NUM(0)};
 				return rload_bitmap(3, args, self);
 			}
-			VALUE rtileset(VALUE self, VALUE filename) {
+			VALUE rtileset(VALUE self, VALUE filename)
+			{
 				VALUE args[3] = {rb_str_new2("Graphics/Tilesets/"), filename, INT2NUM(0)};
 				return rload_bitmap(3, args, self);
 			}
-			VALUE rtitle(VALUE self, VALUE filename) {
+			VALUE rtitle(VALUE self, VALUE filename)
+			{
 				VALUE args[3] = {rb_str_new2("Graphics/Titles/"), filename, INT2NUM(0)};
 				return rload_bitmap(3, args, self);
 			}
-			VALUE rwindowskin(VALUE self, VALUE filename) {
+			VALUE rwindowskin(VALUE self, VALUE filename)
+			{
 				VALUE args[3] = {rb_str_new2("Graphics/Windowskins/"), filename, INT2NUM(0)};
 				return rload_bitmap(3, args, self);
 			}
-			VALUE rtile(VALUE self, VALUE filename, VALUE tile_id, VALUE hue) {
+			VALUE rtile(VALUE self, VALUE filename, VALUE tile_id, VALUE hue)
+			{
 				VALUE key = rb_ary_new3(3, filename, tile_id, hue);
 				VALUE cache = rb_iv_get(id, "@cache");
 				VALUE cache_key;
+
 				if ((rb_funcall(cache, rb_intern("include?"), 1, key) == Qfalse) ||
 					(ARGSS::ABitmap::rdisposedQ(rb_hash_aref(cache, key)) == Qtrue)) {
 					VALUE args[2] = {INT2NUM(32), INT2NUM(32)};
@@ -155,13 +169,12 @@ namespace ARGSS
 					VALUE values[4] = {INT2NUM(0), INT2NUM(0), rtileset(self, filename), rect};
 					ARGSS::ABitmap::rblt(4, values, cache_key);
 					ARGSS::ABitmap::rhue_change(cache_key, hue);
-				}
-				else {
-					cache_key = rb_hash_aref(cache, key);
-				}
+				} else cache_key = rb_hash_aref(cache, key);
+
 				return cache_key;
 			}
-			VALUE rclear(VALUE self) {
+			VALUE rclear(VALUE self)
+			{
 				VALUE cache = rb_iv_get(id, "@cache");
 				VALUE values = rb_funcall(cache, rb_intern("values"), 0);
 				for (int i = 0; i < RARRAY_LEN(values); i++) {
@@ -176,7 +189,8 @@ namespace ARGSS
 			////////////////////////////////////////////////////////////
 			/// ARGSS RPG::Cache initialize
 			////////////////////////////////////////////////////////////
-			void Init() {
+			void Init()
+			{
 				id = rb_define_module_under(ARGSS::ARPG::getID(), "Cache");
 				rb_define_singleton_method(id, ARGSS_FUNC(load_bitmap), -1);
 				rb_define_singleton_method(id, ARGSS_FUNC(animation), 2);

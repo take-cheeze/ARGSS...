@@ -30,8 +30,6 @@
 ////////////////////////////////////////////////////////////
 #include <string>
 #include <map>
-#include <ft2build.h>
-#include FT_FREETYPE_H
 
 #include "bitmap.hxx"
 #include "color.hxx"
@@ -43,9 +41,8 @@
 namespace Text
 {
 	void Init();
-	std::auto_ptr< Bitmap > Draw(std::string const& text, std::string const& font, Color color, int size, bool bold, bool italic, bool shadow);
+	std::auto_ptr< Bitmap > Draw(std::string const& text, std::string const& font, Color const& color, int size, bool bold, bool italic, bool shadow);
 	Rect RectSize(std::string const& text, std::string const& font, int size);
-	FT_Face GetFont(std::string const& name);
 } // namespace Text
 
 #endif

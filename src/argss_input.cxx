@@ -81,19 +81,19 @@ namespace ARGSS
 		}
 		VALUE rpressed(VALUE self)
 		{
-			return Input::GetPressed();
+			return Input::getPressed();
 		}
 		VALUE rtriggered(VALUE self)
 		{
-			return Input::GetTriggered();
+			return Input::getTriggered();
 		}
 		VALUE rrepeated(VALUE self)
 		{
-			return Input::GetRepeated();
+			return Input::getRepeated();
 		}
 		VALUE rreleased(VALUE self)
 		{
-			return Input::GetReleased();
+			return Input::getReleased();
 		}
 
 		////////////////////////////////////////////////////////////

@@ -50,8 +50,8 @@ namespace Output
 	void File(std::string const& name);
 	void None();
 
-	std::string Gets();
-	std::string Getc();
+	std::string getString();
+	std::string getChar();
 } // namespace Output
 
 #endif

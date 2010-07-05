@@ -39,20 +39,22 @@ public:
 	Rect();
 	Rect(VALUE rect);
 	Rect(int ix, int iy, int iwidth, int iheight);
+	Rect(Rect const& src);
 	~Rect();
 
-	bool operator!=(const Rect& other) const;
+	void set(int nx, int ny, int nwidth, int nheight);
 
-	void Set(int nx, int ny, int nwidth, int nheight);
-
-	VALUE GetARGSS();
+	VALUE getARGSS();
 	void Adjust(int awidth, int aheight);
-	bool IsOutOfBounds(int awidth, int aheight);
+	bool IsOutOfBounds(int awidth, int aheight) const;
 
 	int x;
 	int y;
 	int width;
 	int height;
 }; // class Rect
+
+extern bool operator!=(Rect const& lhs, Rect const& rhs);
+inline bool operator==(Rect const& lhs, Rect const& rhs) { return !( lhs != rhs ); }
 
 #endif

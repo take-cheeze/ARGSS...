@@ -44,15 +44,15 @@ ZObj::~ZObj() { }
 ////////////////////////////////////////////////////////////
 /// Properties
 ////////////////////////////////////////////////////////////
-void ZObj::SetZ(long nz) {
+void ZObj::setZ(long nz) {
 	z = nz;
 }
-long ZObj::GetZ() {
+long ZObj::getZ() {
 	return z;
 }
-VALUE ZObj::GetCreation(){
+VALUE ZObj::getCreation(){
 	return creation;
 }
-VALUE ZObj::GetId() {
+VALUE ZObj::getId() {
 	return id;
 }

@@ -64,7 +64,7 @@ Window::Window(VALUE iid)
 	pause_frame = 0;
 	pause_id = 0;
 
-	if (viewport != Qnil) Viewport::Get(viewport).RegisterZObj(0, id);
+	if (viewport != Qnil) Viewport::get(viewport).RegisterZObj(0, id);
 	else Graphics::RegisterZObj(0, id);
 }
 
@@ -92,9 +92,9 @@ void Window::New(VALUE id)
 }
 
 ////////////////////////////////////////////////////////////
-/// Class Get Window
+/// Class get Window
 ////////////////////////////////////////////////////////////
-Window& Window::Get(VALUE id)
+Window& Window::get(VALUE id)
 {
 	return dynamic_cast< Window& >( Graphics::getDrawable(id) );
 }
@@ -104,7 +104,7 @@ Window& Window::Get(VALUE id)
 ////////////////////////////////////////////////////////////
 void Window::Dispose(VALUE id)
 {
-	if (Window::Get(id).viewport != Qnil) Viewport::Get(Window::Get(id).viewport).RemoveZObj(id);
+	if (Window::get(id).viewport != Qnil) Viewport::get(Window::get(id).viewport).RemoveZObj(id);
 	else Graphics::RemoveZObj(id);
 
 	Graphics::eraseDrawable(id);
@@ -124,7 +124,7 @@ void Window::Draw(long z)
 {
 	if (!visible) return;
 	if (width <= 0 || height <= 0) return;
-	if (x < -width || x > Player::GetWidth() || y < -height || y > Player::GetHeight()) return;
+	if (x < -width || x > Player::getWidth() || y < -height || y > Player::getHeight()) return;
 
 	glEnable(GL_TEXTURE_2D);
 
@@ -135,10 +135,10 @@ void Window::Draw(long z)
 	glLoadIdentity();
 
 	if (viewport != Qnil) {
-		Rect rect = Viewport::Get(viewport).GetViewportRect();
+		Rect const& rect = Viewport::get(viewport).getViewportRect();
 
 		glEnable(GL_SCISSOR_TEST);
-		glScissor(rect.x, Player::GetHeight() - (rect.y + rect.height), rect.width, rect.height);
+		glScissor(rect.x, Player::getHeight() - (rect.y + rect.height), rect.width, rect.height);
 
 		glTranslatef((float)rect.x, (float)rect.y, 0.0f);
 	}
@@ -146,7 +146,7 @@ void Window::Draw(long z)
 	glTranslatef((GLfloat)x, (GLfloat)y, 0.0f);
 
 	if (windowskin != Qnil) {
-		Bitmap& bmp = Bitmap::Get(windowskin);
+		Bitmap& bmp = Bitmap::get(windowskin);
 
 		glPushMatrix();
 
@@ -156,8 +156,8 @@ void Window::Draw(long z)
 		glMatrixMode(GL_MODELVIEW);
 		glPopMatrix();
 
-		float bmpw = (float)bmp.GetWidth();
-		float bmph = (float)bmp.GetHeight();
+		float bmpw = (float)bmp.getWidth();
+		float bmph = (float)bmp.getHeight();
 		float widthf = (float)width;
 		float heightf = (float)height;
 
@@ -171,22 +171,21 @@ void Window::Draw(long z)
 					glTexCoord2f(128.0f / bmpw, 128.0f / bmph); glVertex2f(widthf - 4.0f, heightf - 4.0f);
 					glTexCoord2f(0.0f, 128.0f / bmph);			glVertex2f(2.0f, heightf - 4.0f);
 				glEnd();
-			}
-			else {
+			} else {
 				glEnable(GL_SCISSOR_TEST);
 
 				Rect dstrect(x + 2, y + 2, width - 4, height - 4);
 
 				if (viewport != Qnil) {
-					Rect rect = Viewport::Get(viewport).GetViewportRect();
+					Rect const& rect = Viewport::get(viewport).getViewportRect();
 
 					dstrect.x -= rect.x;
 					dstrect.y -= rect.y;
 
 					dstrect.Adjust(rect.width, rect.height);
 				}
-				//glScissor(x + 2, Player::GetHeight() - (y + 2 + height - 4), width - 4, height - 4);
-				glScissor(dstrect.x, Player::GetHeight() - (dstrect.y + dstrect.height), dstrect.width, dstrect.height);
+				//glScissor(x + 2, Player::getHeight() - (y + 2 + height - 4), width - 4, height - 4);
+				glScissor(dstrect.x, Player::getHeight() - (dstrect.y + dstrect.height), dstrect.width, dstrect.height);
 
 				float tilesx = ceil(widthf / 128.0f);
 				float tilesy = ceil(heightf / 128.0f);
@@ -200,6 +199,7 @@ void Window::Draw(long z)
 						glEnd();
 					}
 				}
+	
 				if (viewport == Qnil) glDisable(GL_SCISSOR_TEST);
 			}
 		}
@@ -352,7 +352,7 @@ void Window::Draw(long z)
 
 	if (contents != Qnil) {
 		if (width > 32 && height > 32 && -ox < width - 32 && -oy < height - 32 && contents_opacity > 0) {
-			Bitmap& bmp = Bitmap::Get(contents);
+			Bitmap& bmp = Bitmap::get(contents);
 
 			glPushMatrix();
 
@@ -366,7 +366,7 @@ void Window::Draw(long z)
 
 			glEnable(GL_SCISSOR_TEST);
 			if (viewport != Qnil) {
-				Rect rect = Viewport::Get(viewport).GetViewportRect();
+				Rect rect = Viewport::get(viewport).getViewportRect();
 
 				dstrect.x -= rect.x;
 				dstrect.y -= rect.y;
@@ -374,27 +374,27 @@ void Window::Draw(long z)
 				dstrect.Adjust(rect.width, rect.height);
 			}
 
-			glScissor(dstrect.x, Player::GetHeight() - (dstrect.y + dstrect.height), dstrect.width, dstrect.height);
+			glScissor(dstrect.x, Player::getHeight() - (dstrect.y + dstrect.height), dstrect.width, dstrect.height);
 
 			glColor4f(1.0f, 1.0f, 1.0f, contents_opacity / 255.0f);
 
 			glBegin(GL_QUADS);
 				glTexCoord2f(0.0f, 0.0f);	glVertex2f(16.0f - ox, 16.0f - oy);
-				glTexCoord2f(1.0f, 0.0f);	glVertex2f(16.0f - ox + bmp.GetWidth(), 16.0f - oy);
-				glTexCoord2f(1.0f, 1.0f);	glVertex2f(16.0f - ox + bmp.GetWidth(), 16.0f - oy + bmp.GetHeight());
-				glTexCoord2f(0.0f, 1.0f);	glVertex2f(16.0f - ox, 16.0f - oy + bmp.GetHeight());
+				glTexCoord2f(1.0f, 0.0f);	glVertex2f(16.0f - ox + bmp.getWidth(), 16.0f - oy);
+				glTexCoord2f(1.0f, 1.0f);	glVertex2f(16.0f - ox + bmp.getWidth(), 16.0f - oy + bmp.getHeight());
+				glTexCoord2f(0.0f, 1.0f);	glVertex2f(16.0f - ox, 16.0f - oy + bmp.getHeight());
 			glEnd();
 
-			glViewport(0, 0, Player::GetWidth(), Player::GetHeight());
+			glViewport(0, 0, Player::getWidth(), Player::getHeight());
 
 			if (viewport == Qnil) glDisable(GL_SCISSOR_TEST);
 		}
 
 		if (windowskin != Qnil) {
-			Bitmap& bmp = Bitmap::Get(windowskin);
+			Bitmap& bmp = Bitmap::get(windowskin);
 
-			float bmpw = (float)bmp.GetWidth();
-			float bmph = (float)bmp.GetHeight();
+			float bmpw = (float)bmp.getWidth();
+			float bmph = (float)bmp.getHeight();
 			float widthf = (float)width;
 			float heightf = (float)height;
 
@@ -415,13 +415,13 @@ void Window::Draw(long z)
 					glTexCoord2f(168.0f / bmpw, 24.0f / bmph);	glVertex2f(widthf / 2.0f + 8.0f, 12.0f);
 					glTexCoord2f(152.0f / bmpw, 24.0f / bmph);	glVertex2f(widthf / 2.0f - 8.0f, 12.0f);
 				}
-				if (Bitmap::Get(contents).GetWidth() - ox > width - 32) {
+				if (Bitmap::get(contents).getWidth() - ox > width - 32) {
 					glTexCoord2f(168.0f / bmpw, 24.0f / bmph);	glVertex2f(widthf - 12.0f, heightf / 2.0f - 8.0f);
 					glTexCoord2f(176.0f / bmpw, 24.0f / bmph);	glVertex2f(widthf - 4.0f, heightf / 2.0f - 8.0f);
 					glTexCoord2f(176.0f / bmpw, 40.0f / bmph);	glVertex2f(widthf - 4.0f, heightf / 2.0f + 8.0f);
 					glTexCoord2f(168.0f / bmpw, 40.0f / bmph);	glVertex2f(widthf - 12.0f, heightf / 2.0f + 8.0f);
 				}
-				if (Bitmap::Get(contents).GetHeight() - oy > height - 32) {
+				if (Bitmap::get(contents).getHeight() - oy > height - 32) {
 					glTexCoord2f(152.0f / bmpw, 40.0f / bmph);	glVertex2f(widthf / 2.0f - 8.0f, heightf - 12.0f);
 					glTexCoord2f(168.0f / bmpw, 40.0f / bmph);	glVertex2f(widthf / 2.0f + 8.0f, heightf - 12.0f);
 					glTexCoord2f(168.0f / bmpw, 48.0f / bmph);	glVertex2f(widthf / 2.0f + 8.0f, heightf - 4.0f);
@@ -463,154 +463,154 @@ void Window::Update()
 ////////////////////////////////////////////////////////////
 /// Properties
 ////////////////////////////////////////////////////////////
-VALUE Window::GetViewport()
+VALUE Window::getViewport()
 {
 	return viewport;
 }
-void Window::SetViewport(VALUE nviewport)
+void Window::setViewport(VALUE nviewport)
 {
 	if (viewport != nviewport) {
 		if (nviewport != Qnil) {
 			Graphics::RemoveZObj(id);
-			Viewport::Get(nviewport).RegisterZObj(0, id);
+			Viewport::get(nviewport).RegisterZObj(0, id);
 		}
 		else {
-			if (viewport != Qnil) Viewport::Get(viewport).RemoveZObj(id);
+			if (viewport != Qnil) Viewport::get(viewport).RemoveZObj(id);
 			Graphics::RegisterZObj(0, id);
 		}
 	}
 	viewport = nviewport;
 }
-VALUE Window::GetWindowskin()
+VALUE Window::getWindowskin()
 {
 	return windowskin;
 }
-void Window::SetWindowskin(VALUE nwindowskin)
+void Window::setWindowskin(VALUE nwindowskin)
 {
 	windowskin = nwindowskin;
 }
-VALUE Window::GetContents()
+VALUE Window::getContents()
 {
 	return contents;
 }
-void Window::SetContents(VALUE ncontents)
+void Window::setContents(VALUE ncontents)
 {
 	contents = ncontents;
 }
-bool Window::GetStretch()
+bool Window::getStretch()
 {
 	return stretch;
 }
-void Window::SetStretch(bool nstretch)
+void Window::setStretch(bool nstretch)
 {
 	stretch = nstretch;
 }
-VALUE Window::GetCursorRect()
+VALUE Window::getCursorRect()
 {
 	return cursor_rect;
 }
-void Window::SetCursorRect(VALUE ncursor_rect)
+void Window::setCursorRect(VALUE ncursor_rect)
 {
 	cursor_rect = ncursor_rect;
 }
-bool Window::GetActive()
+bool Window::getActive()
 {
 	return active;
 }
-void Window::SetActive(bool nactive)
+void Window::setActive(bool nactive)
 {
 	active = nactive;
 }
-bool Window::GetVisible()
+bool Window::getVisible()
 {
 	return visible;
 }
-void Window::SetVisible(bool nvisible)
+void Window::setVisible(bool nvisible)
 {
 	visible = nvisible;
 }
-bool Window::GetPause()
+bool Window::getPause()
 {
 	return pause;
 }
-void Window::SetPause(bool npause)
+void Window::setPause(bool npause)
 {
 	pause = npause;
 }
-int Window::GetX()
+int Window::getX()
 {
 	return x;
 }
-void Window::SetX(int nx)
+void Window::setX(int nx)
 {
 	x = nx;
 }
-int Window::GetY()
+int Window::getY()
 {
 	return y;
 }
-void Window::SetY(int ny)
+void Window::setY(int ny)
 {
 	y = ny;
 }
-int Window::GetWidth() {
+int Window::getWidth() {
 	return width;
 }
-void Window::SetWidth(int nwidth) {
+void Window::setWidth(int nwidth) {
 	width = nwidth;
 }
-int Window::GetHeight() {
+int Window::getHeight() {
 	return height;
 }
-void Window::SetHeight(int nheight) {
+void Window::setHeight(int nheight) {
 	height = nheight;
 }
-int Window::GetZ() {
+int Window::getZ() {
 	return z;
 }
-void Window::SetZ(int nz) {
+void Window::setZ(int nz) {
 	if (z != nz) {
-		if (viewport != Qnil) Viewport::Get(viewport).UpdateZObj(id, nz);
+		if (viewport != Qnil) Viewport::get(viewport).UpdateZObj(id, nz);
 		else Graphics::UpdateZObj(id, nz);
 	}
 	z = nz;
 }
-int Window::GetOx()
+int Window::getOx()
 {
 	return ox;
 }
-void Window::SetOx(int nox)
+void Window::setOx(int nox)
 {
 	ox = nox;
 }
-int Window::GetOy()
+int Window::getOy()
 {
 	return oy;
 }
-void Window::SetOy(int noy)
+void Window::setOy(int noy)
 {
 	oy = noy;
 }
-int Window::GetOpacity()
+int Window::getOpacity()
 {
 	return opacity;
 }
-void Window::SetOpacity(int nopacity)
+void Window::setOpacity(int nopacity)
 {
 	opacity = nopacity;
 }
-int Window::GetBackOpacity() {
+int Window::getBackOpacity() {
 	return back_opacity;
 }
-void Window::SetBackOpacity(int nback_opacity)
+void Window::setBackOpacity(int nback_opacity)
 {
 	back_opacity = nback_opacity;
 }
-int Window::GetContentsOpacity()
+int Window::getContentsOpacity()
 {
 	return contents_opacity;
 }
-void Window::SetContentsOpacity(int ncontents_opacity)
+void Window::setContentsOpacity(int ncontents_opacity)
 {
 	contents_opacity = ncontents_opacity;
 }

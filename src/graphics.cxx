@@ -57,7 +57,7 @@ namespace Graphics
 		Color backcolor;
 		int brightness;
 		double framerate_interval;
-		std::map< VALUE, boost::shared_ptr< Drawable > > drawable_map;
+		std::map< VALUE, boost::shared_ptr< Drawable > > drawableMap_;
 		std::map< VALUE, boost::shared_ptr< Drawable > >::iterator it_drawable_map;
 		std::list<ZObj> zlist;
 		std::list<ZObj>::iterator it_zlist;
@@ -70,23 +70,23 @@ namespace Graphics
 	int getFPS() { return fps; }
 	Drawable& getDrawable(VALUE id)
 	{
-		assert( drawable_map.find(id) != drawable_map.end() );
-		return *( drawable_map.find(id)->second );
+		assert( drawableMap_.find(id) != drawableMap_.end() );
+		return *( drawableMap_.find(id)->second );
 	}
 	bool insertDrawable(VALUE id, boost::shared_ptr< Drawable > const& ptr)
 	{
-		return drawable_map.insert(
+		return drawableMap_.insert(
 			std::map< VALUE, boost::shared_ptr< Drawable > >::value_type(id, ptr)
 		).second;
 	}
 	void eraseDrawable(VALUE id)
 	{
-		assert( drawable_map.find(id) != drawable_map.end() );
-		drawable_map.erase( drawable_map.find(id) );
+		assert( drawableMap_.find(id) != drawableMap_.end() );
+		drawableMap_.erase( drawableMap_.find(id) );
 	}
 	unsigned int countDrawable(VALUE id)
 	{
-		return drawable_map.count(id);
+		return drawableMap_.count(id);
 	}
 	void incrementCreation() { creation++; }
 	long getCreation() { return creation; }
@@ -103,8 +103,8 @@ namespace Graphics
 		brightness = 255;
 		creation = 0;
 		framerate_interval = 1000.0 / framerate;
-		last_tics = Time::GetTime() + (long)framerate_interval;
-		next_tics_fps = Time::GetTime() + 1000;
+		last_tics = Time::getTime() + (long)framerate_interval;
+		next_tics_fps = Time::getTime() + 1000;
 
 		InitOpenGL();
 
@@ -117,12 +117,12 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void InitOpenGL()
 	{
-		glViewport(0, 0, Player::GetWidth(), Player::GetHeight());
+		glViewport(0, 0, Player::getWidth(), Player::getHeight());
 		glShadeModel(GL_FLAT);
 
 		glMatrixMode(GL_PROJECTION);
 		glLoadIdentity();
-		glOrtho(0, Player::GetWidth(), Player::GetHeight(), 0, -1, 1); 
+		glOrtho(0, Player::getWidth(), Player::getHeight(), 0, -1, 1); 
 
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
@@ -135,7 +135,7 @@ namespace Graphics
 					 (GLclampf)(backcolor.alpha / 255.0f));
 		glClearDepth(1.0);
 		glClear(GL_COLOR_BUFFER_BIT);
-		Player::SwapBuffers();
+		Player::swapBuffers();
 	}
 
 	////////////////////////////////////////////////////////////
@@ -143,7 +143,7 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void Exit()
 	{
-		drawable_map.clear();
+		drawableMap_.clear();
 		Bitmap::DisposeBitmaps();
 	}
 
@@ -152,7 +152,7 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void RefreshAll()
 	{
-		for (it_drawable_map = drawable_map.begin(); it_drawable_map != drawable_map.end(); it_drawable_map++) {
+		for (it_drawable_map = drawableMap_.begin(); it_drawable_map != drawableMap_.end(); it_drawable_map++) {
 			it_drawable_map->second->RefreshBitmaps();
 		}
 		Bitmap::RefreshBitmaps();
@@ -163,7 +163,7 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void TimerWait()
 	{
-		last_tics_wait = Time::GetTime();
+		last_tics_wait = Time::getTime();
 	}
 
 	////////////////////////////////////////////////////////////
@@ -171,8 +171,8 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void TimerContinue()
 	{
-		last_tics += Time::GetTime() - last_tics_wait;
-		next_tics_fps += Time::GetTime() - last_tics_wait;
+		last_tics += Time::getTime() - last_tics_wait;
+		next_tics_fps += Time::getTime() - last_tics_wait;
 	}
 
 	////////////////////////////////////////////////////////////
@@ -183,7 +183,7 @@ namespace Graphics
 		// Player::getMainWindow().makeCurrent();
 
 		static long tics;
-		// static long tics_fps = Time::GetTime();
+		// static long tics_fps = Time::getTime();
 		static long frames = 0;
 		// static double waitframes = 0;
 		// static double cyclesleftover;
@@ -193,9 +193,9 @@ namespace Graphics
 			waitframes -= 1;
 			return;
 		}*/
-		tics = Time::GetTime();
+		tics = Time::getTime();
 
-		std::cout << tics << std::endl;
+		// std::cout << tics << std::endl;
 
 		if ((tics - last_tics) >= framerate_interval) {// || (framerate_interval - tics + last_tics) < 12) {
 			//cyclesleftover = waitframes;
@@ -213,7 +213,7 @@ namespace Graphics
 				fps = frames;
 				frames = 0;
 
-				Player::getMainWindow().SetTitle( ( boost::format("%s - %d FPS") % System::getTitle() % fps ).str() );
+				Player::getMainWindow().setTitle( ( boost::format("%s - %d FPS") % System::getTitle() % fps ).str() );
 			}
 		}
 		else {
@@ -229,7 +229,7 @@ namespace Graphics
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		for (it_zlist = zlist.begin(); it_zlist != zlist.end(); it_zlist++) {
-			drawable_map[it_zlist->GetId()]->Draw(it_zlist->GetZ());
+			drawableMap_[it_zlist->getId()]->Draw(it_zlist->getZ());
 		}
 
 		if (brightness < 255) {
@@ -239,13 +239,13 @@ namespace Graphics
 			glColor4f(0.0f, 0.0f, 0.0f, (float)(1.0f - brightness / 255.0f));
 			glBegin(GL_QUADS);
 				glVertex2i(0, 0);
-				glVertex2i(0, Player::GetHeight());
-				glVertex2i(Player::GetWidth(), Player::GetHeight());
-				glVertex2i(Player::GetWidth(), 0);
+				glVertex2i(0, Player::getHeight());
+				glVertex2i(Player::getWidth(), Player::getHeight());
+				glVertex2i(Player::getWidth(), 0);
 			glEnd();
 		}
 
-		Player::SwapBuffers();
+		Player::swapBuffers();
 	}
 
 	////////////////////////////////////////////////////////////
@@ -269,8 +269,8 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void FrameReset()
 	{
-		last_tics = Time::GetTime();
-		next_tics_fps = Time::GetTime() + 1000;
+		last_tics = Time::getTime();
+		next_tics_fps = Time::getTime() + 1000;
 	}
 
 	////////////////////////////////////////////////////////////
@@ -302,7 +302,7 @@ namespace Graphics
 
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		Player::SwapBuffers();
+		Player::swapBuffers();
 	}
 
 	////////////////////////////////////////////////////////////
@@ -349,28 +349,28 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	/// Properties
 	////////////////////////////////////////////////////////////
-	int GetFrameRate()
+	int getFrameRate()
 	{
 		return framerate;
 	}
-	void SetFrameRate(int nframerate)
+	void setFrameRate(int nframerate)
 	{
 		framerate = nframerate;
 		framerate_interval = 1000.0 / framerate;
 	}
-	int GetFrameCount()
+	int getFrameCount()
 	{
 		return framecount;
 	}
-	void SetFrameCount(int nframecount)
+	void setFrameCount(int nframecount)
 	{
 		framecount = nframecount;
 	}
-	VALUE GetBackColor()
+	VALUE getBackColor()
 	{
-		return backcolor.GetARGSS();
+		return backcolor.getARGSS();
 	}
-	void SetBackColor(VALUE nbackcolor)
+	void setBackColor(VALUE nbackcolor)
 	{
 		backcolor = Color(nbackcolor);
 		glClearColor((GLclampf)(backcolor.red / 255.0f),
@@ -378,11 +378,11 @@ namespace Graphics
 					 (GLclampf)(backcolor.blue / 255.0f),
 					 (GLclampf)(backcolor.alpha / 255.0f));
 	}
-	int GetBrightness()
+	int getBrightness()
 	{
 		return brightness;
 	}
-	void SetBrightness(int nbrightness)
+	void setBrightness(int nbrightness)
 	{
 		brightness = nbrightness;
 	}
@@ -392,9 +392,9 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	bool SortZObj(ZObj &first, ZObj &second)
 	{
-		if (first.GetZ() < second.GetZ()) return true;
-		else if (first.GetZ() > second.GetZ()) return false;
-		else return first.GetCreation() < second.GetCreation();
+		if (first.getZ() < second.getZ()) return true;
+		else if (first.getZ() > second.getZ()) return false;
+		else return first.getCreation() < second.getCreation();
 	}
 
 	////////////////////////////////////////////////////////////
@@ -421,7 +421,7 @@ namespace Graphics
 	struct remove_zobj_id : public std::binary_function<ZObj, ZObj, bool>
 	{
 		remove_zobj_id(VALUE val) : id(val) {}
-		bool operator () (ZObj &obj) const {return obj.GetId() == id;}
+		bool operator () (ZObj &obj) const {return obj.getId() == id;}
 		VALUE id;
 	};
 	void RemoveZObj(VALUE id)
@@ -435,8 +435,8 @@ namespace Graphics
 	void UpdateZObj(VALUE id, long z)
 	{
 		for(it_zlist = zlist.begin(); it_zlist != zlist.end(); it_zlist++) {
-			if (it_zlist->GetId() == id) {
-				it_zlist->SetZ(z);
+			if (it_zlist->getId() == id) {
+				it_zlist->setZ(z);
 				break;
 			}
 		}

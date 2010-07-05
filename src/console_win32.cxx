@@ -41,7 +41,7 @@
 ////////////////////////////////////////////////////////////
 void Console::Init() {
 	AllocConsole();
-	long lStdHandle = (long)GetStdHandle(STD_INPUT_HANDLE);
+	long lStdHandle = (long)getStdHandle(STD_INPUT_HANDLE);
 	int hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
 	FILE* fp = _fdopen( hConHandle, "r");
 	*stdin = *fp;
@@ -50,21 +50,21 @@ void Console::Init() {
 }
 
 ////////////////////////////////////////////////////////////
-/// Set console title
+/// set console title
 ////////////////////////////////////////////////////////////
-void Console::SetTitle(char* title) {
+void Console::setTitle(char* title) {
 	TCHAR* text = (TCHAR*)(title);
-	SetConsoleTitle(text);
+	setConsoleTitle(text);
 }
 
 ////////////////////////////////////////////////////////////
-/// Set console max lines
+/// set console max lines
 ////////////////////////////////////////////////////////////
-void Console::SetLines(int lines) {
+void Console::setLines(int lines) {
 	CONSOLE_SCREEN_BUFFER_INFO coninfo;
-	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &coninfo);
+	getConsoleScreenBufferInfo(getStdHandle(STD_OUTPUT_HANDLE), &coninfo);
 	coninfo.dwSize.Y = lines;
-	SetConsoleScreenBufferSize(GetStdHandle(STD_OUTPUT_HANDLE), coninfo.dwSize);
+	setConsoleScreenBufferSize(getStdHandle(STD_OUTPUT_HANDLE), coninfo.dwSize);
 }
 
 ////////////////////////////////////////////////////////////
@@ -75,10 +75,10 @@ void Console::Free() {
 }
 
 ////////////////////////////////////////////////////////////
-/// Get console active status
+/// get console active status
 ////////////////////////////////////////////////////////////
 bool Console::Active() {
-	return GetConsoleWindow() != NULL;
+	return getConsoleWindow() != NULL;
 }
 
 ////////////////////////////////////////////////////////////
@@ -87,6 +87,6 @@ bool Console::Active() {
 void Console::Write(std::string msg) {
 	VALUE n;
 	HANDLE out;
-	out = GetStdHandle(STD_OUTPUT_HANDLE);
+	out = getStdHandle(STD_OUTPUT_HANDLE);
 	WriteConsoleA(out, msg.c_str(), msg.size(), &n, NULL);
 }

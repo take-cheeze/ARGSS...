@@ -25,19 +25,27 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include "argss_error.hxx"
+
 #include "text.hxx"
 #include "output.hxx"
 #include "filefinder.hxx"
-#include "argss_error.hxx"
+
+#include <ft2build.h>
+#include FT_FREETYPE_H
 #include FT_GLYPH_H
+
 
 namespace Text
 {
-	////////////////////////////////////////////////////////////
-	/// Global variables
-	////////////////////////////////////////////////////////////
-	FT_Library library;
-	std::map< std::string, FT_Face > fonts;
+	namespace
+	{
+		////////////////////////////////////////////////////////////
+		/// Global variables
+		////////////////////////////////////////////////////////////
+		FT_Library library;
+		std::map< std::string, FT_Face > fonts;
+	}
 
 	////////////////////////////////////////////////////////////
 	/// Initialize
@@ -51,11 +59,27 @@ namespace Text
 	}
 
 	////////////////////////////////////////////////////////////
+	/// get font
+	////////////////////////////////////////////////////////////
+	FT_Face getFont(std::string const& name)
+	{
+		std::string path = "ipag.ttf"; // FileFinder::FindFont(name);
+
+		if ( fonts.find(name) == fonts.end() ) {
+			FT_Error err = FT_New_Face(library, path.c_str(), 0, &fonts[name]);
+			if (err) {
+				rb_raise(ARGSS::AError::getID(), "couldn't load font %s.\n%d\n", name.c_str(), err);
+			}
+		}
+		return fonts.find(name)->second;
+	}
+
+	////////////////////////////////////////////////////////////
 	/// Draw text
 	////////////////////////////////////////////////////////////
-	std::auto_ptr< Bitmap > Draw(std::string const& text, std::string const& font, Color color, int size, bool bold, bool italic, bool shadow)
+	std::auto_ptr< Bitmap > Draw(std::string const& text, std::string const& font, Color const& color, int size, bool bold, bool italic, bool shadow)
 	{
-		FT_Face face = GetFont(font);
+		FT_Face face = getFont(font);
 
 		FT_Error err;
 
@@ -79,7 +103,7 @@ namespace Text
 		pen.x = 0;
 		pen.y = 0;
 
-		std::vector<FT_BitmapGlyph> glyphs;
+		std::vector< FT_BitmapGlyph > glyphs;
 
 		for (unsigned int i = 0; i < text.length(); i++) {
 			FT_Set_Transform(face, &matrix, &pen);
@@ -117,7 +141,7 @@ namespace Text
 		min_y = (int)(((float)min_y + 0.5f) / 2.0f);
 
 		std::auto_ptr< Bitmap > text_bmp( new Bitmap(width, height) );
-		Uint8* dst_pixels = (Uint8*)text_bmp->GetPixels();
+		Uint8* dst_pixels = (Uint8*)text_bmp->getPixels();
 		for (unsigned int i = 0; i < glyphs.size(); i++) {
 
 			long glyph_pixel = 0;
@@ -153,7 +177,7 @@ namespace Text
 	////////////////////////////////////////////////////////////
 	Rect RectSize(std::string const& text, std::string const& font, int size)
 	{
-		FT_Face face = GetFont(font);
+		FT_Face face = getFont(font);
 
 		FT_Error err;
 
@@ -193,20 +217,4 @@ namespace Text
 
 		return Rect(0, 0, width, height);
 	}
-
-	////////////////////////////////////////////////////////////
-	/// Get font
-	////////////////////////////////////////////////////////////
-	FT_Face GetFont(std::string const& name)
-	{
-		std::string path = FileFinder::FindFont(name);
-
-		if (fonts.count(path) == 0) {
-			FT_Error err = FT_New_Face(library, path.c_str(), 0, &fonts[path]);
-			if (err) {
-				rb_raise(ARGSS::AError::getID(), "couldn't load font %s.\n%d\n", name.c_str(), err);
-			}
-		}
-		return fonts[path];
-	}
-}
+} // namespace Text

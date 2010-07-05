@@ -64,7 +64,7 @@ namespace ARGSS
 		{
 			if (argc > 3) raise_argn(argc, 3);
 			int duration = 8;
-			std::string filename = "";
+			std::string filename;
 			int vague = 40;
 			if (argc > 0) {
 				Check_Kind(argv[0], rb_cNumeric);
@@ -88,22 +88,22 @@ namespace ARGSS
 		}
 		VALUE rframe_rate(VALUE self)
 		{
-			return INT2FIX(Graphics::GetFrameRate());
+			return INT2FIX(Graphics::getFrameRate());
 		}
 		VALUE rframe_rateE(VALUE self, VALUE framerate)
 		{
 			Check_Kind(framerate, rb_cNumeric);
-			Graphics::SetFrameRate(NUM2INT(framerate));
+			Graphics::setFrameRate(NUM2INT(framerate));
 			return framerate;
 		}
 		VALUE rframe_count(VALUE self)
 		{
-			return INT2FIX(Graphics::GetFrameCount());
+			return INT2FIX(Graphics::getFrameCount());
 		}
 		VALUE rframe_countE(VALUE self, VALUE framecount)
 		{
 			Check_Kind(framecount, rb_cNumeric);
-			Graphics::SetFrameCount(NUM2INT(framecount));
+			Graphics::setFrameCount(NUM2INT(framecount));
 			return framecount;
 		}
 		VALUE rfps(VALUE self)
@@ -112,12 +112,12 @@ namespace ARGSS
 		}
 		VALUE rbackcolor(VALUE self)
 		{
-			return Graphics::GetBackColor();
+			return Graphics::getBackColor();
 		}
 		VALUE rbackcolorE(VALUE self, VALUE backcolor)
 		{
 			Check_Class( backcolor, ARGSS::AColor::getID() );
-			Graphics::SetBackColor(backcolor);
+			Graphics::setBackColor(backcolor);
 			return backcolor;
 		}
 		VALUE rwait(VALUE self, VALUE duration)
@@ -128,11 +128,11 @@ namespace ARGSS
 		}
 		VALUE rwidth(VALUE self)
 		{
-			return INT2NUM( Player::getMainWindow().GetWidth() ); // System::Width);
+			return INT2NUM( Player::getMainWindow().getWidth() ); // System::Width);
 		}
 		VALUE rheight(VALUE self)
 		{
-			return INT2NUM( Player::getMainWindow().GetHeight() ); // System::Height);
+			return INT2NUM( Player::getMainWindow().getHeight() ); // System::Height);
 		}
 		VALUE rresize_screen(VALUE self, VALUE width, VALUE height)
 		{
@@ -159,12 +159,12 @@ namespace ARGSS
 		}
 		VALUE rbrightness(VALUE self)
 		{
-			return INT2FIX(Graphics::GetBrightness());
+			return INT2FIX(Graphics::getBrightness());
 		}
 		VALUE rbrightnessE(VALUE self, VALUE brightness)
 		{
 			Check_Kind(brightness, rb_cNumeric);
-			Graphics::SetBrightness(NUM2INT(brightness));
+			Graphics::setBrightness(NUM2INT(brightness));
 			return brightness;
 		}
 

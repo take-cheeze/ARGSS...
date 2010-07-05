@@ -85,17 +85,17 @@ namespace ARGSS
 		{
 			CheckDisposed(self);
 			if (color == Qnil) {
-				Viewport::Get(self).Flash(NUM2INT(duration));
+				Viewport::get(self).Flash(NUM2INT(duration));
 			}
 			else {
-				Viewport::Get(self).Flash(Color(color), NUM2INT(duration));
+				Viewport::get(self).Flash(Color(color), NUM2INT(duration));
 			}
 			return Qnil;
 		}
 		VALUE rupdate(VALUE self)
 		{
 			CheckDisposed(self);
-			Viewport::Get(self).Update();
+			Viewport::get(self).Update();
 			return Qnil;
 		}
 		VALUE rrect(VALUE self)
@@ -107,7 +107,7 @@ namespace ARGSS
 		{
 			CheckDisposed(self);
 			Check_Class(rect, ARGSS::ARect::getID());
-			Viewport::Get(self).SetRect(rect);
+			Viewport::get(self).setRect(rect);
 			return rb_iv_set(self, "@rect", rect);
 		}
 		VALUE rvisible(VALUE self)
@@ -118,7 +118,7 @@ namespace ARGSS
 		VALUE rvisibleE(VALUE self, VALUE visible)
 		{
 			CheckDisposed(self);
-			Viewport::Get(self).SetVisible(NUM2BOOL(visible));
+			Viewport::get(self).setVisible(NUM2BOOL(visible));
 			return rb_iv_set(self, "@visible", visible);
 		}
 		VALUE rz(VALUE self)
@@ -129,7 +129,7 @@ namespace ARGSS
 		VALUE rzE(VALUE self, VALUE z)
 		{
 			CheckDisposed(self);
-			Viewport::Get(self).SetZ(NUM2INT(z));
+			Viewport::get(self).setZ(NUM2INT(z));
 			return rb_iv_set(self, "@z", z);
 		}
 		VALUE rox(VALUE self)
@@ -140,7 +140,7 @@ namespace ARGSS
 		VALUE roxE(VALUE self, VALUE ox)
 		{
 			CheckDisposed(self);
-			Viewport::Get(self).SetOx(NUM2INT(ox));
+			Viewport::get(self).setOx(NUM2INT(ox));
 			return rb_iv_set(self, "@ox", ox);
 		}
 		VALUE roy(VALUE self)
@@ -151,7 +151,7 @@ namespace ARGSS
 		VALUE royE(VALUE self, VALUE oy)
 		{
 			CheckDisposed(self);
-			Viewport::Get(self).SetOy(NUM2INT(oy));
+			Viewport::get(self).setOy(NUM2INT(oy));
 			return rb_iv_set(self, "@oy", oy);
 		}
 		VALUE rcolor(VALUE self)
@@ -163,7 +163,7 @@ namespace ARGSS
 		{
 			CheckDisposed(self);
 			Check_Class(color, ARGSS::AColor::getID());
-			Viewport::Get(self).SetColor(color);
+			Viewport::get(self).setColor(color);
 			return rb_iv_set(self, "@color", color);
 		}
 		VALUE rtone(VALUE self)
@@ -175,7 +175,7 @@ namespace ARGSS
 		{
 			CheckDisposed(self);
 			Check_Class(tone, ARGSS::ATone::getID());
-			Viewport::Get(self).SetTone(tone);
+			Viewport::get(self).setTone(tone);
 			return rb_iv_set(self, "@tone", tone);
 		}
 

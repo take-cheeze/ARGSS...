@@ -61,14 +61,14 @@ namespace Graphics
 	VALUE SnapToBitmap();
 	void FadeOut(int duration);
 	void FadeIn(int duration);
-	int GetFrameRate();
-	void SetFrameRate(int nframerate);
-	int GetFrameCount();
-	void SetFrameCount(int nframecount);
-	VALUE GetBackColor();
-	void SetBackColor(VALUE nbackcolor);
-	int GetBrightness();
-	void SetBrightness(int nbrightness);
+	int getFrameRate();
+	void setFrameRate(int nframerate);
+	int getFrameCount();
+	void setFrameCount(int nframecount);
+	VALUE getBackColor();
+	void setBackColor(VALUE nbackcolor);
+	int getBrightness();
+	void setBrightness(int nbrightness);
 
 	bool SortZObj(ZObj &first, ZObj &second);
 	void RegisterZObj(long z, VALUE id);

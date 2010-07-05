@@ -25,6 +25,8 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <cassert>
+
 #include <iomanip>
 #include <iostream>
 #include <string>
@@ -43,6 +45,7 @@ namespace ARGSS
 {
 	void defineMethodsImplement(VALUE klassID, FuncTableElement const* table, unsigned int elmNum)
 	{
+		assert( elmNum );
 		for(unsigned int i = 0; i < elmNum; i++) {
 			FuncTableElement const& elm = table[i];
 
@@ -84,6 +87,7 @@ namespace ARGSS
 			ruby_init();
 			ruby_init_loadpath();
 			//atexit(ruby_finalize);
+
 			protected_objects = rb_hash_new();
 			rb_gc_register_address(&protected_objects);
 
@@ -96,24 +100,6 @@ namespace ARGSS
 		////////////////////////////////////////////////////////////
 		namespace
 		{
-			std::string slasher(std::string const& str)
-			{
-				std::string ret;
-				for(std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
-					ret.push_back( (*it == '\\') ? '/' : *it );
-				}
-				return ret;
-			}
-/*
-			VALUE eval_wrap(VALUE arg)
-			{
-				return rb_funcall(rb_cObject, rb_intern("eval"), 2, rb_ary_entry(arg, 0), rb_ary_entry(arg, 1));
-			}
- */
-			VALUE require_wrap(VALUE arg)
-			{
-				return rb_require( slasher(System::getScriptsPath()).c_str() );
-			}
 			void checkError(int error)
 			{
 				if (error) {
@@ -136,6 +122,34 @@ namespace ARGSS
 						return;
 					}
 				}
+			}
+			std::string slasher(std::string const& str)
+			{
+				std::string ret;
+				for(std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
+					ret.push_back( (*it == '\\') ? '/' : *it );
+				}
+				return ret;
+			}
+			VALUE eval_wrap(VALUE arg)
+			{
+/*
+				std::cout
+					<< RSTRING_PTR( rb_ary_entry(arg, 1) ) << std::endl
+					<< RSTRING_PTR( rb_ary_entry(arg, 0) ) << std::endl
+				;
+ */
+				return rb_funcall(
+					rb_cObject, rb_intern("eval"), 4,
+					rb_ary_entry(arg, 0),
+					Qnil,
+					rb_ary_entry(arg, 1),
+					INT2NUM(1)
+				);
+			}
+			VALUE require_wrap(VALUE arg)
+			{
+				return rb_require( slasher(System::getScriptsPath()).c_str() );
 			}
 		} // namespace
 		void Run()
@@ -170,8 +184,8 @@ namespace ARGSS
  */
 
 					result = 
-						rb_eval_string_protect( RSTRING_PTR(section), &error );
-						// rb_protect(eval_wrap, rb_ary_new3(2, StringValuePtr(section), rb_ary_entry(section_arr, 1)), &error);
+						// rb_eval_string_protect( RSTRING_PTR(section), &error );
+						rb_protect(eval_wrap, rb_ary_new3(2, section, rb_ary_entry(section_arr, 1)), &error);
 					checkError(error);
 				}
 			} else { // if( suffix == "rb" )
@@ -233,12 +247,13 @@ void Check_Types2(VALUE x, VALUE t1, VALUE t2)
 	if ((VALUE)TYPE(x) != t1 && (VALUE)TYPE(x) != t2) {
 		while (type->type >= 0) {
 			if ((VALUE)type->type == t1) {
-				const char *etype;
-				if (NIL_P(x)) etype = "nil";
-				else if (FIXNUM_P(x)) etype = "Fixnum";
-				else if (SYMBOL_P(x)) etype = "Symbol";
-				else if (rb_special_const_p(x)) etype = RSTRING_PTR(rb_obj_as_string(x));
-				else etype = rb_class2name(x);
+				char const* etype =
+					NIL_P(x) ? "nil" :
+					FIXNUM_P(x) ? "Fixnum" :
+					SYMBOL_P(x) ? "Symbol" :
+					rb_special_const_p(x) ? RSTRING_PTR(rb_obj_as_string(x)) :
+					rb_class2name(x)
+				;
 				rb_raise(rb_eTypeError, "wrong argument type %s (expected %s)", etype, type->name);
 			}
 			type++;
@@ -254,12 +269,13 @@ void Check_Bool(VALUE x)
 {
 	if (x == Qundef) rb_bug("undef leaked to the Ruby space");
 	if (TYPE(x) != T_TRUE && TYPE(x) != T_FALSE) {
-		const char *etype;
-		if (NIL_P(x)) etype = (char*)"nil";
-		else if (FIXNUM_P(x)) etype = (char*)"Fixnum";
-		else if (SYMBOL_P(x)) etype = (char*)"Symbol";
-		else if (rb_special_const_p(x)) etype = RSTRING_PTR(rb_obj_as_string(x));
-		else etype = rb_class2name(x);
+		char const* etype =
+			NIL_P(x) ? "nil" :
+			FIXNUM_P(x) ? "Fixnum" :
+			SYMBOL_P(x) ? "Symbol" :
+			rb_special_const_p(x) ? RSTRING_PTR(rb_obj_as_string(x)) :
+			rb_class2name(x)
+		;
 		rb_raise(rb_eTypeError, "wrong argument type %s (expected boolean)", etype);
 	}
 }
@@ -274,12 +290,13 @@ void Check_Class(VALUE x, VALUE c)
 		struct types *type = builtin_types;
 		while (type->type >= 0) {
 			if (type->type == TYPE(c)) {
-				const char *etype;
-				if (NIL_P(x)) etype = (char*)"nil";
-				else if (FIXNUM_P(x)) etype = (char*)"Fixnum";
-				else if (SYMBOL_P(x)) etype = (char*)"Symbol";
-				else if (rb_special_const_p(x)) etype = RSTRING_PTR(rb_obj_as_string(x));
-				else etype = rb_class2name(x);
+				char const* etype =
+					NIL_P(x) ? "nil" :
+					FIXNUM_P(x) ? "Fixnum" :
+					SYMBOL_P(x) ? "Symbol" :
+					rb_special_const_p(x) ? RSTRING_PTR(rb_obj_as_string(x)) :
+					rb_class2name(x)
+				;
 				rb_raise(rb_eTypeError, "wrong argument type %s (expected %s)", etype, type->name);
 			}
 			type++;

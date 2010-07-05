@@ -29,10 +29,11 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #include <boost/smart_ptr.hpp>
-#include <memory>
 
 #include <map>
+#include <memory>
 #include <string>
+#include <vector>
 
 #include <GL/gl.h>
 
@@ -53,35 +54,35 @@ public:
 	Bitmap(int iwidth, int iheight);
 	Bitmap(VALUE iid, std::string const& filename);
 	Bitmap(VALUE iid, int iwidth, int iheight);
-	Bitmap(Bitmap& source, Rect src_rect);
+	Bitmap(Bitmap& source, Rect const& srcRect);
 	~Bitmap();
-	
+
 	static bool IsDisposed(VALUE id);
 	static void New(VALUE id, std::string const& filename);
 	static void New(VALUE id, int width, int height);
-	static Bitmap& Get(VALUE id);
+	static Bitmap& get(VALUE id);
 	static void Dispose(VALUE id);
 	static void RefreshBitmaps();
 	static void DisposeBitmaps();
 
-	int GetWidth() const;
-	int GetHeight() const;
-	void Copy(int x, int y, Bitmap& source, Rect src_rect);
-	void Blit(int x, int y, Bitmap& source, Rect src_rect, int opacity);
-	void StretchBlit(Rect dst_rect, Bitmap& src_bitmap, Rect src_rect, int opacity);
-	void FillRect(Rect rect, Color color);
+	int getWidth () const { return  width_; }
+	int getHeight() const { return height_; }
+	void Copy(int x, int y, Bitmap const& source, Rect srcRect);
+	void Blit(int x, int y, Bitmap const& source, Rect srcRect, int opacity);
+	void StretchBlit(Rect const& dstRect, Bitmap const& srcBitmap, Rect srcRect, int opacity);
+	void FillRect(Rect rect, Color const& color);
 	void Clear();
-	void Clear(Color color);
-	Color GetPixel(int x, int y);
-	void SetPixel(int x, int y, Color color);
+	void Clear(Color const& color);
+	Color getPixel(int x, int y);
+	void setPixel(int x, int y, Color const& color);
 	void HueChange(double hue);
 	void SatChange(double saturation);
 	void LumChange(double luminance);
 	void HSLChange(double h, double s, double l);
 	void HSLChange(double h, double s, double l, Rect rect);
-	void TextDraw(Rect rect, std::string const& text, int align);
-	Rect GetTextSize(std::string const& text);
-	void GradientFillRect(Rect rect, Color color1, Color color2, bool vertical);
+	void TextDraw(Rect const& rect, std::string const& text, int align);
+	Rect getTextSize(std::string const& text);
+	void GradientFillRect(Rect const& rect, Color const& color1, Color const& color2, bool vertical);
 	void ClearRect(Rect rect);
 	void Blur();
 	void RadialBlur(int angle, int division);
@@ -90,27 +91,25 @@ public:
 	void OpacityChange(int opacity, int bush_depth = 0);
 	void Flip(bool flipx, bool flipy);
 	void Zoom(double zoom_x, double zoom_y);
-	std::auto_ptr< Bitmap > Resample(int scalew, int scaleh, Rect src_rect);
+	std::auto_ptr< Bitmap > Resample(int scalew, int scaleh, Rect const& srcRect) const;
 	void Rotate(float angle);
 
-	Rect GetRect();
+	Rect getRect() { return Rect(0, 0, getWidth(), getHeight()); }
 
 	void Changed();
 	void Refresh();
 	void BindBitmap();
-	Uint32* GetPixels();
-
+	Uint32* getPixels() { return &pixels_[0]; }
 protected:
 	VALUE id;
 
-	GLuint gl_bitmap;
-	long width;
-	long height;
+	GLuint glBitmap_;
+	long width_;
+	long height_;
 
-	std::vector<Uint32> pixels;
-
+	std::vector< Uint32 > pixels_;
 private:
-	static std::map< VALUE, boost::shared_ptr< Bitmap > > bitmaps;
+	static std::map< VALUE, boost::shared_ptr< Bitmap > > bitmaps_;
 }; // class Bitmap
 
 #endif

@@ -403,7 +403,7 @@ namespace ARGSS
 					}
 					rb_iv_set(sprite, "@visible", Qtrue);
 					int val_pattern = NUM2INT(pattern);
-					rb_funcall(rb_iv_get(sprite, "@src_rect"), rb_intern("set"), 4, INT2NUM((val_pattern % 5) * 192), INT2NUM(val_pattern / 5 * 192), INT2NUM(192), INT2NUM(192));
+					rb_funcall(rb_iv_get(sprite, "@srcRect"), rb_intern("set"), 4, INT2NUM((val_pattern % 5) * 192), INT2NUM(val_pattern / 5 * 192), INT2NUM(192), INT2NUM(192));
 					if (position == INT2NUM(3)) {
 						VALUE viewport = rb_iv_get(self, "@viewport");
 						VALUE viewport_rect = rb_funcall(viewport, rb_intern("rect"), 0);
@@ -417,13 +417,13 @@ namespace ARGSS
 						}
 					}
 					else {
-						VALUE src_rect = rb_iv_get(self, "@src_rect");
+						VALUE srcRect = rb_iv_get(self, "@srcRect");
 						int val_x = NUM2INT(rb_iv_get(self, "@x"));
 						int val_y = NUM2INT(rb_iv_get(self, "@y"));
 						int val_ox = NUM2INT(rb_iv_get(self, "@ox"));
 						int val_oy = NUM2INT(rb_iv_get(self, "@oy"));
-						int val_rect_w = NUM2INT(rb_iv_get(src_rect, "@width"));
-						int val_rect_h = NUM2INT(rb_iv_get(src_rect, "@height"));
+						int val_rect_w = NUM2INT(rb_iv_get(srcRect, "@width"));
+						int val_rect_h = NUM2INT(rb_iv_get(srcRect, "@height"));
 						rb_funcall(sprite, rb_intern("x="), 1, INT2NUM(val_x - val_ox + val_rect_w / 2));
 						val_y = val_y - val_oy + val_rect_h / 2;
 						rb_funcall(sprite, rb_intern("y="), 1, INT2NUM(val_y));

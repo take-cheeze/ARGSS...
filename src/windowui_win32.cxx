@@ -72,7 +72,7 @@
 /// Event Process
 ////////////////////////////////////////////////////////////
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	WindowUi* window = (WindowUi*) GetWindowLongPtr(hWnd, GWLP_USERDATA);
+	WindowUi* window = (WindowUi*) getWindowLongPtr(hWnd, GWLP_USERDATA);
 
 	if (!window->ProccesEvents(hWnd, uMsg, wParam, lParam)) {
 		return 0;
@@ -97,7 +97,7 @@ WindowUi::WindowUi(long iwidth, long iheight, std::string title, bool center, bo
 
 	fullscreen = fs_flag;
 	
-	hinstance = GetModuleHandle(NULL);
+	hinstance = getModuleHandle(NULL);
 	
 #ifdef UNICODE
 	WNDCLASSEXW wc;
@@ -126,15 +126,15 @@ WindowUi::WindowUi(long iwidth, long iheight, std::string title, bool center, bo
 	}
 	
 	if (fullscreen)	{
-		DEVMODE dmScreenSettings;
-		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
-		dmScreenSettings.dmSize = sizeof(dmScreenSettings);
-		dmScreenSettings.dmPelsWidth = width;
-		dmScreenSettings.dmPelsHeight = height;
-		dmScreenSettings.dmBitsPerPel = 32;
-		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+		DEVMODE dmScreensettings;
+		memset(&dmScreensettings, 0, sizeof(dmScreensettings));
+		dmScreensettings.dmSize = sizeof(dmScreensettings);
+		dmScreensettings.dmPelsWidth = width;
+		dmScreensettings.dmPelsHeight = height;
+		dmScreensettings.dmBitsPerPel = 32;
+		dmScreensettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
-		if (ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
+		if (ChangeDisplaysettings(&dmScreensettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
 			Output::WarningStr("Current fullscreen mode is not supported. Windowed mode will be used.");
 		}
 	}
@@ -159,8 +159,8 @@ WindowUi::WindowUi(long iwidth, long iheight, std::string title, bool center, bo
 			int centerx = scrrect.right / 2;
 			int centery = scrrect.bottom / 2;
 
-			int edge = GetSystemMetrics(SM_CXEDGE);
-			int capt = GetSystemMetrics(SM_CXFIXEDFRAME);
+			int edge = getSystemMetrics(SM_CXEDGE);
+			int capt = getSystemMetrics(SM_CXFIXEDFRAME);
 
 			posx = centerx - width / 2 - edge;
 			posy = centery - height / 2 - capt;
@@ -187,7 +187,7 @@ WindowUi::WindowUi(long iwidth, long iheight, std::string title, bool center, bo
 	pfd.cDepthBits = 16;
 	pfd.iLayerType = PFD_MAIN_PLANE;
 	
-	if (!(hdc = GetDC(hwnd)))	{
+	if (!(hdc = getDC(hwnd)))	{
 		Dispose();
 		Output::ErrorStr("Failed to create opengl device context.");
 	}
@@ -196,7 +196,7 @@ WindowUi::WindowUi(long iwidth, long iheight, std::string title, bool center, bo
 		Dispose();
 		Output::ErrorStr("Couldn't find a suitable pixel format.");
 	}
-	if (!SetPixelFormat(hdc, PixelFormat, &pfd)) {
+	if (!setPixelFormat(hdc, PixelFormat, &pfd)) {
 		Dispose();
 		Output::ErrorStr("Can't set the pixel format.");
 	}
@@ -209,11 +209,11 @@ WindowUi::WindowUi(long iwidth, long iheight, std::string title, bool center, bo
 		Output::ErrorStr("Can't activate opengl rendering context.");
 	}
 
-	SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)this);
+	setWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)this);
 
 	ShowWindow(hwnd, SW_SHOW);
-	SetForegroundWindow(hwnd);
-	SetFocus(hwnd);
+	setForegroundWindow(hwnd);
+	setFocus(hwnd);
 }
 
 ////////////////////////////////////////////////////////////
@@ -235,7 +235,7 @@ void WindowUi::SwapBuffers() {
 ////////////////////////////////////////////////////////////
 void WindowUi::Dispose() {
 	if (fullscreen)	{
-		ChangeDisplaySettings(NULL, 0);
+		ChangeDisplaysettings(NULL, 0);
 		ShowCursor(true);
 	}
 	if (hrc) {
@@ -265,10 +265,10 @@ void WindowUi::Resize(long nwidth, long nheight) {
 }
 
 ////////////////////////////////////////////////////////////
-/// Set title
+/// set title
 ////////////////////////////////////////////////////////////
-void WindowUi::SetTitle(std::string title) {
-	SetWindowText(hwnd, s2ws(title).c_str());
+void WindowUi::setTitle(std::string title) {
+	setWindowText(hwnd, s2ws(title).c_str());
 }
 
 ////////////////////////////////////////////////////////////
@@ -283,19 +283,19 @@ void WindowUi::ToggleFullscreen() {
 		devmode.dmBitsPerPel = 32;
 		devmode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
 
-		if (ChangeDisplaySettings(&devmode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
+		if (ChangeDisplaysettings(&devmode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
 			Output::Warning("Failed to toggle fullscreen mode");
 			return;
 		}
 
-		SetWindowLong(hwnd, GWL_STYLE,   WS_POPUP);
-		SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_APPWINDOW);
+		setWindowLong(hwnd, GWL_STYLE,   WS_POPUP);
+		setWindowLong(hwnd, GWL_EXSTYLE, WS_EX_APPWINDOW);
 
-		SetWindowPos(hwnd, HWND_TOP, 0, 0, width, height, SWP_FRAMECHANGED);
+		setWindowPos(hwnd, HWND_TOP, 0, 0, width, height, SWP_FRAMECHANGED);
 		ShowWindow(hwnd, SW_SHOW);
 
-		long Style = GetWindowLong(hwnd, GWL_STYLE);
-		SetWindowLong(hwnd, GWL_STYLE, Style | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
+		long Style = getWindowLong(hwnd, GWL_STYLE);
+		setWindowLong(hwnd, GWL_STYLE, Style | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
 
 		fullscreen = true;
 	}
@@ -305,23 +305,23 @@ void WindowUi::ToggleFullscreen() {
 }
 
 ////////////////////////////////////////////////////////////
-/// Get Width
+/// get Width
 ////////////////////////////////////////////////////////////
-long WindowUi::GetWidth() {
+long WindowUi::getWidth() {
 	return width;
 }
 
 ////////////////////////////////////////////////////////////
-/// Get Height
+/// get Height
 ////////////////////////////////////////////////////////////
-long WindowUi::GetHeight() {
+long WindowUi::getHeight() {
 	return height;
 }
 
 ////////////////////////////////////////////////////////////
-/// Get Event
+/// get Event
 ////////////////////////////////////////////////////////////
-bool WindowUi::GetEvent(Event& evnt) {
+bool WindowUi::getEvent(Event& evnt) {
 	if (hwnd && events.empty()) {
 		MSG Message;
 		while (PeekMessage(&Message, hwnd, 0, 0, PM_REMOVE)) {
@@ -597,18 +597,18 @@ Input::Keys::InputKey WindowUi::VK2IK(int vk) {
 bool WindowUi::IsFullscreen() {
 	return fullscreen;
 }
-std::vector<bool> WindowUi::GetKeyStates() {
+std::vector<bool> WindowUi::getKeyStates() {
 	return keys;
 }
-bool WindowUi::GetMouseFocus() {
+bool WindowUi::getMouseFocus() {
 	return mouse_focus;
 }
-int WindowUi::GetMouseWheel() {
+int WindowUi::getMouseWheel() {
 	return mouse_wheel;
 }
-int WindowUi::GetMousePosX() {
+int WindowUi::getMousePosX() {
 	return mouse_x;
 }
-int WindowUi::GetMousePosY() {
+int WindowUi::getMousePosY() {
 	return mouse_y;
 }

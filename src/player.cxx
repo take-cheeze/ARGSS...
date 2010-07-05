@@ -26,6 +26,7 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #include <cassert>
+#include <memory>
 
 #include "player.hxx"
 #include "options.hxx"
@@ -43,15 +44,15 @@ namespace Player
 		////////////////////////////////////////////////////////////
 		/// Global Variables
 		////////////////////////////////////////////////////////////
-		WindowUi* main_window;
-		bool focus;
-		bool alt_pressing;
+		std::auto_ptr< WindowUi > mainWindow_;
+		bool focus_;
+		bool altPressing_;
 	} // namespace
 
 	WindowUi& getMainWindow()
 	{
-		assert(main_window);
-		return *main_window;
+		assert( mainWindow_.get() );
+		return *mainWindow_;
 	}
 
 	////////////////////////////////////////////////////////////
@@ -59,10 +60,12 @@ namespace Player
 	////////////////////////////////////////////////////////////
 	void Init()
 	{
-		main_window = new WindowUi(System::getDefaultWidth(), System::getDefaultHeight(), System::getTitle(), true, RUN_FULLSCREEN);
+		mainWindow_ = std::auto_ptr< WindowUi >(
+			new WindowUi(System::getDefaultWidth(), System::getDefaultHeight(), System::getTitle(), true, RUN_FULLSCREEN)
+		);
 
-		focus = true;
-		alt_pressing = false;
+		focus_ = true;
+		altPressing_ = false;
 	}
 
 	////////////////////////////////////////////////////////////
@@ -73,35 +76,31 @@ namespace Player
 		Event evnt;
 
 		while (true) {
-			bool result = getMainWindow().GetEvent(evnt);
+			bool result = getMainWindow().getEvent(evnt);
 			if (evnt.type == Event::Quit) {
 				ARGSS::Exit();
 				break;
-			}
-			else if (evnt.type == Event::KeyDown) {
+			} else if (evnt.type == Event::KeyDown) {
 				if (evnt.param1 == Input::Keys::ALT) {
-					alt_pressing = true;
+					altPressing_ = true;
 				}
-				else if (evnt.param1 == Input::Keys::RETURN && alt_pressing) {
+				else if (evnt.param1 == Input::Keys::RETURN && altPressing_) {
 					ToggleFullscreen();
-					alt_pressing = false;
+					altPressing_ = false;
 				}
-			}
-			else if (evnt.type == Event::KeyUp) {
+			} else if (evnt.type == Event::KeyUp) {
 				if (evnt.param1 == Input::Keys::ALT) {
-					alt_pressing = false;
+					altPressing_ = false;
 				}
-			}
-			else if (PAUSE_GAME_WHEN_FOCUS_LOST) {
-				if (evnt.type == Event::GainFocus && !focus) {
-					focus = true;
+			} else if (PAUSE_GAME_WHEN_FOCUS_LOST) {
+				if (evnt.type == Event::GainFocus && !focus_) {
+					focus_ = true;
 					Graphics::TimerContinue();
 					if (PAUSE_AUDIO_WHEN_FOCUS_LOST) {
 						Audio::Continue();
 					}
-				}
-				else if (evnt.type == Event::LostFocus && focus) {
-					focus = false;
+				} else if (evnt.type == Event::LostFocus && focus_) {
+					focus_ = false;
 					Input::ClearKeys();
 					Graphics::TimerWait();
 					if (PAUSE_AUDIO_WHEN_FOCUS_LOST) {
@@ -110,7 +109,7 @@ namespace Player
 				}
 			}
 
-			if (!result && !(PAUSE_GAME_WHEN_FOCUS_LOST && !focus)) {
+			if (!result && !(PAUSE_GAME_WHEN_FOCUS_LOST && !focus_)) {
 				break;
 			}
 		}
@@ -123,7 +122,7 @@ namespace Player
 	{
 		Graphics::Exit();
 		Output::None();
-		getMainWindow().Dispose();
+		mainWindow_.release();
 	}
 
 	////////////////////////////////////////////////////////////
@@ -132,9 +131,9 @@ namespace Player
 	void ToggleFullscreen()
 	{
 		bool toggle = !getMainWindow().IsFullscreen();
-		getMainWindow().Dispose();
-		delete main_window;
-		main_window = new WindowUi(System::getDefaultWidth(), System::getDefaultHeight(), System::getTitle(), true, toggle);
+		mainWindow_ = std::auto_ptr< WindowUi >(
+			new WindowUi(System::getDefaultWidth(), System::getDefaultHeight(), System::getTitle(), true, toggle)
+		);
 		Graphics::InitOpenGL();
 		Graphics::RefreshAll();
 	}
@@ -148,26 +147,26 @@ namespace Player
 	}
 
 	////////////////////////////////////////////////////////////
-	/// Get window width
+	/// get window width
 	////////////////////////////////////////////////////////////
-	int GetWidth()
+	int getWidth()
 	{
-		return getMainWindow().GetWidth();
+		return getMainWindow().getWidth();
 	}
 
 	////////////////////////////////////////////////////////////
-	/// Get window height
+	/// get window height
 	////////////////////////////////////////////////////////////
-	int GetHeight()
+	int getHeight()
 	{
-		return getMainWindow().GetHeight();
+		return getMainWindow().getHeight();
 	}
 
 	////////////////////////////////////////////////////////////
 	/// Swap Buffers
 	////////////////////////////////////////////////////////////
-	void SwapBuffers()
+	void swapBuffers()
 	{
-		getMainWindow().SwapBuffers();
+		getMainWindow().swapBuffers();
 	}
 } // namespace Player

@@ -87,7 +87,7 @@ namespace ARGSS
 		}
 		VALUE rupdate(VALUE self) {
 			CheckDisposed(self);
-			Tilemap::Get(self).Update();
+			Tilemap::get(self).Update();
 			return Qnil;
 		}
 		VALUE rviewport(VALUE self) {
@@ -97,7 +97,7 @@ namespace ARGSS
 		VALUE rviewportE(VALUE self, VALUE viewport) {
 			CheckDisposed(self);
 			Check_Classes_N(viewport, ARGSS::AViewport::getID());
-			Tilemap::Get(self).SetViewport(viewport);
+			Tilemap::get(self).setViewport(viewport);
 			return rb_iv_set(self, "@viewport", viewport);
 		}
 		VALUE rtileset(VALUE self) {
@@ -107,7 +107,7 @@ namespace ARGSS
 		VALUE rtilesetE(VALUE self, VALUE tileset) {
 			CheckDisposed(self);
 			Check_Classes_N(tileset, ARGSS::ABitmap::getID());
-			Tilemap::Get(self).SetTileset(tileset);
+			Tilemap::get(self).setTileset(tileset);
 			return rb_iv_set(self, "@tileset", tileset);
 		}
 		VALUE rautotiles(VALUE self) {
@@ -121,7 +121,7 @@ namespace ARGSS
 		VALUE rmap_dataE(VALUE self, VALUE map_data) {
 			CheckDisposed(self);
 			Check_Classes_N(map_data, ARGSS::ATable::getID());
-			Tilemap::Get(self).SetMapData(map_data);
+			Tilemap::get(self).setMapData(map_data);
 			return rb_iv_set(self, "@map_data", map_data);
 		}
 		VALUE rflash_data(VALUE self) {
@@ -131,7 +131,7 @@ namespace ARGSS
 		VALUE rflash_dataE(VALUE self, VALUE flash_data) {
 			CheckDisposed(self);
 			Check_Classes_N(flash_data, ARGSS::ATable::getID());
-			Tilemap::Get(self).SetFlashData(flash_data);
+			Tilemap::get(self).setFlashData(flash_data);
 			return rb_iv_set(self, "@flash_data", flash_data);
 		}
 		VALUE rpriorities(VALUE self) {
@@ -141,7 +141,7 @@ namespace ARGSS
 		VALUE rprioritiesE(VALUE self, VALUE priorities) {
 			CheckDisposed(self);
 			Check_Classes_N(priorities, ARGSS::ATable::getID());
-			Tilemap::Get(self).SetPriorities(priorities);
+			Tilemap::get(self).setPriorities(priorities);
 			return rb_iv_set(self, "@priorities", priorities);
 		}
 		VALUE rvisible(VALUE self) {
@@ -150,7 +150,7 @@ namespace ARGSS
 		}
 		VALUE rvisibleE(VALUE self, VALUE visible) {
 			CheckDisposed(self);
-			Tilemap::Get(self).SetVisible(NUM2BOOL(visible));
+			Tilemap::get(self).setVisible(NUM2BOOL(visible));
 			return rb_iv_set(self, "@visible", visible);
 		}
 		VALUE rox(VALUE self) {
@@ -159,7 +159,7 @@ namespace ARGSS
 		}
 		VALUE roxE(VALUE self, VALUE ox) {
 			CheckDisposed(self);
-			Tilemap::Get(self).SetOx(NUM2INT(ox));
+			Tilemap::get(self).setOx(NUM2INT(ox));
 			return rb_iv_set(self, "@ox", ox);
 		}
 		VALUE roy(VALUE self) {
@@ -168,7 +168,7 @@ namespace ARGSS
 		}
 		VALUE royE(VALUE self, VALUE oy) {
 			CheckDisposed(self);
-			Tilemap::Get(self).SetOy(NUM2INT(oy));
+			Tilemap::get(self).setOy(NUM2INT(oy));
 			return rb_iv_set(self, "@oy", oy);
 		}
 

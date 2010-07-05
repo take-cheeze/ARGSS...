@@ -38,7 +38,7 @@ public:
 	Tone(VALUE tone);
 	~Tone();
 
-	void Set(VALUE tone);
+	void set(VALUE tone);
 
 	double red;
 	double green;

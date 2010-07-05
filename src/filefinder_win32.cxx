@@ -65,7 +65,7 @@ void FileFinder::Init() {
 #else
 	char* dir  = new char[256];
 #endif
-	int n = GetWindowsDirectory(dir, 256);
+	int n = getWindowsDirectory(dir, 256);
 	if (n > 0) {
 		char* str = (char*)dir;
 		for(unsigned int i = 0; i < n * sizeof(dir[0]); i++) {

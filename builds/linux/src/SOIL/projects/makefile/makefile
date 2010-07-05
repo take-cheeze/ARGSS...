@@ -12,7 +12,6 @@ LIBDIR = ../../lib
 INCDIR = ../../src
 OBJDIR = obj
 
-CXX = gcc
 CXXFLAGS = -O2 -s -Wall
 DELETER = rm -f
 COPIER = cp
@@ -39,7 +38,7 @@ $(BIN): $(OBJ)
 	@echo Done. As root, type 'make install' to install the library.
 
 $(OBJDIR)/%.o: $(SRCDIR)/%.c
-	$(CXX) $(CXXFLAGS) -o $@ -c $<
+	$(CC) $(CXXFLAGS) -o $@ -c $<
 
 
 clean:

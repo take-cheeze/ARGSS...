@@ -36,10 +36,10 @@ public:
 	ZObj(long iz, VALUE icreation, VALUE iid);
 	~ZObj();
 
-	void SetZ(long n);
-	long GetZ();
-	VALUE GetCreation();
-	VALUE GetId();
+	void setZ(long n);
+	long getZ();
+	VALUE getCreation();
+	VALUE getId();
 
 private:
 	long z;

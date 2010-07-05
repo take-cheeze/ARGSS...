@@ -37,6 +37,7 @@
 #include "registry.hxx"
 #include "options.hxx"
 
+
 namespace FileFinder
 {
 	namespace
@@ -103,7 +104,7 @@ namespace FileFinder
 		fonts_path.clear();
 
 		WCHAR dir[256];
-		int n = 0; // GetWindowsDirectory(dir, 256);
+		int n = 0; // getWindowsDirectory(dir, 256);
 		if (n > 0) {
 			char* str = (char*)dir;
 			for(unsigned int i = 0; i < n * sizeof(dir[0]); i++) {
@@ -156,7 +157,7 @@ namespace FileFinder
 			if (fexists(path)) return path;
 		}
 		for (int i = 0; i < 3; i++) {
-			if (rtp_paths[i] != "") {
+			if ( rtp_paths[i].empty() ) {
 				std::string rtp_path = slasher(rtp_paths[i]);
 				rtp_path += target;
 				path = rtp_path;

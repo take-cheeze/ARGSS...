@@ -47,8 +47,8 @@ namespace Audio
 		int bgs_channel;
 		Mix_Music* me;
 		bool me_playing;
-		std::map<int, Mix_Chunk*> sounds;
-		std::map<int, Mix_Chunk*>::iterator it_sounds;
+		std::map< int, Mix_Chunk* > sounds;
+		std::map< int, Mix_Chunk* >::iterator it_sounds;
 	} // namespace
 
 	////////////////////////////////////////////////////////////
@@ -101,7 +101,7 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	void BGM_Play(std::string const& file, int volume, int pitch) {
 		std::string path = FileFinder::FindMusic(file);
-		if (path == "") {
+		if ( path.empty() ) {
 			VALUE enoent = rb_const_get(rb_mErrno, rb_intern("ENOENT"));
 			rb_raise(enoent, "No such file or directory - %s", file.c_str());
 		}
@@ -151,7 +151,7 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	void BGS_Play(std::string const& file, int volume, int pitch) {
 		std::string path = FileFinder::FindMusic(file);
-		if (path == "") {
+		if ( path.empty() ) {
 			VALUE enoent = rb_const_get(rb_mErrno, rb_intern("ENOENT"));
 			rb_raise(enoent, "No such file or directory - %s", file.c_str());
 		}
@@ -186,7 +186,7 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	void ME_Play(std::string const& file, int volume, int pitch) {
 		std::string path = FileFinder::FindMusic(file);
-		if (path == "") {
+		if ( path.empty() ) {
 			VALUE enoent = rb_const_get(rb_mErrno, rb_intern("ENOENT"));
 			rb_raise(enoent, "No such file or directory - %s", file.c_str());
 		}
@@ -243,7 +243,7 @@ namespace Audio
 		if (sounds.size() >= 7) return;
 
 		std::string path = FileFinder::FindMusic(file);
-		if (path == "") {
+		if ( path.empty() ) {
 			VALUE enoent = rb_const_get(rb_mErrno, rb_intern("ENOENT"));
 			rb_raise(enoent, "No such file or directory - %s", file.c_str());
 		}

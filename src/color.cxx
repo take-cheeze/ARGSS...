@@ -32,25 +32,32 @@
 /// Constructor
 ////////////////////////////////////////////////////////////
 Color::Color()
+: red(0.0f)
+, green(0.0f)
+, blue(0.0f)
+, alpha(0.0f)
 {
-	red = 0.0f;
-	green = 0.0f;
-	blue = 0.0f;
-	alpha = 0.0f;
 }
 Color::Color(VALUE color)
+: red((float)NUM2DBL(rb_iv_get(color, "@red")))
+, green((float)NUM2DBL(rb_iv_get(color, "@green")))
+, blue((float)NUM2DBL(rb_iv_get(color, "@blue")))
+, alpha((float)NUM2DBL(rb_iv_get(color, "@alpha")))
 {
-	red = (float)NUM2DBL(rb_iv_get(color, "@red"));
-	green = (float)NUM2DBL(rb_iv_get(color, "@green"));
-	blue = (float)NUM2DBL(rb_iv_get(color, "@blue"));
-	alpha = (float)NUM2DBL(rb_iv_get(color, "@alpha"));
 }
 Color::Color(int ired, int igreen, int iblue, int ialpha)
+: red((float)ired)
+, green((float)igreen)
+, blue((float)iblue)
+, alpha((float)ialpha)
 {
-	red = (float)ired;
-	green = (float)igreen;
-	blue = (float)iblue;
-	alpha = (float)ialpha;
+}
+Color::Color(Color const& src)
+: red(src.red)
+, green(src.green)
+, blue(src.blue)
+, alpha(src.alpha)
+{
 }
 
 ////////////////////////////////////////////////////////////
@@ -61,9 +68,9 @@ Color::~Color()
 }
 
 ////////////////////////////////////////////////////////////
-/// Set
+/// set
 ////////////////////////////////////////////////////////////
-void Color::Set(VALUE color)
+void Color::set(VALUE color)
 {
 	red = (float)NUM2DBL(rb_iv_get(color, "@red"));
 	green = (float)NUM2DBL(rb_iv_get(color, "@green"));
@@ -72,18 +79,18 @@ void Color::Set(VALUE color)
 }
 
 ////////////////////////////////////////////////////////////
-/// Get ARGSS
+/// get ARGSS
 ////////////////////////////////////////////////////////////
-VALUE Color::GetARGSS()
+VALUE Color::getARGSS()
 {
 	VALUE args[4] = {rb_float_new(red), rb_float_new(green), rb_float_new(blue), rb_float_new(alpha)};
 	return rb_class_new_instance(4, args, ARGSS::AColor::getID());
 }
 
 ////////////////////////////////////////////////////////////
-/// Get Uint32
+/// get Uint32
 ////////////////////////////////////////////////////////////
-Uint32 Color::GetUint32()
+Uint32 Color::getUint32() const
 {
 	return ((Uint8)red) + (((Uint8)green) << 8) + (((Uint8)blue) << 16) + (((Uint8)alpha) << 24); 
 }

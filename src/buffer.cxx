@@ -28,25 +28,29 @@
 #include "buffer.hxx"
 #include <cstring>
 
-Buffer::Buffer(int size) {
+Buffer::Buffer(int size)
+{
 	m_pBuffer = new char[size];
 	m_Size = size;
 	m_Position = 0;
 }
 
-Buffer::Buffer(const char* pBuffer, int size) {
+Buffer::Buffer(const char* pBuffer, int size)
+{
 	m_pBuffer = strdup(pBuffer);
 	m_Size = size;
 	m_Position = 0;
 }
 
-void Buffer::WriteString(const std::string& str) {
+void Buffer::WriteString(const std::string& str)
+{
 	// TODO: make it memory secure
 	memcpy(m_pBuffer + m_Position, str.c_str(), str.size());
 	m_Position += str.size();
 }
 
-std::string Buffer::ReadString() {
+std::string Buffer::ReadString()
+{
 	unsigned int size = strlen(m_pBuffer + m_Position) + 1;
 	char* pBuffer = new char[size];
 	// TODO: make it memory secure
@@ -59,6 +63,7 @@ std::string Buffer::ReadString() {
 	return str;
 }
 
-Buffer::~Buffer() {
+Buffer::~Buffer()
+{
 	delete[] m_pBuffer;
 }

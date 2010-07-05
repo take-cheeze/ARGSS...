@@ -48,9 +48,9 @@ Tone::Tone(VALUE tone)
 Tone::~Tone() { }
 
 ////////////////////////////////////////////////////////////
-/// Set
+/// set
 ////////////////////////////////////////////////////////////
-void Tone::Set(VALUE tone) {
+void Tone::set(VALUE tone) {
 	red = NUM2DBL(rb_iv_get(tone, "@red"));
 	green = NUM2DBL(rb_iv_get(tone, "@green"));
 	blue = NUM2DBL(rb_iv_get(tone, "@blue"));

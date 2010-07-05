@@ -29,9 +29,9 @@
 #include "time_win32.hxx"
 
 ////////////////////////////////////////////////////////////
-/// Get time
+/// get time
 ////////////////////////////////////////////////////////////
-long Time::GetTime() {
+long Time::getTime() {
 	static LARGE_INTEGER frequency;
 	static BOOL htimer = QueryPerformanceFrequency(&frequency);
 
@@ -41,7 +41,7 @@ long Time::GetTime() {
 
 		return (long)(((double)tick.QuadPart * 1000.0) / (double)frequency.QuadPart);
 	}
-	return GetTickCount();
+	return getTickCount();
 }
 
 ////////////////////////////////////////////////////////////

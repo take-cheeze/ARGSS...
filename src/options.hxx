@@ -22,14 +22,16 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#define RPGXP 1
-#define RPGVX 2
+#ifndef _OPTIONS_HXX_
+#define _OPTIONS_HXX_
 
 ////////////////////////////////////////////////////////////
 /// RPGMAKER
 ///   Defines RPG Maker compability, RPGXP for RPG Maker XP and RPGVX for
 ///   RPG Maker VX.
 ////////////////////////////////////////////////////////////
+#define RPGXP 1
+#define RPGVX 2
 #define RPGMAKER RPGXP
 
 ////////////////////////////////////////////////////////////
@@ -61,6 +63,7 @@
 #define GAME_TITLE "ARGSS Player"
 #define SCRIPTS_PATH "scripts.rb"
 #define SCRIPTS_ZLIB false
+// #define RTP[3] { "", "", "", }
 #define RTP1 ""
 #define RTP2 ""
 #define RTP3 ""
@@ -158,3 +161,5 @@
 #define READ_BUTTON_ASSIGMENT true
 #define READ_BUTTON_ASSIGMENT_KEY "SOFTWARE\\Enterbrain\\RGSS"
 #define READ_BUTTON_ASSIGMENT_VALUE "ButtonAssign"
+
+#endif // _OPTIONS_HXX_

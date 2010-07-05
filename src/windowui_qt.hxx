@@ -15,26 +15,25 @@ public:
 	WindowUi(long iwidth, long iheight, std::string const& title, bool center, bool fs_flag);
 	virtual ~WindowUi();
 
-	void Dispose();
-	void SwapBuffers();
+	void swapBuffers();
 	void Resize(long nwidth, long nheight) { resize(nwidth, nheight); }
-	void SetTitle(std::string const& title) { setWindowTitle( title.c_str() ); }
+	void setTitle(std::string const& title) { setWindowTitle( title.c_str() ); }
 	void ToggleFullscreen() { showFullScreen(); }
 
-	long GetWidth() const { return width(); }
-	long GetHeight() const { return height(); }
+	long getWidth() const { return width(); }
+	long getHeight() const { return height(); }
 
-	bool GetEvent(Event& evnt);
+	bool getEvent(Event& evnt);
 	// int ProccesEvents(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	bool IsFullscreen() const { return isFullScreen(); }
-	bool GetMouseFocus() const { return  mouseFocus_; }
-	int GetMouseWheel() const { return mouseWheel_; }
-	int GetMousePosX() const { return mouseX_; }
-	int GetMousePosY() const { return mouseY_; }
+	bool getMouseFocus() const { return  mouseFocus_; }
+	int getMouseWheel() const { return mouseWheel_; }
+	int getMousePosX() const { return mouseX_; }
+	int getMousePosY() const { return mouseY_; }
 
-	std::vector< bool >& GetKeyStates() { return keys_; }
-	std::vector< bool > const& GetKeyStates() const { return keys_; }
+	std::vector< bool >& getKeyStates() { return keys_; }
+	std::vector< bool > const& getKeyStates() const { return keys_; }
 private:
 	Input::Keys::InputKey QtK2IK(QKeyEvent* event);
 

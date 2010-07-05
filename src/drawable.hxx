@@ -25,6 +25,11 @@
 #ifndef _DRAWABLE_HXX_
 #define _DRAWABLE_HXX_
 
+namespace Blend
+{
+	enum Type { NORMAL = 0, ADD = 1, SUBTRACT = 2, };
+} // namespace Blend
+
 ////////////////////////////////////////////////////////////
 /// Drawable virtual
 ////////////////////////////////////////////////////////////
@@ -36,6 +41,8 @@ public:
 	virtual void Draw(long z) = 0;
 
 	virtual void RefreshBitmaps() = 0;
+protected:
+	static void setBlendFunc(Blend::Type type);
 }; // class Drawable
 
 #endif

@@ -41,10 +41,10 @@ namespace Player
 
 	void ToggleFullscreen();
 	void ResizeWindow(long width, long height);
-	int GetWidth();
-	int GetHeight();
+	int getWidth();
+	int getHeight();
 
-	void SwapBuffers();
+	void swapBuffers();
 
 	WindowUi& getMainWindow();
 } // namespace Player

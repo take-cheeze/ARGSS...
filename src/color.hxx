@@ -41,11 +41,12 @@ public:
 	Color();
 	Color(VALUE color);
 	Color(int ired, int igreen, int iblue, int ialpha);
+	Color(Color const& src);
 	~Color();
 
-	void Set(VALUE color);
-	VALUE GetARGSS();
-	Uint32 GetUint32();
+	void set(VALUE color);
+	VALUE getARGSS();
+	Uint32 getUint32() const;
 
 	float red;
 	float green;

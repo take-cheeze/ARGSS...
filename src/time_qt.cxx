@@ -3,7 +3,7 @@
 
 namespace Time
 {
-	long GetTime()
+	long getTime()
 	{
 		return SDL_GetTicks();
 	}

@@ -33,35 +33,35 @@ public:
 	Buffer(int size);
 	Buffer(const char* pBuffer, int size);
 
-	template<class T> void Write(T obj) {
+	template<class T> void Write(T obj)
+	{
 		// TODO: make it secure, check number of bytes left to fill
 		// and fill them and only them.
 		memcpy(m_pBuffer + m_Position, &obj, sizeof(obj));
 		m_Position += sizeof(T);
-	};
+	}
 
-	template<class T> T Read() {
+	template<class T> T Read()
+	{
 		// TODO: read only available bytes, shorten the third parameter
 		// to the least possible to read.
 		T obj;
 		memcpy(&obj, m_pBuffer + m_Position, sizeof(obj));
 		return obj;
-	};
+	}
 
 	void WriteString(std::string const& str);
 	std::string ReadString();
 
-	char* GetData() { return m_pBuffer; }
-	int GetSize() { return m_Size; }
-	int GetPosition() { return m_Position; }
+	char* getData() { return m_pBuffer; }
+	int getSize() { return m_Size; }
+	int getPosition() { return m_Position; }
 
 	~Buffer();
-
 private:
 	char* m_pBuffer;
 	int m_Size;
 	int m_Position;
-
 }; // class Buffer
 
 #endif

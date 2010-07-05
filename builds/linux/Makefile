@@ -13,11 +13,6 @@ LINUX_SRC_DIR = src
 LINUX_SRC_C = $(wildcard $(LINUX_SRC_DIR)/*.c)
 OBJS += $(subst $(LINUX_SRC_DIR), $(OBJS_DIR), $(LINUX_SRC_C:.c=.o))
 
-COMPILER_PREFIX = ccache
-CXX = $(COMPILER_PREFIX) g++
-CC  = $(COMPILER_PREFIX) gcc
-LD  = g++
-
 CFLAGS = \
 	-Wall -Os -pg -g3 \
 	-I$(SRC_DIR) \
@@ -31,7 +26,7 @@ CFLAGS = \
 
 CFLAGS += -D_FORTIFY_SOURCE=1 -fstack-protector-all
 CXXFLAGS = $(CFLAGS) -I/usr/include/qt4
-LDFLAGS = -Wl,-Map=$(TARGET).map --enable-gold
+LDFLAGS = --enable-gold
 
 LIBS = \
 	$(shell sdl-config --libs) \

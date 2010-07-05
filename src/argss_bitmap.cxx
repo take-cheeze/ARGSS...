@@ -25,6 +25,7 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <iostream>
 #include <string>
 
 #include "argss_bitmap.hxx"
@@ -57,7 +58,7 @@ namespace ARGSS
 			switch(argc) {
 				case 0: raise_argn(argc, 1);
 					break;
-				case 1: Bitmap::New(self, StringValuePtr(argv[0]));
+				case 1: Bitmap::New(self, RSTRING_PTR(argv[0]));
 					break;
 				case 2: Bitmap::New(self, NUM2INT(argv[0]), NUM2INT(argv[1]));
 					break;
@@ -76,31 +77,36 @@ namespace ARGSS
 			}
 			return self;
 		}
-		VALUE rdisposedQ(VALUE self) {
+		VALUE rdisposedQ(VALUE self)
+		{
 			return INT2BOOL(Bitmap::IsDisposed(self));
 		}
-		VALUE rwidth(VALUE self) {
+		VALUE rwidth(VALUE self)
+		{
 			CheckDisposed(self);
-			return INT2NUM(Bitmap::Get(self).GetWidth());
+			return INT2NUM(Bitmap::get(self).getWidth());
 		}
-		VALUE rheight(VALUE self) {
+		VALUE rheight(VALUE self)
+		{
 			CheckDisposed(self);
-			return INT2NUM(Bitmap::Get(self).GetHeight());
+			return INT2NUM(Bitmap::get(self).getHeight());
 		}
-		VALUE rrect(VALUE self) {
+		VALUE rrect(VALUE self)
+		{
 			CheckDisposed(self);
-			return Bitmap::Get(self).GetRect().GetARGSS();
+			return Bitmap::get(self).getRect().getARGSS();
 		}
-		VALUE rblt(int argc, VALUE *argv, VALUE self) {
+		VALUE rblt(int argc, VALUE *argv, VALUE self)
+		{
 			CheckDisposed(self);
 			if (argc < 4) raise_argn(argc, 4);
 			else if (argc > 5) raise_argn(argc, 5);
 			CheckDisposed(argv[2]);
 			if (argc == 5) {
-				Bitmap::Get(self).Blit(NUM2INT(argv[0]), NUM2INT(argv[1]), Bitmap::Get(argv[2]), Rect(argv[3]), NUM2INT(argv[4]));
+				Bitmap::get(self).Blit(NUM2INT(argv[0]), NUM2INT(argv[1]), Bitmap::get(argv[2]), Rect(argv[3]), NUM2INT(argv[4]));
 			}
 			else {
-				Bitmap::Get(self).Blit(NUM2INT(argv[0]), NUM2INT(argv[1]), Bitmap::Get(argv[2]), Rect(argv[3]), 255);
+				Bitmap::get(self).Blit(NUM2INT(argv[0]), NUM2INT(argv[1]), Bitmap::get(argv[2]), Rect(argv[3]), 255);
 			}
 			return self;
 		}
@@ -110,97 +116,103 @@ namespace ARGSS
 			else if (argc > 4) raise_argn(argc, 4);
 			CheckDisposed(argv[1]);
 			if (argc == 4) {
-				Bitmap::Get(self).StretchBlit(Rect(argv[0]), Bitmap::Get(argv[1]), Rect(argv[2]), NUM2INT(argv[3]));
+				Bitmap::get(self).StretchBlit(Rect(argv[0]), Bitmap::get(argv[1]), Rect(argv[2]), NUM2INT(argv[3]));
 			}
 			else {
-				Bitmap::Get(self).StretchBlit(Rect(argv[0]), Bitmap::Get(argv[1]), Rect(argv[2]), 255);
+				Bitmap::get(self).StretchBlit(Rect(argv[0]), Bitmap::get(argv[1]), Rect(argv[2]), 255);
 			}
 			return self;
 		}
-		VALUE rfill_rect(int argc, VALUE *argv, VALUE self) {
+		VALUE rfill_rect(int argc, VALUE *argv, VALUE self)
+		{
 			CheckDisposed(self);
 			if (argc < 2) raise_argn(argc, 2);
 			else if (argc == 2) {
-				Bitmap::Get(self).FillRect(Rect(argv[0]), Color(argv[1]));
+				Bitmap::get(self).FillRect(Rect(argv[0]), Color(argv[1]));
 			}
 			else if (argc == 5) {
-				Bitmap::Get(self).FillRect(Rect(NUM2INT(argv[0]), NUM2INT(argv[1]), NUM2INT(argv[2]), NUM2INT(argv[3])), Color(argv[4]));
+				Bitmap::get(self).FillRect(Rect(NUM2INT(argv[0]), NUM2INT(argv[1]), NUM2INT(argv[2]), NUM2INT(argv[3])), Color(argv[4]));
 			}
 			else raise_argn(argc, 5);
 			return self;
 		}
-		VALUE rclear(int argc, VALUE *argv, VALUE self) {
+		VALUE rclear(int argc, VALUE *argv, VALUE self)
+		{
 			CheckDisposed(self);
 			if (argc > 1) raise_argn(argc, 1);
 			else if (argc == 1) {
-				Bitmap::Get(self).Clear(Color(argv[0]));
+				Bitmap::get(self).Clear(Color(argv[0]));
 			}
 			else {
-				Bitmap::Get(self).Clear();
+				Bitmap::get(self).Clear();
 			}
 			return self;
 		}
-		VALUE rget_pixel(VALUE self, VALUE x, VALUE y) {
+		VALUE rget_pixel(VALUE self, VALUE x, VALUE y)
+		{
 			CheckDisposed(self);
-			return Bitmap::Get(self).GetPixel(NUM2INT(x), NUM2INT(y)).GetARGSS();
+			return Bitmap::get(self).getPixel(NUM2INT(x), NUM2INT(y)).getARGSS();
 		}
 		VALUE rset_pixel(VALUE self, VALUE x, VALUE y, VALUE color) {
 			CheckDisposed(self);
-			Bitmap::Get(self).SetPixel(NUM2INT(x), NUM2INT(y), Color(color));
+			Bitmap::get(self).setPixel(NUM2INT(x), NUM2INT(y), Color(color));
 			return self;
 		}
-		VALUE rhue_change(VALUE self, VALUE hue) {
+		VALUE rhue_change(VALUE self, VALUE hue)
+		{
 			CheckDisposed(self);
-			Bitmap::Get(self).HueChange(NUM2DBL(hue));
+			Bitmap::get(self).HueChange(NUM2DBL(hue));
 			return self;
 		}
-		VALUE rsaturation_change(VALUE self, VALUE saturation) {
+		VALUE rsaturation_change(VALUE self, VALUE saturation)
+		{
 			CheckDisposed(self);
-			Bitmap::Get(self).SatChange(NUM2DBL(saturation));
+			Bitmap::get(self).SatChange(NUM2DBL(saturation));
 			return self;
 		}
-		VALUE rluminance_change(VALUE self, VALUE luminance) {
+		VALUE rluminance_change(VALUE self, VALUE luminance)
+		{
 			CheckDisposed(self);
-			Bitmap::Get(self).LumChange(NUM2DBL(luminance));
+			Bitmap::get(self).LumChange(NUM2DBL(luminance));
 			return self;
 		}
-		VALUE rhsl_change(int argc, VALUE *argv, VALUE self) {
+		VALUE rhsl_change(int argc, VALUE *argv, VALUE self)
+		{
 			CheckDisposed(self);
 			if (argc < 3) raise_argn(argc, 3);
 			else if (argc > 4) raise_argn(argc, 4);
-			if (argc == 4) {
-				Bitmap::Get(self).HSLChange(NUM2DBL(argv[0]), NUM2DBL(argv[1]), NUM2DBL(argv[2]), Rect(argv[3]));
-			}
-			else {
-				Bitmap::Get(self).HSLChange(NUM2DBL(argv[0]), NUM2DBL(argv[1]), NUM2DBL(argv[2]));
-			}
+
+			if (argc == 4) Bitmap::get(self).HSLChange(NUM2DBL(argv[0]), NUM2DBL(argv[1]), NUM2DBL(argv[2]), Rect(argv[3]));
+			else Bitmap::get(self).HSLChange(NUM2DBL(argv[0]), NUM2DBL(argv[1]), NUM2DBL(argv[2]));
+
 			return self;
 		}
-		VALUE rdraw_text(int argc, VALUE *argv, VALUE self) {
+		VALUE rdraw_text(int argc, VALUE *argv, VALUE self)
+		{
 			CheckDisposed(self);
 			int align = 0;
 			if (argc < 2) raise_argn(argc, 2);
 			else if (argc < 4) {
-				if (argc == 3) {
-					align = NUM2INT(argv[2]);
-				}
-				Bitmap::Get(self).TextDraw(Rect(argv[0]), StringValuePtr(argv[1]), align);
+				if (argc == 3) align = NUM2INT(argv[2]);
+
+				Bitmap::get(self).TextDraw(Rect(argv[0]), StringValuePtr(argv[1]), align);
 			}
 			else if (argc == 4) raise_argn(argc, 3);
 			else if (argc < 7) {
-				if (argc == 6) {
-					align = NUM2INT(argv[5]);
-				}
-				Bitmap::Get(self).TextDraw(Rect(NUM2INT(argv[0]), NUM2INT(argv[1]), NUM2INT(argv[2]), NUM2INT(argv[3])), StringValuePtr(argv[4]), align);
+				if (argc == 6) align = NUM2INT(argv[5]);
+
+				Bitmap::get(self).TextDraw(Rect(NUM2INT(argv[0]), NUM2INT(argv[1]), NUM2INT(argv[2]), NUM2INT(argv[3])), StringValuePtr(argv[4]), align);
 			}
 			else raise_argn(argc, 6);
 			return self;
 		}
-		VALUE rtext_size(VALUE self, VALUE str) {
+		VALUE rtext_size(VALUE self, VALUE str)
+		{
 			CheckDisposed(self);
-			return Bitmap::Get(self).GetTextSize(StringValuePtr(str)).GetARGSS();
+			return Bitmap::get(self).getTextSize(StringValuePtr(str)).getARGSS();
 		}
-		VALUE rgradient_fill_rect(int argc, VALUE *argv, VALUE self) {
+		VALUE rgradient_fill_rect(int argc, VALUE *argv, VALUE self)
+		{
 			CheckDisposed(self);
 			if (argc < 3) raise_argn(argc, 3);
 			else if (argc < 5) {
@@ -208,7 +220,7 @@ namespace ARGSS
 				if (argc == 4) {
 					vertical = NUM2BOOL(argv[3]);
 				}
-			Bitmap::Get(self).GradientFillRect(Rect(argv[0]), Color(argv[1]), Color(argv[2]), vertical);
+			Bitmap::get(self).GradientFillRect(Rect(argv[0]), Color(argv[1]), Color(argv[2]), vertical);
 			}
 			else if (argc < 6) raise_argn(argc, 6);
 			else if (argc < 8) {
@@ -216,31 +228,34 @@ namespace ARGSS
 				if (argc == 4) {
 					vertical = NUM2BOOL(argv[6]);
 				}
-				Bitmap::Get(self).GradientFillRect(Rect(NUM2INT(argv[0]), NUM2INT(argv[1]), NUM2INT(argv[2]), NUM2INT(argv[3])), Color(argv[4]), Color(argv[5]), vertical);
+				Bitmap::get(self).GradientFillRect(Rect(NUM2INT(argv[0]), NUM2INT(argv[1]), NUM2INT(argv[2]), NUM2INT(argv[3])), Color(argv[4]), Color(argv[5]), vertical);
 			}
 			else raise_argn(argc, 7);
 			return self;
 		}
-		VALUE rclear_rect(int argc, VALUE *argv, VALUE self) {
+		VALUE rclear_rect(int argc, VALUE *argv, VALUE self)
+		{
 			CheckDisposed(self);
 			if (argc < 1) raise_argn(argc, 1);
 			if (argc == 1) {
-				Bitmap::Get(self).ClearRect(Rect(argv[0]));
+				Bitmap::get(self).ClearRect(Rect(argv[0]));
 			}
 			else if (argc == 4) {
-				Bitmap::Get(self).ClearRect(Rect(NUM2INT(argv[0]), NUM2INT(argv[1]), NUM2INT(argv[2]), NUM2INT(argv[3])));
+				Bitmap::get(self).ClearRect(Rect(NUM2INT(argv[0]), NUM2INT(argv[1]), NUM2INT(argv[2]), NUM2INT(argv[3])));
 			}
 			else raise_argn(argc, 4);
 			return self;
 		}
-		VALUE rblur(VALUE self) {
+		VALUE rblur(VALUE self)
+		{
 			CheckDisposed(self);
-			Bitmap::Get(self).Blur();
+			Bitmap::get(self).Blur();
 			return self;
 		}
-		VALUE rradial_blur(VALUE self, VALUE angle, VALUE division) {
+		VALUE rradial_blur(VALUE self, VALUE angle, VALUE division)
+		{
 			CheckDisposed(self);
-			Bitmap::Get(self).RadialBlur(NUM2INT(angle), NUM2INT(division));
+			Bitmap::get(self).RadialBlur(NUM2INT(angle), NUM2INT(division));
 			return self;
 		}
 		VALUE rfont(VALUE self)
@@ -257,11 +272,11 @@ namespace ARGSS
 		VALUE rdup(VALUE self)
 		{
 			CheckDisposed(self);
-			int width = Bitmap::Get(self).GetWidth();
-			int height = Bitmap::Get(self).GetHeight();
+			int width = Bitmap::get(self).getWidth();
+			int height = Bitmap::get(self).getHeight();
 			VALUE args[2] = {INT2NUM(width), INT2NUM(height)};
 			VALUE bmp = rb_class_new_instance(2, args, id);
-			Bitmap::Get(bmp).Blit(0, 0, Bitmap::Get(self), Rect(0, 0, width, height), 255);
+			Bitmap::get(bmp).Blit(0, 0, Bitmap::get(self), Rect(0, 0, width, height), 255);
 			return bmp;
 		}
 

@@ -49,19 +49,23 @@ namespace ARGSS
 		////////////////////////////////////////////////////////////
 		/// ARGSS Output ruby functions
 		////////////////////////////////////////////////////////////
-		VALUE rconsole(VALUE self) {
+		VALUE rconsole(VALUE self)
+		{
 			Output::Console();
 			return Qnil;
 		}
-		VALUE rmsgbox(VALUE self) {
+		VALUE rmsgbox(VALUE self)
+		{
 			Output::MsgBox();
 			return Qnil;
 		}
-		VALUE rfile(VALUE self, VALUE file) {
+		VALUE rfile(VALUE self, VALUE file)
+		{
 			Output::File(StringValuePtr(file));
 			return Qnil;
 		}
-		VALUE rnone(VALUE self) {
+		VALUE rnone(VALUE self)
+		{
 			Output::None();
 			return Qnil;
 		}
@@ -85,12 +89,12 @@ namespace ARGSS
 		}
 		VALUE stdin_gets(int argc, VALUE *argv, VALUE self)
 		{
-			std::string str = Output::Gets();
+			std::string str = Output::getString();
 			return rb_str_new(str.c_str(), str.length());
 		}
 		VALUE stdin_getc(int argc, VALUE *argv, VALUE self)
 		{
-			std::string str = Output::Getc();
+			std::string str = Output::getChar();
 			return rb_str_new(str.c_str(), str.length());
 		}
 

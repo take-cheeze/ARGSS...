@@ -63,7 +63,7 @@ namespace ARGSS
 			}
 			else raise_argn(argc, 1);
 			rb_iv_set(self, "@bitmap", Qnil);
-			rb_iv_set(self, "@src_rect", ARGSS::ARect::New(0, 0, 0, 0));
+			rb_iv_set(self, "@srcRect", ARGSS::ARect::New(0, 0, 0, 0));
 			rb_iv_set(self, "@visible", Qtrue);
 			rb_iv_set(self, "@x", INT2NUM(0));
 			rb_iv_set(self, "@y", INT2NUM(0));
@@ -99,25 +99,25 @@ namespace ARGSS
 		VALUE rflash(VALUE self, VALUE color, VALUE duration) {
 			Check(self);
 			if (color == Qnil) {
-				Sprite::Get(self).Flash(NUM2INT(duration));
+				Sprite::get(self).Flash(NUM2INT(duration));
 			}
 			else {
-				Sprite::Get(self).Flash(Color(color), NUM2INT(duration));
+				Sprite::get(self).Flash(Color(color), NUM2INT(duration));
 			}
 			return Qnil;
 		}
 		VALUE rupdate(VALUE self) {
 			Check(self);
-			Sprite::Get(self).Update();
+			Sprite::get(self).Update();
 			return Qnil;
 		}
 		VALUE rwidth(VALUE self) {
 			Check(self);
-			return rb_iv_get(rb_iv_get(self, "@src_rect"), "@width");
+			return rb_iv_get(rb_iv_get(self, "@srcRect"), "@width");
 		}
 		VALUE rheight(VALUE self) {
 			Check(self);
-			return rb_iv_get(rb_iv_get(self, "@src_rect"), "@height");
+			return rb_iv_get(rb_iv_get(self, "@srcRect"), "@height");
 		}
 		VALUE rviewport(VALUE self) {
 			Check(self);
@@ -127,7 +127,7 @@ namespace ARGSS
 			Check(self);
 			Check_Classes_N(viewport, ARGSS::AViewport::getID());
 			if (viewport != Qnil) ARGSS::AViewport::CheckDisposed(viewport);
-			Sprite::Get(self).SetViewport(viewport);
+			Sprite::get(self).setViewport(viewport);
 			return rb_iv_set(self, "@viewport", viewport);
 		}
 		VALUE rbitmap(VALUE self) {
@@ -138,91 +138,106 @@ namespace ARGSS
 			Check(self);
 			Check_Classes_N(bitmap, ARGSS::ABitmap::getID());
 			if (bitmap != Qnil) {
-				VALUE src_rect = rb_iv_get(self, "@src_rect");
-				rb_iv_set(src_rect, "@x", INT2NUM(0));
-				rb_iv_set(src_rect, "@y", INT2NUM(0));
+				VALUE srcRect = rb_iv_get(self, "@srcRect");
+				rb_iv_set(srcRect, "@x", INT2NUM(0));
+				rb_iv_set(srcRect, "@y", INT2NUM(0));
 				if (!Bitmap::IsDisposed(bitmap)) {
-					rb_iv_set(src_rect, "@width", INT2NUM(Bitmap::Get(bitmap).GetWidth()));
-					rb_iv_set(src_rect, "@height", INT2NUM(Bitmap::Get(bitmap).GetHeight()));
+					rb_iv_set(srcRect, "@width", INT2NUM(Bitmap::get(bitmap).getWidth()));
+					rb_iv_set(srcRect, "@height", INT2NUM(Bitmap::get(bitmap).getHeight()));
 				}
 				else {
-					rb_iv_set(src_rect, "@width", INT2NUM(0));
-					rb_iv_set(src_rect, "@height", INT2NUM(0));
+					rb_iv_set(srcRect, "@width", INT2NUM(0));
+					rb_iv_set(srcRect, "@height", INT2NUM(0));
 				}
 			}
-			Sprite::Get(self).SetBitmap(bitmap);
+			Sprite::get(self).setBitmap(bitmap);
 			return rb_iv_set(self, "@bitmap", bitmap);
 		}
-		VALUE rsrc_rect(VALUE self) {
+		VALUE rsrcRect(VALUE self)
+		{
 			Check(self);
-			return rb_iv_get(self, "@src_rect");
+			return rb_iv_get(self, "@srcRect");
 		}
-		VALUE rsrc_rectE(VALUE self, VALUE src_rect) {
+		VALUE rsrcRectE(VALUE self, VALUE srcRect)
+		{
 			Check(self);
-			Check_Class(src_rect, ARGSS::ARect::getID());
-			Sprite::Get(self).SetSrcRect(src_rect);
-			return rb_iv_set(self, "@src_rect", src_rect);
+			Check_Class(srcRect, ARGSS::ARect::getID());
+			Sprite::get(self).setSrcRect(srcRect);
+			return rb_iv_set(self, "@srcRect", srcRect);
 		}
-		VALUE rvisible(VALUE self) {
+		VALUE rvisible(VALUE self)
+		{
 			Check(self);
 			return rb_iv_get(self, "@visible");
 		}
-		VALUE rvisibleE(VALUE self, VALUE visible) {
+		VALUE rvisibleE(VALUE self, VALUE visible)
+		{
 			Check(self);
-			Sprite::Get(self).SetVisible(NUM2BOOL(visible));
+			Sprite::get(self).setVisible(NUM2BOOL(visible));
 			return rb_iv_set(self, "@visible", visible);
 		}
-		VALUE rx(VALUE self) {
+		VALUE rx(VALUE self)
+		{
 			Check(self);
 			return rb_to_int(rb_iv_get(self, "@x"));
 		}
-		VALUE rfx(VALUE self) {
+		VALUE rfx(VALUE self)
+		{
 			Check(self);
 			return rb_Float(rb_iv_get(self, "@x"));
 		}
-		VALUE rxE(VALUE self, VALUE x) {
+		VALUE rxE(VALUE self, VALUE x)
+		{
 			Check(self);
-			Sprite::Get(self).SetX(NUM2INT(x));
+			Sprite::get(self).setX(NUM2INT(x));
 			return rb_iv_set(self, "@x", x);
 		}
-		VALUE ry(VALUE self) {
+		VALUE ry(VALUE self)
+		{
 			Check(self);
 			return rb_to_int(rb_iv_get(self, "@y"));
 		}
-		VALUE rfy(VALUE self) {
+		VALUE rfy(VALUE self)
+		{
 			Check(self);
 			return rb_Float(rb_iv_get(self, "@y"));
 		}
-		VALUE ryE(VALUE self, VALUE y) {
+		VALUE ryE(VALUE self, VALUE y)
+		{
 			Check(self);
-			Sprite::Get(self).SetY(NUM2INT(y));
+			Sprite::get(self).setY(NUM2INT(y));
 			return rb_iv_set(self, "@y", y);
 		}
-		VALUE rz(VALUE self) {
+		VALUE rz(VALUE self)
+		{
 			Check(self);
 			return rb_iv_get(self, "@z");
 		}
-		VALUE rzE(VALUE self, VALUE z) {
+		VALUE rzE(VALUE self, VALUE z)
+		{
 			Check(self);
-			Sprite::Get(self).SetZ(NUM2INT(z));
+			Sprite::get(self).setZ(NUM2INT(z));
 			return rb_iv_set(self, "@z", rb_to_int(z));
 		}
-		VALUE rox(VALUE self) {
+		VALUE rox(VALUE self)
+		{
 			Check(self);
 			return rb_iv_get(self, "@ox");
 		}
-		VALUE roxE(VALUE self, VALUE ox) {
+		VALUE roxE(VALUE self, VALUE ox)
+		{
 			Check(self);
-			Sprite::Get(self).SetOx(NUM2INT(ox));
+			Sprite::get(self).setOx(NUM2INT(ox));
 			return rb_iv_set(self, "@ox", ox);
 		}
-		VALUE roy(VALUE self) {
+		VALUE roy(VALUE self)
+		{
 			Check(self);
 			return rb_iv_get(self, "@oy");
 		}
 		VALUE royE(VALUE self, VALUE oy) {
 			Check(self);
-			Sprite::Get(self).SetOy(NUM2INT(oy));
+			Sprite::get(self).setOy(NUM2INT(oy));
 			return rb_iv_set(self, "@oy", oy);
 		}
 		VALUE rzoom_x(VALUE self) {
@@ -231,7 +246,7 @@ namespace ARGSS
 		}
 		VALUE rzoom_xE(VALUE self, VALUE zoom_x) {
 			Check(self);
-			Sprite::Get(self).SetZoomX((float)NUM2DBL(zoom_x));
+			Sprite::get(self).setZoomX((float)NUM2DBL(zoom_x));
 			return rb_iv_set(self, "@zoom_x", rb_Float(zoom_x));
 		}
 		VALUE rzoom_y(VALUE self) {
@@ -240,7 +255,7 @@ namespace ARGSS
 		}
 		VALUE rzoom_yE(VALUE self, VALUE zoom_y) {
 			Check(self);
-			Sprite::Get(self).SetZoomY((float)NUM2DBL(zoom_y));
+			Sprite::get(self).setZoomY((float)NUM2DBL(zoom_y));
 			return rb_iv_set(self, "@zoom_y", rb_Float(zoom_y));
 		}
 		VALUE rangle(VALUE self) {
@@ -249,43 +264,51 @@ namespace ARGSS
 		}
 		VALUE rangleE(VALUE self, VALUE angle) {
 			Check(self);
-			Sprite::Get(self).SetAngle((float)NUM2DBL(angle));
+			Sprite::get(self).setAngle((float)NUM2DBL(angle));
 			return rb_iv_set(self, "@angle", rb_Float(angle));
 		}
-		VALUE rmirror(VALUE self) {
+		VALUE rmirror(VALUE self)
+		{
 			Check(self);
 			return rb_iv_get(self, "@flipx");
 		}
-		VALUE rmirrorE(VALUE self, VALUE mirror) {
+		VALUE rmirrorE(VALUE self, VALUE mirror)
+		{
 			Check(self);
-			Sprite::Get(self).SetFlipX(NUM2BOOL(mirror));
+			Sprite::get(self).setFlipX(NUM2BOOL(mirror));
 			return rb_iv_set(self, "@flipx", mirror);
 		}
-		VALUE rflipx(VALUE self) {
+		VALUE rflipx(VALUE self)
+		{
 			Check(self);
 			return rb_iv_get(self, "@flipx");
 		}
-		VALUE rflipxE(VALUE self, VALUE flipx) {
+		VALUE rflipxE(VALUE self, VALUE flipx)
+		{
 			Check(self);
-			Sprite::Get(self).SetFlipX(NUM2BOOL(flipx));
+			Sprite::get(self).setFlipX(NUM2BOOL(flipx));
 			return rb_iv_set(self, "@flipx", flipx);
 		}
-		VALUE rflipy(VALUE self) {
+		VALUE rflipy(VALUE self)
+		{
 			Check(self);
 			return rb_iv_get(self, "@flipy");
 		}
-		VALUE rflipyE(VALUE self, VALUE flipy) {
+		VALUE rflipyE(VALUE self, VALUE flipy)
+		{
 			Check(self);
-			Sprite::Get(self).SetFlipY(NUM2BOOL(flipy));
+			Sprite::get(self).setFlipY(NUM2BOOL(flipy));
 			return rb_iv_set(self, "@flipy", flipy);
 		}
-		VALUE rbush_depth(VALUE self) {
+		VALUE rbush_depth(VALUE self)
+		{
 			Check(self);
 			return rb_iv_get(self, "@bush_depth");
 		}
-		VALUE rbush_depthE(VALUE self, VALUE bush_depth) {
+		VALUE rbush_depthE(VALUE self, VALUE bush_depth)
+		{
 			Check(self);
-			Sprite::Get(self).SetBushDepth(NUM2INT(bush_depth));
+			Sprite::get(self).setBushDepth(NUM2INT(bush_depth));
 			return rb_iv_set(self, "@bush_depth", bush_depth);
 		}
 		VALUE ropacity(VALUE self) {
@@ -294,45 +317,51 @@ namespace ARGSS
 		}
 		VALUE ropacityE(VALUE self, VALUE opacity) {
 			Check(self);
-			Sprite::Get(self).SetOpacity(NUM2INT(opacity));
+			Sprite::get(self).setOpacity(NUM2INT(opacity));
 			return rb_iv_set(self, "@opacity", opacity);
 		}
 		VALUE rblend_type(VALUE self) {
 			Check(self);
 			return rb_iv_get(self, "@blend_type");
 		}
-		VALUE rblend_typeE(VALUE self, VALUE blend_type) {
+		VALUE rblend_typeE(VALUE self, VALUE blend_type)
+		{
 			Check(self);
 			int type = NUM2INT(blend_type);
-			if (type < 0 || type > 3) type = 0;
-			Sprite::Get(self).SetBlendType(type);
+			if (type < 0 || type > 3) type = Blend::NORMAL;
+			Sprite::get(self).setBlendType( Blend::Type(type) );
 			return rb_iv_set(self, "@blend_type", INT2NUM(type));
 		}
-		VALUE rcolor(VALUE self) {
+		VALUE rcolor(VALUE self)
+		{
 			Check(self);
 			return rb_iv_get(self, "@color");
 		}
-		VALUE rcolorE(VALUE self, VALUE color) {
+		VALUE rcolorE(VALUE self, VALUE color)
+		{
 			Check(self);
 			Check_Class(color, ARGSS::AColor::getID());
-			Sprite::Get(self).SetColor(color);
+			Sprite::get(self).setColor(color);
 			return rb_iv_set(self, "@color", color);
 		}
-		VALUE rtone(VALUE self) {
+		VALUE rtone(VALUE self)
+		{
 			Check(self);
 			return rb_iv_get(self, "@tone");
 		}
-		VALUE rtoneE(VALUE self, VALUE tone) {
+		VALUE rtoneE(VALUE self, VALUE tone)
+		{
 			Check(self);
 			Check_Class(tone, ARGSS::ATone::getID());
-			Sprite::Get(self).SetTone(tone);
+			Sprite::get(self).setTone(tone);
 			return rb_iv_set(self, "@tone", tone);
 		}
 
 		////////////////////////////////////////////////////////////
 		/// ARGSS Sprite initialize
 		////////////////////////////////////////////////////////////
-		void Init() {
+		void Init()
+		{
 			id = rb_define_class("Sprite", rb_cObject);
 			static FuncTable funcTable =
 			{
@@ -344,7 +373,7 @@ namespace ARGSS
 				{ ARGSS_FUNC(height), 0 },
 				ARGSS_GETTER_SETTER(viewport),
 				ARGSS_GETTER_SETTER(bitmap),
-				ARGSS_GETTER_SETTER(src_rect),
+				ARGSS_GETTER_SETTER(srcRect),
 				ARGSS_GETTER_SETTER(visible),
 				ARGSS_GETTER_SETTER(x), { ARGSS_FUNC(fx), 0 },
 				ARGSS_GETTER_SETTER(y), { ARGSS_FUNC(fy), 0 },
@@ -369,7 +398,8 @@ namespace ARGSS
 		////////////////////////////////////////////////////////////
 		/// Check if sprite isn't disposed
 		////////////////////////////////////////////////////////////
-		void Check(VALUE self) {
+		void Check(VALUE self)
+		{
 			if (Sprite::IsDisposed(self)) {
 				rb_raise(ARGSS::AError::getID(), "disposed sprite <%i>", (int)self);
 			}

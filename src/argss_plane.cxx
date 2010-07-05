@@ -99,7 +99,7 @@ namespace ARGSS
 		{
 			CheckDisposed(self);
 			Check_Classes_N(viewport, ARGSS::AViewport::getID());
-			Plane::Get(self).SetViewport(viewport);
+			Plane::get(self).setViewport(viewport);
 			return rb_iv_set(self, "@viewport", viewport);
 		}
 		VALUE rbitmap(VALUE self)
@@ -111,7 +111,7 @@ namespace ARGSS
 		{
 			CheckDisposed(self);
 			Check_Classes_N(bitmap, ARGSS::ABitmap::getID());
-			Plane::Get(self).SetBitmap(bitmap);
+			Plane::get(self).setBitmap(bitmap);
 			return rb_iv_set(self, "@bitmap", bitmap);
 		}
 		VALUE rvisible(VALUE self)
@@ -122,7 +122,7 @@ namespace ARGSS
 		VALUE rvisibleE(VALUE self, VALUE visible)
 		{
 			CheckDisposed(self);
-			Plane::Get(self).SetVisible(NUM2BOOL(visible));
+			Plane::get(self).setVisible(NUM2BOOL(visible));
 			return rb_iv_set(self, "@visible", visible);
 		}
 		VALUE rz(VALUE self)
@@ -133,7 +133,7 @@ namespace ARGSS
 		VALUE rzE(VALUE self, VALUE z)
 		{
 			CheckDisposed(self);
-			Plane::Get(self).SetZ(NUM2INT(z));
+			Plane::get(self).setZ(NUM2INT(z));
 			return rb_iv_set(self, "@z", z);
 		}
 		VALUE rox(VALUE self)
@@ -144,7 +144,7 @@ namespace ARGSS
 		VALUE roxE(VALUE self, VALUE ox)
 		{
 			CheckDisposed(self);
-			Plane::Get(self).SetOx(NUM2INT(ox));
+			Plane::get(self).setOx(NUM2INT(ox));
 			return rb_iv_set(self, "@ox", ox);
 		}
 		VALUE roy(VALUE self)
@@ -155,7 +155,7 @@ namespace ARGSS
 		VALUE royE(VALUE self, VALUE oy)
 		{
 			CheckDisposed(self);
-			Plane::Get(self).SetOy(NUM2INT(oy));
+			Plane::get(self).setOy(NUM2INT(oy));
 			return rb_iv_set(self, "@oy", oy);
 		}
 		VALUE rzoom_x(VALUE self)
@@ -166,7 +166,7 @@ namespace ARGSS
 		VALUE rzoom_xE(VALUE self, VALUE zoom_x)
 		{
 			CheckDisposed(self);
-			Plane::Get(self).SetZoomX((float)NUM2DBL(zoom_x));
+			Plane::get(self).setZoomX((float)NUM2DBL(zoom_x));
 			return rb_iv_set(self, "@zoom_x", zoom_x);
 		}
 		VALUE rzoom_y(VALUE self) {
@@ -175,7 +175,7 @@ namespace ARGSS
 		}
 		VALUE rzoom_yE(VALUE self, VALUE zoom_y) {
 			CheckDisposed(self);
-			Plane::Get(self).SetZoomY((float)NUM2DBL(zoom_y));
+			Plane::get(self).setZoomY((float)NUM2DBL(zoom_y));
 			return rb_iv_set(self, "@zoom_y", zoom_y);
 		}
 		VALUE ropacity(VALUE self) {
@@ -184,7 +184,7 @@ namespace ARGSS
 		}
 		VALUE ropacityE(VALUE self, VALUE opacity) {
 			CheckDisposed(self);
-			Plane::Get(self).SetOpacity(NUM2INT(opacity));
+			Plane::get(self).setOpacity(NUM2INT(opacity));
 			return rb_iv_set(self, "@opacity", opacity);
 		}
 		VALUE rblend_type(VALUE self)
@@ -195,7 +195,7 @@ namespace ARGSS
 		VALUE rblend_typeE(VALUE self, VALUE blend_type)
 		{
 			CheckDisposed(self);
-			Plane::Get(self).SetBlendType(NUM2INT(blend_type));
+			Plane::get(self).setBlendType( Blend::Type( NUM2INT(blend_type) ) );
 			return rb_iv_set(self, "@blend_type", blend_type);
 		}
 		VALUE rcolor(VALUE self)
@@ -207,7 +207,7 @@ namespace ARGSS
 		{
 			CheckDisposed(self);
 			Check_Class(color, ARGSS::AColor::getID());
-			Plane::Get(self).SetColor(color);
+			Plane::get(self).setColor(color);
 			return rb_iv_set(self, "@color", color);
 		}
 		VALUE rtone(VALUE self)
@@ -219,7 +219,7 @@ namespace ARGSS
 		{
 			CheckDisposed(self);
 			Check_Class(tone, ARGSS::ATone::getID());
-			Plane::Get(self).SetTone(tone);
+			Plane::get(self).setTone(tone);
 			return rb_iv_set(self, "@tone", tone);
 		}
 

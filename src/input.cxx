@@ -94,7 +94,7 @@ namespace Input
 	void Update() {
 		Player::Update();
 
-		std::vector<bool> keystates = Player::getMainWindow().GetKeyStates(); 
+		std::vector<bool> keystates = Player::getMainWindow().getKeyStates(); 
 		for (unsigned int i = 0; i < press_time.size(); ++i) {
 			if (keystates[i]) {
 				press_time[i] += 1;
@@ -231,9 +231,9 @@ namespace Input
 	}
 
 	////////////////////////////////////////////////////////////
-	/// Get pressed keys
+	/// get pressed keys
 	////////////////////////////////////////////////////////////
-	VALUE GetPressed() {
+	VALUE getPressed() {
 		VALUE arr = rb_ary_new();
 		for(unsigned int i = 0; i < press_time.size(); i++) {
 			if (press_time[i] > 0) {
@@ -244,9 +244,9 @@ namespace Input
 	}
 
 	////////////////////////////////////////////////////////////
-	/// Get triggered keys
+	/// get triggered keys
 	////////////////////////////////////////////////////////////
-	VALUE GetTriggered() {
+	VALUE getTriggered() {
 		VALUE arr = rb_ary_new();
 		for(unsigned int i = 0; i < triggered.size(); i++) {
 			if (triggered[i]) {
@@ -257,9 +257,9 @@ namespace Input
 	}
 
 	////////////////////////////////////////////////////////////
-	/// Get repeated keys
+	/// get repeated keys
 	////////////////////////////////////////////////////////////
-	VALUE GetRepeated() {
+	VALUE getRepeated() {
 		VALUE arr = rb_ary_new();
 		for(unsigned int i = 0; i < repeated.size(); i++) {
 			if (repeated[i]) {
@@ -270,9 +270,9 @@ namespace Input
 	}
 
 	////////////////////////////////////////////////////////////
-	/// Get released keys
+	/// get released keys
 	////////////////////////////////////////////////////////////
-	VALUE GetReleased() {
+	VALUE getReleased() {
 		VALUE arr = rb_ary_new();
 		for(unsigned int i = 0; i < released.size(); i++) {
 			if (released[i]) {

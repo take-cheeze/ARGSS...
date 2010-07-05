@@ -33,16 +33,12 @@ WindowUi::~WindowUi()
 {
 }
 
-void WindowUi::SwapBuffers()
+void WindowUi::swapBuffers()
 {
 	if( !autoBufferSwap() ) swapBuffers();
 }
 
-void WindowUi::Dispose()
-{
-	setVisible(false);
-}
-bool WindowUi::GetEvent(Event& ev)
+bool WindowUi::getEvent(Event& ev)
 {
 	if( !events_.empty() ) {
 		ev = events_.front();

@@ -47,38 +47,37 @@ public:
 
 	static bool IsDisposed(VALUE id);
 	static void New(VALUE id);
-	static Plane& Get(VALUE id);
+	static Plane& get(VALUE id);
 	static void Dispose(VALUE id);
 
 	void RefreshBitmaps();
 	void Draw(long z);
 	void Draw(long z, Bitmap* dst_bitmap);
 
-	VALUE GetViewport();
-	void SetViewport(VALUE nviewport);
-	VALUE GetBitmap();
-	void SetBitmap(VALUE nbitmap);
-	bool GetVisible();
-	void SetVisible(bool nvisible);
-	int GetZ();
-	void SetZ(int nz);
-	int GetOx();
-	void SetOx(int nox);
-	int GetOy();
-	void SetOy(int noy);
-	float GetZoomX();
-	void SetZoomX(float nzoom_x);
-	float GetZoomY();
-	void SetZoomY(float nzoom_y);
-	int GetOpacity();
-	void SetOpacity(int nopacity);
-	int GetBlendType();
-	void SetBlendType(int nblend_type);
-	VALUE GetColor();
-	void SetColor(VALUE ncolor);
-	VALUE GetTone();
-	void SetTone(VALUE ntone);
-
+	VALUE getViewport() { return viewport_; }
+	void setViewport(VALUE nviewport);
+	VALUE getBitmap() { return bitmap_; }
+	void setBitmap(VALUE nbitmap);
+	bool getVisible() { return visible_; }
+	void setVisible(bool nvisible) { visible_ = nvisible; }
+	int getZ() { return z; }
+	void setZ(int nz);
+	int getOx() { return ox; }
+	int getOy() { return oy; }
+	void setOx(int nox) { ox = nox; }
+	void setOy(int noy) { oy = noy; }
+	float getZoomX() { return zoom_x; }
+	float getZoomY() { return zoom_y; }
+	void setZoomX(float nzoom_x);
+	void setZoomY(float nzoom_y);
+	int getOpacity() { return opacity; }
+	void setOpacity(int nopacity);
+	Blend::Type getBlendType() { return blendType_; }
+	void setBlendType(Blend::Type nBlendType) { blendType_ = nBlendType; }
+	VALUE getColor(){ return color; }
+	void setColor(VALUE ncolor) { color = ncolor; }
+	VALUE getTone() { return tone; }
+	void setTone(VALUE ntone);
 private:
 	void Refresh();
 	void ApplyTone();
@@ -87,16 +86,16 @@ private:
 	Tone tone_last;
 
 	VALUE id;
-	VALUE viewport;
-	VALUE bitmap;
-	bool visible;
+	VALUE viewport_;
+	VALUE bitmap_;
+	bool visible_;
 	int z;
 	int ox;
 	int oy;
 	float zoom_x;
 	float zoom_y;
 	int opacity;
-	int blend_type;
+	Blend::Type blendType_;
 	VALUE color;
 	VALUE tone;
 }; // class Plane

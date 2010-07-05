@@ -30,6 +30,6 @@
 ////////////////////////////////////////////////////////////
 #include "color.hxx"
 
-Color RGBAdjustHSL(Color col, double h, double s, double l);
+Color RGBAdjustHSL(Color const& col, double h, double s, double l);
 
 #endif

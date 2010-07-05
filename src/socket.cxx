@@ -25,18 +25,22 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <boost/smart_ptr.hpp>
+
 #include "socket.hxx"
 #include "argss_error.hxx"
 
-Socket::Socket() {
-#ifdef WIN32
-	m_Socket = socket(AF_INET, SOCK_STREAM, AF_INET);
-#else
-	m_Socket = socket(AF_INET, SOCK_STREAM, 0);
+#ifndef WIN32
+	#define closesocket close
 #endif
+
+Socket::Socket()
+{
+	m_Socket = socket(AF_INET, SOCK_STREAM, AF_INET);
 }
 
-void Socket::Connect(const std::string& host, unsigned short port) {
+void Socket::Connect(const std::string& host, uint16_t port)
+{
 	struct sockaddr_in hostAddr;
 	hostAddr.sin_family = AF_INET;
 	hostAddr.sin_addr.s_addr = inet_addr(host.c_str());
@@ -47,7 +51,8 @@ void Socket::Connect(const std::string& host, unsigned short port) {
 	}
 }
 
-void Socket::Listen(unsigned short port, int maxclients) {
+void Socket::Listen(uint16_t port, int maxclients)
+{
 	struct sockaddr_in machineAddr;
 	machineAddr.sin_family = AF_INET;
 	machineAddr.sin_addr.s_addr = INADDR_ANY;
@@ -63,14 +68,47 @@ void Socket::Listen(unsigned short port, int maxclients) {
 	}
 }
 
-Buffer Socket::Receive() {
+std::vector< uint8_t > Socket::Receive()
+{
+	uint16_t msglen = 0;
+	std::vector< uint8_t > ret;
+	if (recv(m_Socket, &msglen, sizeof(uint16_t), 0) <= 0) {
+		rb_raise(ARGSS::AError::getID(), "Could not receive the message length.");
+	} else {
+		msglen = ntohs(msglen); // to host endian
+		ret.resize(msglen);
+		if (recv(m_Socket, &(ret[0]), msglen, 0) <= 0) {
+			rb_raise(ARGSS::AError::getID(), "Could not receive the message.");
+		}
+	}
+
+	return ret;
+}
+void Socket::Send(std::vector< uint8_t > const& buffer)
+{
+	uint16_t bufferSize = buffer.size();
+	boost::scoped_array< char > pFinalBuffer( new char[bufferSize + sizeof(uint16_t)] );
+	// message size (to network endian)
+	uint16_t msglen = htons(bufferSize);
+	memcpy(pFinalBuffer.get(), &msglen, sizeof(uint16_t));
+	// message body
+	memcpy(pFinalBuffer.get() + sizeof(uint16_t), &(buffer[0]), bufferSize);
+
+	if (send(m_Socket, pFinalBuffer.get(), sizeof(uint16_t) + bufferSize, 0) <= 0) {
+		rb_raise(ARGSS::AError::getID(), "Could not send the message.");
+	}
+}
+
+/*
+Buffer Socket::Receive()
+{
 	Buffer buffer(0);
-	unsigned short msglen = 0;
+	uint16_t msglen = 0;
 	if (recv(m_Socket, (char*)&msglen, 2, 0) <= 0) {
 		rb_raise(ARGSS::AError::getID(), "Could not receive the message length.");
 	} else {
 		buffer = Buffer(msglen);
-		char* pBufferData = buffer.GetData();
+		char* pBufferData = buffer.getData();
 		if (recv(m_Socket, pBufferData, msglen, 0) <= 0) {
 			rb_raise(ARGSS::AError::getID(), "Could not receive the message.");
 		}
@@ -78,38 +116,34 @@ Buffer Socket::Receive() {
 
 	return buffer;
 }
+void Socket::Send(Buffer buffer)
+{
+	uint16_t bufferSize = buffer.getSize();
+	boost::scoped_array< char > pFinalBuffer( new char[2 + bufferSize] );
+	memcpy(pFinalBuffer.get(), &bufferSize, 2);
+	memcpy(pFinalBuffer.get() + 2, buffer.getData(), bufferSize);
 
-
-void Socket::Send(Buffer buffer) {
-	unsigned short bufferSize = buffer.GetSize();
-	char* pFinalBuffer = new char[2 + bufferSize];
-	memcpy(pFinalBuffer, &bufferSize, 2);
-	memcpy(pFinalBuffer + 2, buffer.GetData(), bufferSize);
-
-	if (send(m_Socket, pFinalBuffer, 2 + bufferSize, 0) <= 0) {
+	if (send(m_Socket, pFinalBuffer.get(), 2 + bufferSize, 0) <= 0) {
 		rb_raise(ARGSS::AError::getID(), "Could not send the message.");
 	}
-
-	delete[] pFinalBuffer;
 }
+ */
 
-void Socket::Shutdown() {
+void Socket::Shutdown()
+{
 	if (m_Socket) {
-#ifdef WIN32
-	shutdown(m_Socket, SD_BOTH);
-#else
-	shutdown(m_Socket, 0);
-#endif
+	#ifdef WIN32
+		shutdown(m_Socket, SD_BOTH);
+	#else
+		shutdown(m_Socket, SHUT_RDWR);
+	#endif
 	}
 }
 
-Socket::~Socket() {
+Socket::~Socket()
+{
 	if (m_Socket) {
 		Shutdown();
-		#if defined(WIN32)
-			closesocket(m_Socket);
-		#else
-			close(m_Socket);
-		#endif
+		closesocket(m_Socket);
 	}
 }

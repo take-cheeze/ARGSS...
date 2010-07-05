@@ -47,7 +47,7 @@ public:
 	static void Init();
 	static bool IsDisposed(VALUE id);
 	static void New(VALUE id);
-	static Tilemap& Get(VALUE id);
+	static Tilemap& get(VALUE id);
 	static void Dispose(VALUE id);
 
 	void RefreshBitmaps();
@@ -56,22 +56,22 @@ public:
 	void RefreshData();
 
 	void Update();
-	VALUE GetViewport();
-	void SetViewport(VALUE nviewport);
-	VALUE GetTileset();
-	void SetTileset(VALUE ntileset);
-	VALUE GetMapData();
-	void SetMapData(VALUE nmap_data);
-	VALUE GetFlashData();
-	void SetFlashData(VALUE nflash_data);
-	VALUE GetPriorities();
-	void SetPriorities(VALUE npriorities);
-	bool GetVisible();
-	void SetVisible(bool nvisible);
-	int GetOx();
-	void SetOx(int nox);
-	int GetOy();
-	void SetOy(int noy);
+	VALUE getViewport();
+	void setViewport(VALUE nviewport);
+	VALUE getTileset();
+	void setTileset(VALUE ntileset);
+	VALUE getMapData();
+	void setMapData(VALUE nmap_data);
+	VALUE getFlashData();
+	void setFlashData(VALUE nflash_data);
+	VALUE getPriorities();
+	void setPriorities(VALUE npriorities);
+	bool getVisible();
+	void setVisible(bool nvisible);
+	int getOx();
+	void setOx(int nox);
+	int getOy();
+	void setOy(int noy);
 
 private:
 	VALUE id;

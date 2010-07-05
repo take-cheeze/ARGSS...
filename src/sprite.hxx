@@ -47,7 +47,7 @@ public:
 
 	static bool IsDisposed(VALUE id);
 	static void New(VALUE id);
-	static Sprite& Get(VALUE id);
+	static Sprite& get(VALUE id);
 	static void Dispose(VALUE id);
 
 	void RefreshBitmaps();
@@ -55,52 +55,52 @@ public:
 	void Draw(long z, Bitmap* dst_bitmap);
 
 	void Flash(int duration);
-	void Flash(Color color, int duration);
+	void Flash(Color const& color, int duration);
 	void Update();
-	VALUE GetViewport();
-	void SetViewport(VALUE nviewport);
-	VALUE GetBitmap();
-	void SetBitmap(VALUE nbitmap);
-	VALUE GetSrcRect();
-	void SetSrcRect(VALUE nsrc_rect);
-	bool GetVisible();
-	void SetVisible(bool nvisible);
-	int GetX();
-	void SetX(int nx);
-	int GetY();
-	void SetY(int ny);
-	int GetZ();
-	void SetZ(int nz);
-	int GetOx();
-	void SetOx(int nox);
-	int GetOy();
-	void SetOy(int noy);
-	float GetZoomX();
-	void SetZoomX(float nzoom_x);
-	float GetZoomY();
-	void SetZoomY(float nzoom_y);
-	float GetAngle();
-	void SetAngle(float nangle);
-	bool GetFlipX();
-	void SetFlipX(bool nflipx);
-	bool GetFlipY();
-	void SetFlipY(bool nflipy);
-	int GetBushDepth();
-	void SetBushDepth(int nbush_depth);
-	int GetOpacity();
-	void SetOpacity(int nopacity);
-	int GetBlendType();
-	void SetBlendType(int nblend_type);
-	VALUE GetColor();
-	void SetColor(VALUE ncolor);
-	VALUE GetTone();
-	void SetTone(VALUE ntone);
 
+	VALUE getViewport() const { return viewport_; }
+	void setViewport(VALUE nviewport);
+	VALUE getBitmap() const { return bitmap_; }
+	void setBitmap(VALUE nbitmap);
+	VALUE getSrcRect() const { return srcRect_; }
+	void setSrcRect(VALUE nsrcRect) { nsrcRect = srcRect_; }
+	bool getVisible() const { return visible; }
+	void setVisible(bool nvisible) { visible = nvisible; }
+	int getX() const { return x; }
+	int getY() const { return y; }
+	int getZ() const { return z; }
+	void setX(int nx) { x = nx; }
+	void setY(int ny) { y = ny; }
+	void setZ(int nz);
+	int getOx() const { return ox; }
+	int getOy() const { return oy; }
+	void setOx(int nox) { ox = nox; }
+	void setOy(int noy) { oy = noy; }
+	float getZoomX() const { return zoom_x; }
+	float getZoomY() const { return zoom_y; }
+	void setZoomX(float nzoom_x) { zoom_x = nzoom_x; }
+	void setZoomY(float nzoom_y) { zoom_y = nzoom_y; }
+	float getAngle() const { return angle; }
+	void setAngle(float nangle) { angle = nangle; }
+	void setFlipX(bool nflipx) { flipx = nflipx; }
+	void setFlipY(bool nflipy) { flipy = nflipy; }
+	bool getFlipX() const { return flipx; }
+	bool getFlipY() const { return flipy; }
+	int getBushDepth() const { return bush_depth; }
+	void setBushDepth(int nbush_depth) { bush_depth = nbush_depth; }
+	int getOpacity() const { return opacity; }
+	void setOpacity(int nopacity) { opacity = nopacity; }
+	Blend::Type getBlendType() const { return blendType_; }
+	void setBlendType(Blend::Type nBlendType) { blendType_ = nBlendType; }
+	VALUE getColor() const { return color; }
+	void setColor(VALUE ncolor) { color = ncolor; }
+	VALUE getTone() const { return tone; }
+	void setTone(VALUE ntone);
 private:
 	VALUE id;
-	VALUE viewport;
-	VALUE bitmap;
-	VALUE src_rect;
+	VALUE viewport_;
+	VALUE bitmap_;
+	VALUE srcRect_;
 	bool visible;
 	int x;
 	int y;
@@ -114,7 +114,7 @@ private:
 	bool flipy;
 	int bush_depth;
 	int opacity;
-	int blend_type;
+	Blend::Type blendType_;
 	VALUE color;
 	VALUE tone;
 
@@ -123,15 +123,15 @@ private:
 	int flash_duration;
 	int flash_frame;
 	Bitmap* sprite;
-	Rect src_rect_sprite;
-	Rect src_rect_last;
+	Rect srcRect_sprite;
+	Rect srcRect_last;
 	bool needs_refresh;
 	bool flash_needs_refresh;
 
 	void Refresh();
 	void RefreshFlash();
-	int GetWidth();
-	int GetHeight();
+	int getWidth();
+	int getHeight();
 }; // class Sprite
 
 #endif

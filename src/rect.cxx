@@ -31,40 +31,53 @@
 ////////////////////////////////////////////////////////////
 /// Constructor
 ////////////////////////////////////////////////////////////
-Rect::Rect() {
-	x = 0;
-	y = 0;
-	width = 0;
-	height = 0;
+Rect::Rect()
+: x(0), y(0)
+, width(0), height(0)
+{
 }
-Rect::Rect(VALUE rect) {
-	x = NUM2INT(rb_iv_get(rect, "@x"));
-	y = NUM2INT(rb_iv_get(rect, "@y"));
-	width = NUM2INT(rb_iv_get(rect, "@width"));
-	height = NUM2INT(rb_iv_get(rect, "@height"));
+Rect::Rect(VALUE rect)
+{
+	if( NIL_P(rect) ) {
+		x = y = width = height = 0;
+	} else {
+		x = NUM2INT(rb_iv_get(rect, "@x"));
+		y = NUM2INT(rb_iv_get(rect, "@y"));
+		width = NUM2INT(rb_iv_get(rect, "@width"));
+		height = NUM2INT(rb_iv_get(rect, "@height"));
+	}
 }
-Rect::Rect(int ix, int iy, int iwidth, int iheight) {
-	x = ix;
-	y = iy;
-	width = iwidth;
-	height = iheight;
+Rect::Rect(int ix, int iy, int iwidth, int iheight)
+: x(ix), y(iy)
+, width(iwidth), height(iheight)
+{
 }
+Rect::Rect(Rect const& src)
+: x(src.x), y(src.y)
+, width(src.width), height(src.height)
+{
+}
+
 ////////////////////////////////////////////////////////////
 /// Destructor
 ////////////////////////////////////////////////////////////
-Rect::~Rect() { }
+Rect::~Rect()
+{
+}
 
 ////////////////////////////////////////////////////////////
 /// != operator
 ////////////////////////////////////////////////////////////
-bool Rect::operator!=(const Rect &other) const {
-	return x != other.x || y != other.y || width != other.width || height != other.height;
+bool operator!=(Rect const& lhs, Rect const& rhs)
+{
+	return lhs.x != rhs.x || lhs.y != rhs.y || lhs.width != rhs.width || lhs.height != rhs.height;
 }
 
 ////////////////////////////////////////////////////////////
-/// Set rect values
+/// set rect values
 ////////////////////////////////////////////////////////////
-void Rect::Set(int nx, int ny, int nwidth, int nheight) {
+void Rect::set(int nx, int ny, int nwidth, int nheight)
+{
 	x = nx;
 	y = ny;
 	width = nwidth;
@@ -72,16 +85,18 @@ void Rect::Set(int nx, int ny, int nwidth, int nheight) {
 }
 
 ////////////////////////////////////////////////////////////
-/// Get ARGSS rect
+/// get ARGSS rect
 ////////////////////////////////////////////////////////////
-VALUE Rect::GetARGSS() {
+VALUE Rect::getARGSS()
+{
 	VALUE args[4] = {INT2NUM(x), INT2NUM(y), INT2NUM(width), INT2NUM(height)};
 	return rb_class_new_instance(4, args, ARGSS::ARect::getID());
 }
 ////////////////////////////////////////////////////////////
 /// Adjust Rect
 ////////////////////////////////////////////////////////////
-void Rect::Adjust(int awidth, int aheight) {
+void Rect::Adjust(int awidth, int aheight)
+{
 	if (x < 0) {
 		width += x;
 		x = 0;
@@ -100,7 +115,8 @@ void Rect::Adjust(int awidth, int aheight) {
 ////////////////////////////////////////////////////////////
 /// Adjust Rect
 ////////////////////////////////////////////////////////////
-bool Rect::IsOutOfBounds(int awidth, int aheight) {
+bool Rect::IsOutOfBounds(int awidth, int aheight) const
+{
 	if (width <= 0 || height <= 0) return true;
 	if (x >= awidth || y >= aheight) return true;
 	if (x + width <= 0 || y + height <= 0) return true;

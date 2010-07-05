@@ -25,104 +25,101 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <algorithm>
+
 #include "hslrgb.hxx"
 
-////////////////////////////////////////////////////////////
-/// Defines
-////////////////////////////////////////////////////////////
-#define min(a, b)  (((a) < (b)) ? (a) : (b))
-#define max(a, b)  (((a) > (b)) ? (a) : (b))
+namespace
+{
+	////////////////////////////////////////////////////////////
+	/// Defines
+	////////////////////////////////////////////////////////////
+	struct ColorHSL
+	{
+		double h;
+		double s;
+		double l;
+	};
 
-struct ColorHSL {
-	double h;
-	double s;
-	double l;
-};
+	////////////////////////////////////////////////////////////
+	/// RGB to HSL
+	////////////////////////////////////////////////////////////
+	ColorHSL RGB2HSL(Color const& col)
+	{
+		ColorHSL ncol;
+		double vmin, vmax, delta;
+		double dr, dg, db;
+		double r, g, b;
+		r = col.red / 255.0;
+		g = col.green / 255.0;
+		b = col.blue / 255.0;
+		vmin = std::min(std::min(r, g), b);
+		vmax = std::max(std::max(r, g), b);
+		delta = vmax - vmin;
+		ncol.l = (vmax + vmin) / 2;
+		if (delta == 0) {
+			ncol.h = 0;
+			ncol.s = 0;
+		} else {
+			if (ncol.l < 0.5) ncol.s = delta / (vmax + vmin);
+			else ncol.s = delta / (2 - vmax - vmin);
 
-////////////////////////////////////////////////////////////
-/// RGB to HSL
-////////////////////////////////////////////////////////////
-ColorHSL RGB2HSL(Color col) {
-	ColorHSL ncol;
-	double vmin, vmax, delta;
-	double dr, dg, db;
-	double r, g, b;
-	r = col.red / 255.0;
-	g = col.green / 255.0;
-	b = col.blue / 255.0;
-	vmin = min(min(r, g), b);
-	vmax = max(max(r, g), b);
-	delta = vmax - vmin;
-	ncol.l = (vmax + vmin) / 2;
-	if (delta == 0) {
-		ncol.h = 0;
-		ncol.s = 0;
-	}
-	else {
-		if (ncol.l < 0.5) {
-			ncol.s = delta / (vmax + vmin);
-		}
-		else {
-			ncol.s = delta / (2 - vmax - vmin);
-		}
-		dr = (((vmax - r) / 6) + (delta / 2)) / delta;
-		dg = (((vmax - g) / 6) + (delta / 2)) / delta;
-		db = (((vmax - b) / 6) + (delta / 2)) / delta;
-		if (r == vmax) {
-			ncol.h = db - dg;
-		}
-		else if (g == vmax) {
-			ncol.h = (1.0 / 3) + dr - db;
-		}
-		else if (b == vmax) {
-			ncol.h = (2.0 / 3) + dg - dr;
-		}
-	}
-	return ncol;
-}
+			dr = (((vmax - r) / 6) + (delta / 2)) / delta;
+			dg = (((vmax - g) / 6) + (delta / 2)) / delta;
+			db = (((vmax - b) / 6) + (delta / 2)) / delta;
 
-////////////////////////////////////////////////////////////
-/// Hue to RGB
-////////////////////////////////////////////////////////////
-double Hue_2_RGB(double v1, double v2, double vH) {
-   if (vH < 0) vH += 1;
-   if (vH > 1) vH -= 1;
-   if ((6 * vH) < 1) return (v1 + (v2 - v1) * 6 * vH);
-   if ((2 * vH) < 1) return (v2);
-   if ((3 * vH) < 2) return (v1 + (v2 - v1) * ((2.0 / 3) - vH ) * 6);
-   return v1;
-}
+				 if (r == vmax) ncol.h = db - dg;
+			else if (g == vmax) ncol.h = (1.0 / 3) + dr - db;
+			else if (b == vmax) ncol.h = (2.0 / 3) + dg - dr;
+		}
+		return ncol;
+	}
 
-////////////////////////////////////////////////////////////
-/// HSL to RGB
-////////////////////////////////////////////////////////////
-Color HSL2RGB(ColorHSL col) {
-	Color ncol(0, 0, 0, 0);
-	double v1, v2;
-	if (col.s == 0) {
-		ncol.red = (unsigned char)(col.l * 255);
-		ncol.green = (unsigned char)(col.l * 255);
-		ncol.blue = (unsigned char)(col.l * 255);
+	////////////////////////////////////////////////////////////
+	/// Hue to RGB
+	////////////////////////////////////////////////////////////
+	double Hue_2_RGB(double v1, double v2, double vH)
+	{
+		if (vH < 0) vH += 1;
+		if (vH > 1) vH -= 1;
+		if ((6 * vH) < 1) return (v1 + (v2 - v1) * 6 * vH);
+		if ((2 * vH) < 1) return (v2);
+		if ((3 * vH) < 2) return (v1 + (v2 - v1) * ((2.0 / 3) - vH ) * 6);
+		return v1;
 	}
-	else {
-		if (col.l < 0.5) {
-			v2 = col.l * (1 + col.s);
+
+	////////////////////////////////////////////////////////////
+	/// HSL to RGB
+	////////////////////////////////////////////////////////////
+	Color HSL2RGB(ColorHSL const& col)
+	{
+		Color ncol(0, 0, 0, 0);
+		double v1, v2;
+		if (col.s == 0) {
+			ncol.red = (unsigned char)(col.l * 255);
+			ncol.green = (unsigned char)(col.l * 255);
+			ncol.blue = (unsigned char)(col.l * 255);
+		} else {
+			if (col.l < 0.5) {
+				v2 = col.l * (1 + col.s);
+			}
+			else {
+				v2 = (col.l + col.s) - (col.s * col.l);
+			}
+			v1 = 2 * col.l - v2;
+			ncol.red = (unsigned char)(255 * Hue_2_RGB(v1, v2, col.h + (1.0 / 3)));
+			ncol.green = (unsigned char)(255 * Hue_2_RGB(v1, v2, col.h));
+			ncol.blue = (unsigned char)(255 * Hue_2_RGB(v1, v2, col.h - (1.0 / 3)));
 		}
-		else {
-			v2 = (col.l + col.s) - (col.s * col.l);
-		}
-		v1 = 2 * col.l - v2;
-		ncol.red = (unsigned char)(255 * Hue_2_RGB(v1, v2, col.h + (1.0 / 3)));
-		ncol.green = (unsigned char)(255 * Hue_2_RGB(v1, v2, col.h));
-		ncol.blue = (unsigned char)(255 * Hue_2_RGB(v1, v2, col.h - (1.0 / 3)));
+		return ncol;
 	}
-	return ncol;
-}
+} // namespace
 
 ////////////////////////////////////////////////////////////
 /// Ajust RGB with HSL
 ////////////////////////////////////////////////////////////
-Color RGBAdjustHSL(Color col, double h, double s, double l) {
+Color RGBAdjustHSL(Color const& col, double h, double s, double l)
+{
 	ColorHSL hsl;
 	Color rgb = col;
 	hsl = RGB2HSL(rgb);

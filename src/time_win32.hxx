@@ -30,7 +30,7 @@
 ////////////////////////////////////////////////////////////
 namespace Time
 {
-	long GetTime();
+	long getTime();
 
 	void SleepMs(long ms);
 } // namespace Time

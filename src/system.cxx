@@ -68,15 +68,11 @@ namespace System
 			CSimpleIniA ini(true, false, false);
 			SI_Error rc = ini.LoadFile(INI_NAME);
 			if (rc < 0) {
-				rc = ini.LoadFile("Game.ini");
+				rc = ini.LoadFile("Game.ini"); // otherwise "Game.ini"
 				if (rc < 0) Output::Warning("ARGSS could not open %s file.", INI_NAME);
 			}
-			if (READ_INI_SCRIPTS_PATH) {
-				ScriptsPath = ini.GetValue("Game", "Scripts", SCRIPTS_PATH);
-			}
-			if (READ_INI_GAME_TITLE) {
-				Title = ini.GetValue("Game", "Title", GAME_TITLE);
-			}
+			if (READ_INI_SCRIPTS_PATH) ScriptsPath = ini.GetValue("Game", "Scripts", SCRIPTS_PATH);
+			if (READ_INI_GAME_TITLE) Title = ini.GetValue("Game", "Title", GAME_TITLE);
 			if (READ_INI_RTPS) {
 				RTPS[0] = ini.GetValue("Game", "RTP1", RTP1);
 				RTPS[1] = ini.GetValue("Game", "RTP2", RTP2);

@@ -27,10 +27,12 @@
 ////////////////////////////////////////////////////////////
 #include <iostream>
 #include <fstream>
+
 #include <cstdarg>
 #include <cstdlib>
 #include <cstdio>
 // #include <conio.h>
+
 #include "output.hxx"
 #include "options.hxx"
 #include "system.hxx"
@@ -210,7 +212,7 @@ namespace Output
 	////////////////////////////////////////////////////////////
 	/// Output Console
 	////////////////////////////////////////////////////////////
-	std::string Gets()
+	std::string getString()
 	{
 		char string[256] = "\0";
 		if (Console::Active()) {
@@ -226,9 +228,9 @@ namespace Output
 	////////////////////////////////////////////////////////////
 	/// Output Console
 	////////////////////////////////////////////////////////////
-	std::string Getc()
+	std::string getChar()
 	{
-		std::string chr = "";
+		std::string chr;
 		if (Console::Active()) {
 	#ifdef MSVC
 			chr += _getch();

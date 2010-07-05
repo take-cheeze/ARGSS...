@@ -49,7 +49,7 @@ public:
 
 	static bool IsDisposed(VALUE id);
 	static void New(VALUE id);
-	static Viewport& Get(VALUE id);
+	static Viewport& get(VALUE id);
 	static void Dispose(VALUE id);
 
 	void RefreshBitmaps();
@@ -59,28 +59,27 @@ public:
 	void Flash(int duration);
 	void Flash(Color color, int duration);
 	void Update();
-	VALUE GetRect();
-	void SetRect(VALUE nrect);
-	bool GetVisible();
-	void SetVisible(bool nvisible);
-	int GetZ();
-	void SetZ(int nz);
-	int GetOx();
-	void SetOx(int nox);
-	int GetOy();
-	void SetOy(int noy);
-	VALUE GetColor();
-	void SetColor(VALUE ncolor);
-	VALUE GetTone();
-	void SetTone(VALUE ntone);
+	VALUE getRect();
+	void setRect(VALUE nrect);
+	bool getVisible();
+	void setVisible(bool nvisible);
+	int getZ();
+	void setZ(int nz);
+	int getOx();
+	void setOx(int nox);
+	int getOy();
+	void setOy(int noy);
+	VALUE getColor();
+	void setColor(VALUE ncolor);
+	VALUE getTone();
+	void setTone(VALUE ntone);
 
 	void RegisterZObj(long z, VALUE id);
 	void RegisterZObj(long z, VALUE id, bool multiz);
 	void RemoveZObj(VALUE id);
 	void UpdateZObj(VALUE id, long z);
 
-	Rect GetViewportRect();
-
+	Rect const& getViewportRect() { return dstRect; }
 private:
 	std::list< ZObj > zlist;
 	std::list< ZObj >::iterator it_zlist;
@@ -103,7 +102,7 @@ private:
 
 	Bitmap* viewport;
 
-	Rect dst_rect;
+	Rect dstRect;
 }; // class Viewport
 
 #endif

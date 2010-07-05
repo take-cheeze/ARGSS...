@@ -43,10 +43,10 @@ namespace Input
 	bool IsTriggered(VALUE button);
 	bool IsRepeated(VALUE button);
 	bool IsReleased(VALUE button);
-	VALUE GetPressed();
-	VALUE GetTriggered();
-	VALUE GetRepeated();
-	VALUE GetReleased();
+	VALUE getPressed();
+	VALUE getTriggered();
+	VALUE getRepeated();
+	VALUE getReleased();
 
 	int& getDir4();
 	int& getDir8();

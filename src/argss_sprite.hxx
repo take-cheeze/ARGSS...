@@ -53,8 +53,8 @@ namespace ARGSS
 		VALUE rviewportE(VALUE self, VALUE viewport);
 		VALUE rbitmap(VALUE self);
 		VALUE rbitmapE(VALUE self, VALUE bitmap);
-		VALUE rsrc_rect(VALUE self);
-		VALUE rsrc_rectE(VALUE self, VALUE src_rect);
+		VALUE rsrcRect(VALUE self);
+		VALUE rsrcRectE(VALUE self, VALUE srcRect);
 		VALUE rvisible(VALUE self);
 		VALUE rvisibleE(VALUE self, VALUE visible);
 		VALUE rx(VALUE self);
