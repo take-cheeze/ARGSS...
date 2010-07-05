@@ -29,9 +29,13 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #ifdef WIN32
-	#include "windowui_win32.hxx"
+	#include "qt/windowui.hxx"
 #else
-	#include "windowui_qt.hxx"
+	#include "qt/windowui.hxx"
+/*
+#else
+	#include "sdl/windowui.hxx"
+ */
 #endif
 
 #endif

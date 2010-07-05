@@ -33,8 +33,8 @@
 #include <vector>
 
 #include "plane.hxx"
-#include "argss_ruby.hxx"
-#include "argss_plane.hxx"
+#include <argss/ruby.hxx>
+#include <argss/plane.hxx>
 #include "graphics.hxx"
 #include "viewport.hxx"
 #include "rect.hxx"

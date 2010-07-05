@@ -2,12 +2,15 @@ TARGET = ARGSS
 
 BIN_DIR = ../../bin
 
+PLATFORM = qt
+
 SRC_DIR = ../../src
 SRC_CXX = $(wildcard $(SRC_DIR)/*.cxx)
+SRC_CXX += $(wildcard $(SRC_DIR)/argss/*.cxx)
+SRC_CXX += $(wildcard $(SRC_DIR)/$(PLATFORM)/*.cxx)
 OBJS_DIR = ./objs
 OBJS_CXX = $(subst $(SRC_DIR), $(OBJS_DIR), $(SRC_CXX:.cxx=.o))
-NO_WIN32_OBJS = $(patsubst $(OBJS_DIR)/%_win32.o, , $(OBJS_CXX))
-OBJS = $(NO_WIN32_OBJS) $(wildcard src/SOIL/projects/makefile/obj/*.o)
+OBJS = $(OBJS_CXX) $(wildcard src/SOIL/projects/makefile/obj/*.o)
 
 LINUX_SRC_DIR = src
 LINUX_SRC_C = $(wildcard $(LINUX_SRC_DIR)/*.c)
@@ -22,6 +25,7 @@ CFLAGS = \
 	-I../../dependencies \
 	-Isrc/SOIL/src \
 	-Isrc \
+	-I$(SRC_DIR) \
 	-I/usr/include/wine/windows \
 
 CFLAGS += -D_FORTIFY_SOURCE=1 -fstack-protector-all
@@ -61,7 +65,7 @@ endif
 CFLAGS += -include /usr/include/time.h
 
 
-all : build_soil $(TARGET)
+all : $(TARGET)
 
 clean :
 	$(RM) -f $(TARGET) $(TARGET).* $(OBJS) $(BIN_DIR)/$(TARGET)
@@ -83,12 +87,14 @@ $(OBJS_DIR)/%.o : $(SRC_DIR)/%.cxx
 $(OBJS_DIR)/%.o : $(LINUX_SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-make_objs_dir :
-	mkdir -p objs
-
-$(TARGET) : make_objs_dir $(OBJS)
+$(TARGET) : make_objs_dir build_soil $(OBJS)
 	$(LD) $(LDFLAGS) $(OBJS) -o $(TARGET) $(LIBS)
 	cp $(TARGET) $(BIN_DIR)/$(TARGET)
 
 build_soil :
 	make -C src/SOIL/projects/makefile/
+
+make_objs_dir :
+	mkdir -p objs
+	mkdir -p objs/argss
+	mkdir -p objs/$(PLATFORM)

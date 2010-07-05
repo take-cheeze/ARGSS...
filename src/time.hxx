@@ -29,9 +29,13 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #ifdef WIN32
-	#include "time_win32.hxx"
+	#include "win32/time.hxx"
 #else
-	#include "time_qt.hxx"
+	#include "qt/time.hxx"
+/*
+#else
+	#include "sdl/time.hxx"
+ */
 #endif
 
 #endif

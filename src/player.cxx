@@ -35,7 +35,7 @@
 #include "input.hxx"
 #include "graphics.hxx"
 #include "audio.hxx"
-#include "argss.hxx"
+#include "argss/argss.hxx"
 
 namespace Player
 {

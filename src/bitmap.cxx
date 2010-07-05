@@ -30,7 +30,7 @@
 
 #include <SOIL.h>
 
-#include "argss_error.hxx"
+#include <argss/error.hxx>
 
 #include "text.hxx"
 #include "bitmap.hxx"

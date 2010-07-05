@@ -27,8 +27,8 @@
 ////////////////////////////////////////////////////////////
 #include <string>
 
-#include "argss_ruby.hxx"
-#include "argss_input.hxx"
+#include <argss/ruby.hxx>
+#include <argss/input.hxx>
 
 #include "input.hxx"
 #include "inputbuttons.hxx"

@@ -25,7 +25,7 @@
 #ifndef _INPUT_KEYS_HXX_
 #define _INPUT_KEYS_HXX_
 
-#include "argss_ruby.hxx"
+#include <argss/ruby.hxx>
 
 
 ////////////////////////////////////////////////////////////

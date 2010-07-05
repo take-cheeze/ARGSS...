@@ -37,7 +37,7 @@
 
 #include <GL/gl.h>
 
-#include "argss_ruby.hxx"
+#include <argss/ruby.hxx>
 
 #include "color.hxx"
 #include "defines.hxx"

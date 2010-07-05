@@ -29,9 +29,13 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #ifdef WIN32
-	#include "inputbuttons_win32.hxx"
+	#include "win32/inputbuttons.hxx"
 #else
-	#include "inputbuttons_qt.hxx"
+	#include "qt/inputbuttons.hxx"
+/*
+#else
+	#include "sdl/inputbuttons.hxx"
+ */
 #endif
 
 #endif

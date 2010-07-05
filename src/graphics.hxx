@@ -33,7 +33,7 @@
 #include <string>
 #include <list>
 
-#include "argss_ruby.hxx"
+#include <argss/ruby.hxx>
 
 #include "color.hxx"
 #include "drawable.hxx"

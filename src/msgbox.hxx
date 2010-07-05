@@ -29,9 +29,13 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #ifdef WIN32
-	#include "msgbox_win32.hxx"
+	#include "win32/msgbox.hxx"
 #else
-	#include "msgbox_qt.hxx"
+	#include "qt/msgbox.hxx"
+/*
+#else
+	#include "sdl/msgbox.hxx"
+ */
 #endif
 
 #endif

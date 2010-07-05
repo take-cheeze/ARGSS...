@@ -25,8 +25,8 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#include "argss_error.hxx"
-#include "argss_ruby.hxx"
+#include <argss/error.hxx>
+#include <argss/ruby.hxx>
 
 #include "audio.hxx"
 #include "filefinder.hxx"

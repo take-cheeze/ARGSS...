@@ -25,7 +25,7 @@
 #ifndef _TONE_HXX_
 #define _TONE_HXX_
 
-#include "argss_ruby.hxx"
+#include <argss/ruby.hxx>
 
 
 ////////////////////////////////////////////////////////////

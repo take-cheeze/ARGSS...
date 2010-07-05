@@ -26,7 +26,7 @@
 #define _ZOBJ_HXX_
 
 
-#include "argss_ruby.hxx"
+#include <argss/ruby.hxx>
 
 ////////////////////////////////////////////////////////////
 /// ZObj class

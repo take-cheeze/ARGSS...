@@ -28,8 +28,8 @@
 #include <string>
 #include <math.h>
 #include "window_xp.hxx"
-#include "argss_ruby.hxx"
-#include "argss_window.hxx"
+#include <argss/ruby.hxx>
+#include <argss/window.hxx>
 #include "graphics.hxx"
 #include "viewport.hxx"
 #include "player.hxx"

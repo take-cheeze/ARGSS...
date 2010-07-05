@@ -28,7 +28,7 @@
 #include <boost/smart_ptr.hpp>
 
 #include "socket.hxx"
-#include "argss_error.hxx"
+#include <argss/error.hxx>
 
 #ifndef WIN32
 	#define closesocket close

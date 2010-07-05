@@ -32,7 +32,7 @@
 #include "graphics.hxx"
 #include "audio.hxx"
 #include "input.hxx"
-#include "argss.hxx"
+#include "argss/argss.hxx"
 
 #include <cstdlib>
 
@@ -40,12 +40,13 @@
 /// Main
 ////////////////////////////////////////////////////////////
 #ifdef WIN32
-	int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+
 #else
 
 #include <QtCore/QThread>
 #include <QtGui/QApplication>
-#include <iostream>
 
 class MainThread : public QThread
 {

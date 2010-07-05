@@ -30,7 +30,7 @@
 ////////////////////////////////////////////////////////////
 #include <string>
 
-#include "argss_ruby.hxx"
+#include <argss/ruby.hxx>
 
 #include "bitmap.hxx"
 #include "drawable.hxx"

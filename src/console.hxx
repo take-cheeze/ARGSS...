@@ -29,9 +29,13 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #ifdef WIN32
-	#include "console_win32.hxx"
+	#include "wi32/console.hxx"
 #else
-	#include "console_qt.hxx"
+	#include "qt/console.hxx"
+/*
+#else
+	#include "sdl/console.hxx"
+ */
 #endif
 
 #endif

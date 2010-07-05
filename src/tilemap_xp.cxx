@@ -29,8 +29,8 @@
 #include <string>
 #include <map>
 #include "tilemap_xp.hxx"
-#include "argss_ruby.hxx"
-#include "argss_tilemap.hxx"
+#include <argss/ruby.hxx>
+#include <argss/tilemap.hxx>
 #include "graphics.hxx"
 #include "viewport.hxx"
 #include "player.hxx"

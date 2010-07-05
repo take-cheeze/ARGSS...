@@ -35,8 +35,8 @@
 
 #include "time.hxx"
 #include "graphics.hxx"
-#include "argss_ruby.hxx"
-#include "argss_error.hxx"
+#include <argss/ruby.hxx>
+#include <argss/error.hxx>
 #include "system.hxx"
 #include "player.hxx"
 #include "output.hxx"
@@ -54,7 +54,7 @@ namespace Graphics
 		int fps;
 		int framerate;
 		int framecount;
-		Color backcolor;
+		Color backcolor(255.0f, 255.0f, 255.0f, 255.0f);
 		int brightness;
 		double framerate_interval;
 		std::map< VALUE, boost::shared_ptr< Drawable > > drawableMap_;
@@ -134,8 +134,9 @@ namespace Graphics
 					 (GLclampf)(backcolor.blue  / 255.0f),
 					 (GLclampf)(backcolor.alpha / 255.0f));
 		glClearDepth(1.0);
-		glClear(GL_COLOR_BUFFER_BIT);
-		Player::swapBuffers();
+		glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		// Player::swapBuffers();
 	}
 
 	////////////////////////////////////////////////////////////
@@ -215,10 +216,7 @@ namespace Graphics
 
 				Player::getMainWindow().setTitle( ( boost::format("%s - %d FPS") % System::getTitle() % fps ).str() );
 			}
-		}
-		else {
-			Time::SleepMs((long)(framerate_interval) - (tics - last_tics));
-		}
+		} else Time::SleepMs((long)(framerate_interval) - (tics - last_tics));
 	}
 
 	////////////////////////////////////////////////////////////
@@ -226,7 +224,7 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void DrawFrame()
 	{
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		for (it_zlist = zlist.begin(); it_zlist != zlist.end(); it_zlist++) {
 			drawableMap_[it_zlist->getId()]->Draw(it_zlist->getZ());
@@ -245,7 +243,7 @@ namespace Graphics
 			glEnd();
 		}
 
-		Player::swapBuffers();
+		// Player::swapBuffers();
 	}
 
 	////////////////////////////////////////////////////////////
@@ -300,9 +298,9 @@ namespace Graphics
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		Player::swapBuffers();
+		// Player::swapBuffers();
 	}
 
 	////////////////////////////////////////////////////////////

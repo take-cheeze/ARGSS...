@@ -29,9 +29,13 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #ifdef WIN32
-	#include "filefinder_win32.hxx"
+	#include "win32/filefinder.hxx"
 #else
-	#include "filefinder_qt.hxx"
+	#include "qt/filefinder.hxx"
+/*
+#else
+	#include "sdl/filefinder.hxx"
+ */
 #endif
 
 #endif

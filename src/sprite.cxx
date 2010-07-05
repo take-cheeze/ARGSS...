@@ -30,8 +30,8 @@
 
 #include <GL/gl.h>
 
-#include "argss_ruby.hxx"
-#include "argss_sprite.hxx"
+#include <argss/ruby.hxx>
+#include <argss/sprite.hxx>
 
 #include "graphics.hxx"
 #include "player.hxx"
