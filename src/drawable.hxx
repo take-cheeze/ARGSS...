@@ -38,7 +38,7 @@ class Drawable
 public:
 	virtual ~Drawable() {}
 
-	virtual void Draw(long z) = 0;
+	virtual void draw(long z) = 0;
 
 	virtual void RefreshBitmaps() = 0;
 protected:

@@ -31,20 +31,20 @@
 ////////////////////////////////////////////////////////////
 /// ZObj class
 ////////////////////////////////////////////////////////////
-class ZObj {
+class ZObj
+{
+private:
+	long z_;
+	VALUE creation_;
+	VALUE id_;
 public:
 	ZObj(long iz, VALUE icreation, VALUE iid);
 	~ZObj();
 
-	void setZ(long n);
-	long getZ();
-	VALUE getCreation();
-	VALUE getId();
-
-private:
-	long z;
-	VALUE creation;
-	VALUE id;
+	void setZ(long nz) { z_ = nz; }
+	long getZ() const { return z_; }
+	VALUE getCreation() const { return creation_; }
+	VALUE getId() const { return id_; }
 }; // class ZObj
 
 #endif

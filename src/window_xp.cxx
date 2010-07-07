@@ -120,7 +120,7 @@ void Window::RefreshBitmaps()
 ////////////////////////////////////////////////////////////
 /// Draw
 ////////////////////////////////////////////////////////////
-void Window::Draw(long z)
+void Window::draw(long z)
 {
 	if (!visible) return;
 	if (width <= 0 || height <= 0) return;
@@ -433,7 +433,7 @@ void Window::Draw(long z)
 
 	glDisable(GL_SCISSOR_TEST);
 }
-void Window::Draw(long z, Bitmap* dst_bitmap)
+void Window::draw(long z, Bitmap* dst_bitmap)
 {
 }
 

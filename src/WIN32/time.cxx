@@ -22,79 +22,31 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _TILEMAP_XP_HXX_
-#define _TILEMAP_XP_HXX_
-
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#include <map>
-#include <string>
-#include <vector>
-
-#include "bitmap.hxx"
-#include "drawable.hxx"
+#include <windows.h>
+#include "time.hxx"
 
 ////////////////////////////////////////////////////////////
-/// Tilemap class
+/// get time
 ////////////////////////////////////////////////////////////
-class Tilemap : public Drawable
-{
-public:
-	Tilemap(VALUE iid);
-	~Tilemap();
+long Time::getTime() {
+	static LARGE_INTEGER frequency;
+	static BOOL htimer = QueryPerformanceFrequency(&frequency);
 
-	static void Init();
-	static bool IsDisposed(VALUE id);
-	static void New(VALUE id);
-	static Tilemap& get(VALUE id);
-	static void Dispose(VALUE id);
+	if (htimer) {
+		LARGE_INTEGER tick;
+		QueryPerformanceCounter(&tick);
 
-	void RefreshBitmaps();
-	void draw(long z);
-	void draw(long z, Bitmap* dst_bitmap);
-	void RefreshData();
+		return (long)(((double)tick.QuadPart * 1000.0) / (double)frequency.QuadPart);
+	}
+	return getTickCount();
+}
 
-	void Update();
-	VALUE getViewport();
-	void setViewport(VALUE nviewport);
-	VALUE getTileset();
-	void setTileset(VALUE ntileset);
-	VALUE getMapData();
-	void setMapData(VALUE nmap_data);
-	VALUE getFlashData();
-	void setFlashData(VALUE nflash_data);
-	VALUE getPriorities();
-	void setPriorities(VALUE npriorities);
-	bool getVisible();
-	void setVisible(bool nvisible);
-	int getOx();
-	void setOx(int nox);
-	int getOy();
-	void setOy(int noy);
-
-private:
-	VALUE id;
-	VALUE viewport;
-	VALUE tileset;
-	VALUE autotiles;
-	VALUE map_data;
-	VALUE flash_data;
-	VALUE priorities;
-	bool visible;
-	int ox;
-	int oy;
-	int autotile_frame;
-	int autotile_time;
-
-	std::map<VALUE, std::map<int, std::map<int, Bitmap*> > > autotiles_cache;
-	static int autotiles_id[6][8][4];
-
-	struct TileData {
-		int id;
-		int priority;
-	};
-	std::vector<std::vector<std::vector<TileData> > > data_cache;
-}; // class Tilemap
-
-#endif
+////////////////////////////////////////////////////////////
+/// Sleep
+////////////////////////////////////////////////////////////
+void Time::sleepMs(long ms) {
+	::Sleep(ms);
+}

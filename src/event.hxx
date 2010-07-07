@@ -47,6 +47,7 @@ public:
 		param1 = 0;
 		param2 = 0;
 	};
+	Event(Event const& src) : type(src.type), param1(src.param1), param2(src.param2) {}
 	~Event() {};
 
 	EventType type; 

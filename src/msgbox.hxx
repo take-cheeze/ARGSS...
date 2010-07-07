@@ -28,14 +28,12 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#ifdef WIN32
-	#include "win32/msgbox.hxx"
-#else
-	#include "qt/msgbox.hxx"
-/*
-#else
-	#include "sdl/msgbox.hxx"
- */
+#if defined(ARGSS_WIN32)
+	#include "WIN32/msgbox.hxx"
+#elif defined(ARGSS_Qt)
+	#include "Qt/msgbox.hxx"
+#elif defined(ARGSS_SDL)
+	#include "SDL/msgbox.hxx"
 #endif
 
 #endif

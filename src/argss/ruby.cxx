@@ -86,7 +86,7 @@ namespace ARGSS
 		{
 			ruby_init();
 			ruby_init_loadpath();
-			//atexit(ruby_finalize);
+			atexit(ruby_finalize);
 
 			protected_objects = rb_hash_new();
 			rb_gc_register_address(&protected_objects);
@@ -107,10 +107,8 @@ namespace ARGSS
 					VALUE klass = rb_class_path(CLASS_OF(lasterr));
 					VALUE message = rb_obj_as_string(lasterr);
 					if (CLASS_OF(lasterr) != rb_eSystemExit) {
-						std::string report = "RUBY ERROR\n";
-						report += std::string( RSTRING_PTR(klass) );
-						report += " - ";
-						report += std::string( RSTRING_PTR(message) );
+						std::string report = std::string("RUBY ERROR\n")
+							+ RSTRING_PTR(klass) + " - " + RSTRING_PTR(message);
 						if (!NIL_P(ruby_errinfo)) {
 							VALUE ary = rb_funcall(ruby_errinfo, rb_intern("backtrace"), 0);
 							for (int i = 0; i < RARRAY_LEN(ary); i++) {

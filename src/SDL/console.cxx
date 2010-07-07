@@ -25,61 +25,50 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#include "output.hxx"
-#include "system.hxx"
-#include "filefinder.hxx"
-#include "player.hxx"
-#include "graphics.hxx"
-#include "audio.hxx"
-#include "input.hxx"
-#include "argss/argss.hxx"
-
-#include <cstdlib>
+#include <iostream>
+#include <fstream>
+#include "console.hxx"
 
 ////////////////////////////////////////////////////////////
-/// Main
+/// Initialize Console
 ////////////////////////////////////////////////////////////
-#ifdef WIN32
-
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-
-#else
-
-#include <QtCore/QThread>
-#include <QtGui/QApplication>
-
-class MainThread : public QThread
+void Console::Init()
 {
-public:
-	MainThread(QObject* parent = NULL) : QThread(parent) {}
-	virtual ~MainThread() {}
-protected:
-	virtual void run()
-	{
-		ARGSS::Init();
-	}
-};
+}
 
-int main(int argc, char **argv)
+////////////////////////////////////////////////////////////
+/// set console title
+////////////////////////////////////////////////////////////
+void Console::setTitle(char* title)
 {
-	QApplication app(argc, argv);
+}
 
-#endif
+////////////////////////////////////////////////////////////
+/// set console max lines
+////////////////////////////////////////////////////////////
+void Console::setLines(int lines)
+{
+}
 
-	Output::Init();
-	System::Init();
-	FileFinder::Init();
-	Player::Init();
-	Graphics::Init();
-	Input::Init();
-	Audio::Init();
+////////////////////////////////////////////////////////////
+/// Free console
+////////////////////////////////////////////////////////////
+void Console::Free()
+{
+}
 
-#ifdef WIN32
-	ARGSS::Init();
-	return EXIT_SUCCESS;
-#else
-	MainThread mainThread(&app);
-	mainThread.start();
-	return app.exec();
-#endif
+////////////////////////////////////////////////////////////
+/// get console active status
+////////////////////////////////////////////////////////////
+bool Console::Active()
+{
+	return true;
+}
+
+////////////////////////////////////////////////////////////
+/// Write message to console
+////////////////////////////////////////////////////////////
+void Console::Write(std::string const& msg)
+{
+	std::cout << msg << std::endl;
 }

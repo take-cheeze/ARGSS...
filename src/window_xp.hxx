@@ -48,8 +48,8 @@ public:
 	static void Dispose(VALUE id);
 
 	void RefreshBitmaps();
-	void Draw(long z);
-	void Draw(long z, Bitmap* dst_bitmap);
+	void draw(long z);
+	void draw(long z, Bitmap* dst_bitmap);
 
 	void Update();
 	VALUE getViewport();

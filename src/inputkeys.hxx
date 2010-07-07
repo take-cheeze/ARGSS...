@@ -174,7 +174,9 @@ namespace Input
 			JOY_31,
 			JOY_32,
 
-			KEYS_COUNT
+			KEYS_COUNT,
+
+			NONE,
 		}; // enum InputKey
 	} // namespace Keys
 

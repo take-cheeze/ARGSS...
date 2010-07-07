@@ -485,7 +485,7 @@ void Bitmap::TextDraw(Rect const& rect, std::string const& text, int align)
 	bool bold = NUM2BOOL(rb_iv_get(font_id, "@bold"));
 	bool italic = NUM2BOOL(rb_iv_get(font_id, "@italic"));
 
-	std::auto_ptr< Bitmap > text_bmp = Text::Draw(text, StringValuePtr(name_id), color, size, bold, italic, false);
+	std::auto_ptr< Bitmap > text_bmp = Text::draw(text, StringValuePtr(name_id), color, size, bold, italic, false);
 
 	if (text_bmp->getWidth() > rect.width) {
 		int stretch = (int)(text_bmp->getWidth() * 0.4);

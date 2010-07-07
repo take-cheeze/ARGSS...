@@ -41,7 +41,7 @@
 namespace Text
 {
 	void Init();
-	std::auto_ptr< Bitmap > Draw(std::string const& text, std::string const& font, Color const& color, int size, bool bold, bool italic, bool shadow);
+	std::auto_ptr< Bitmap > draw(std::string const& text, std::string const& font, Color const& color, int size, bool bold, bool italic, bool shadow);
 	Rect RectSize(std::string const& text, std::string const& font, int size);
 } // namespace Text
 

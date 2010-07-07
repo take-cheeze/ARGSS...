@@ -77,7 +77,7 @@ namespace Text
 	////////////////////////////////////////////////////////////
 	/// Draw text
 	////////////////////////////////////////////////////////////
-	std::auto_ptr< Bitmap > Draw(std::string const& text, std::string const& font, Color const& color, int size, bool bold, bool italic, bool shadow)
+	std::auto_ptr< Bitmap > draw(std::string const& text, std::string const& font, Color const& color, int size, bool bold, bool italic, bool shadow)
 	{
 		FT_Face face = getFont(font);
 

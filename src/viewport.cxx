@@ -104,7 +104,7 @@ void Viewport::RefreshBitmaps() {
 ////////////////////////////////////////////////////////////
 /// Draw
 ////////////////////////////////////////////////////////////
-void Viewport::Draw(long z) {
+void Viewport::draw(long z) {
 	if (!visible) return;
 
 	dstRect = Rect(rect);
@@ -112,7 +112,7 @@ void Viewport::Draw(long z) {
 	if (dstRect.x < -dstRect.width || dstRect.x > Player::getWidth() || dstRect.y < -dstRect.height || dstRect.y > Player::getHeight()) return;
 
 	for(it_zlist = zlist.begin(); it_zlist != zlist.end(); it_zlist++) {
-		Graphics::getDrawable( it_zlist->getId() ).Draw(it_zlist->getZ());
+		Graphics::getDrawable( it_zlist->getId() ).draw(it_zlist->getZ());
 	}
 }
 

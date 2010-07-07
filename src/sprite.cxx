@@ -118,7 +118,7 @@ void Sprite::RefreshBitmaps()
 ////////////////////////////////////////////////////////////
 /// Draw
 ////////////////////////////////////////////////////////////
-void Sprite::Draw(long z)
+void Sprite::draw(long z)
 {
 	if( (!visible) || (bitmap_ == Qnil) ) return;
 
@@ -342,7 +342,7 @@ void Sprite::Draw(long z)
 
 	glDisable(GL_SCISSOR_TEST);*/
 }
-void Sprite::Draw(long z, Bitmap* dst_bitmap)
+void Sprite::draw(long z, Bitmap* dst_bitmap)
 {
 	/*if (!visible) return;
 	if (getWidth() <= 0 || getHeight() <= 0) return;

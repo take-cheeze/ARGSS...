@@ -130,7 +130,7 @@ namespace Player
 	////////////////////////////////////////////////////////////
 	void ToggleFullscreen()
 	{
-		bool toggle = !getMainWindow().IsFullscreen();
+		bool toggle = !getMainWindow().isFullscreen();
 		mainWindow_ = std::auto_ptr< WindowUi >(
 			new WindowUi(System::getDefaultWidth(), System::getDefaultHeight(), System::getTitle(), true, toggle)
 		);
@@ -143,7 +143,7 @@ namespace Player
 	////////////////////////////////////////////////////////////
 	void ResizeWindow(long width, long height)
 	{
-		getMainWindow().Resize(width, height);
+		getMainWindow().resize(width, height);
 	}
 
 	////////////////////////////////////////////////////////////

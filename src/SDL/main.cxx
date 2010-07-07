@@ -22,21 +22,39 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _INPUTBUTTONS_WIN32_HXX_
-#define _INPUTBUTTONS_WIN32_HXX_
-
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#include <map>
-#include <vector>
+#include "output.hxx"
+#include "system.hxx"
+#include "filefinder.hxx"
+#include "player.hxx"
+#include "graphics.hxx"
+#include "audio.hxx"
+#include "input.hxx"
+#include "argss/argss.hxx"
+
+#include <cassert>
+#include <cstdlib>
+
+#include <SDL.h>
 
 ////////////////////////////////////////////////////////////
-/// Keys namespace
+/// Main
 ////////////////////////////////////////////////////////////
-namespace Input
+
+int main(int argc, char **argv)
 {
-	void InitButtons();
-} // namespace Input
+	assert( SDL_Init(SDL_INIT_EVENTTHREAD) == 0 );
 
-#endif
+	Output::Init();
+	System::Init();
+	FileFinder::Init();
+	Player::Init();
+	Graphics::Init();
+	Input::Init();
+	Audio::Init();
+
+	ARGSS::Init();
+	return EXIT_SUCCESS;
+}

@@ -28,14 +28,12 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#ifdef WIN32
-	#include "win32/inputbuttons.hxx"
-#else
-	#include "qt/inputbuttons.hxx"
-/*
-#else
-	#include "sdl/inputbuttons.hxx"
- */
+#if defined(ARGSS_WIN32)
+	#include "WIN32/inputbuttons.hxx"
+#elif defined(ARGSS_Qt)
+	#include "Qt/inputbuttons.hxx"
+#elif defined(ARGSS_SDL)
+	#include "SDL/inputbuttons.hxx"
 #endif
 
 #endif

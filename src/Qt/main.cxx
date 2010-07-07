@@ -25,28 +25,49 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#include <windows.h>
-#include "time.hxx"
+#include "output.hxx"
+#include "system.hxx"
+#include "filefinder.hxx"
+#include "player.hxx"
+#include "graphics.hxx"
+#include "audio.hxx"
+#include "input.hxx"
+#include "argss/argss.hxx"
+
+#include <cstdlib>
+
+#include <QtCore/QThread>
+#include <QtGui/QApplication>
 
 ////////////////////////////////////////////////////////////
-/// get time
+/// Main
 ////////////////////////////////////////////////////////////
-long Time::getTime() {
-	static LARGE_INTEGER frequency;
-	static BOOL htimer = QueryPerformanceFrequency(&frequency);
 
-	if (htimer) {
-		LARGE_INTEGER tick;
-		QueryPerformanceCounter(&tick);
-
-		return (long)(((double)tick.QuadPart * 1000.0) / (double)frequency.QuadPart);
+class MainThread : public QThread
+{
+public:
+	MainThread(QObject* parent = NULL) : QThread(parent) {}
+	virtual ~MainThread() {}
+protected:
+	virtual void run()
+	{
+		ARGSS::Init();
 	}
-	return getTickCount();
-}
+};
 
-////////////////////////////////////////////////////////////
-/// Sleep
-////////////////////////////////////////////////////////////
-void Time::SleepMs(long ms) {
-	::Sleep(ms);
+int main(int argc, char **argv)
+{
+	QApplication app(argc, argv);
+
+	Output::Init();
+	System::Init();
+	FileFinder::Init();
+	Player::Init();
+	Graphics::Init();
+	Input::Init();
+	Audio::Init();
+
+	MainThread mainThread(&app);
+	mainThread.start();
+	return app.exec();
 }

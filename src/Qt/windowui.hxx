@@ -18,7 +18,7 @@ public:
 	void swapBuffers();
 	void Resize(long nwidth, long nheight) { resize(nwidth, nheight); }
 	void setTitle(std::string const& title) { setWindowTitle( title.c_str() ); }
-	void ToggleFullscreen() { showFullScreen(); }
+	void toggleFullscreen() { showFullScreen(); }
 
 	long getWidth() const { return width(); }
 	long getHeight() const { return height(); }
@@ -26,7 +26,7 @@ public:
 	bool getEvent(Event& evnt);
 	// int ProccesEvents(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-	bool IsFullscreen() const { return isFullScreen(); }
+	bool isFullscreen() const { return isFullScreen(); }
 	bool getMouseFocus() const { return  mouseFocus_; }
 	int getMouseWheel() const { return mouseWheel_; }
 	int getMousePosX() const { return mouseX_; }
@@ -54,7 +54,7 @@ protected:
 	virtual void mouseReleaseEvent(QMouseEvent* event);
 	virtual void wheelEvent(QWheelEvent* event);
 
-	virtual void updateGL();
+	virtual void paintGL();
 	virtual void initializeGL();
 	virtual void resizeGL(int width, int height);
 }; // class WindowUi

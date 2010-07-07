@@ -161,7 +161,7 @@ void Tilemap::RefreshBitmaps() {
 ////////////////////////////////////////////////////////////
 /// Draw
 ////////////////////////////////////////////////////////////
-void Tilemap::Draw(long z_level) {
+void Tilemap::draw(long z_level) {
 	if (!visible) return;
 	if (tileset == Qnil || map_data == Qnil || priorities == Qnil) return;
 
@@ -270,7 +270,7 @@ void Tilemap::Draw(long z_level) {
 
 	glDisable(GL_SCISSOR_TEST);
 }
-void Tilemap::Draw(long z, Bitmap* dst_bitmap) {
+void Tilemap::draw(long z, Bitmap* dst_bitmap) {
 
 }
 

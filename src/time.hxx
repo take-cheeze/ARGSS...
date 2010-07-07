@@ -28,14 +28,12 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#ifdef WIN32
-	#include "win32/time.hxx"
-#else
-	#include "qt/time.hxx"
-/*
-#else
-	#include "sdl/time.hxx"
- */
+#if defined(ARGSS_WIN32)
+	#include "WIN32/time.hxx"
+#elif defined(ARGSS_Qt)
+	#include "Qt/time.hxx"
+#elif defined(ARGSS_SDL)
+	#include "SDL/time.hxx"
 #endif
 
 #endif

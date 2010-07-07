@@ -1,17 +1,20 @@
 #include "msgbox.hxx"
 #include "../player.hxx"
 
-#include <QtGui/QMessageBox>
+#include <iostream>
 
 void MsgBox::OK(std::string const& msg, std::string const& title)
 {
-	QMessageBox::information( &Player::getMainWindow(), title.c_str(), msg.c_str() );
+	std::cout << "Message: " << title << ", " << msg << std::endl;
+	std::cin.get();
 }
 void MsgBox::Error(std::string const& msg, std::string const& title)
 {
-	QMessageBox::critical( &Player::getMainWindow(), title.c_str(), msg.c_str() );
+	std::cout << "Error: " << title << ", " << msg << std::endl;
+	std::cin.get();
 }
 void MsgBox::Warning(std::string const& msg, std::string const& title)
 {
-	QMessageBox::warning( &Player::getMainWindow(), title.c_str(), msg.c_str() );
+	std::cout << "Warning: " << title << ", " << msg << std::endl;
+	std::cin.get();
 }

@@ -5,7 +5,7 @@ namespace Time
 {
 	long getTime();
 
-	void SleepMs(long ms);
+	void sleepMs(long ms);
 } // namespace Time
 
 #endif

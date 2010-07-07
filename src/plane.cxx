@@ -105,7 +105,7 @@ void Plane::RefreshBitmaps()
 ////////////////////////////////////////////////////////////
 /// Draw
 ////////////////////////////////////////////////////////////
-void Plane::Draw(long z)
+void Plane::draw(long z)
 {
 	if( (!visible_) || (bitmap_ == Qnil) ) return;
 
@@ -185,7 +185,7 @@ void Plane::Draw(long z)
 
 	glDisable(GL_SCISSOR_TEST);
 }
-void Plane::Draw(long z, Bitmap* dst_bitmap)
+void Plane::draw(long z, Bitmap* dst_bitmap)
 {
 }
 

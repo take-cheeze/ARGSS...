@@ -50,7 +50,7 @@ namespace Graphics
 	void RefreshAll();
 	void TimerWait();
 	void TimerContinue();
-	void DrawFrame();
+	void drawFrame();
 
 	void Update();
 	void Freeze();

@@ -8,7 +8,7 @@ namespace Time
 		return SDL_GetTicks();
 	}
 
-	void SleepMs(long ms)
+	void sleepMs(long ms)
 	{
 		SDL_Delay(ms);
 	}

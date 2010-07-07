@@ -27,16 +27,20 @@
 ////////////////////////////////////////////////////////////
 #include <boost/format.hpp>
 
+#include <cstdlib>
+#include <ctime>
+
 #include <iostream>
 #include <map>
 #include <string>
 
 #include <GL/gl.h>
 
-#include "time.hxx"
-#include "graphics.hxx"
 #include <argss/ruby.hxx>
 #include <argss/error.hxx>
+
+#include "time.hxx"
+#include "graphics.hxx"
 #include "system.hxx"
 #include "player.hxx"
 #include "output.hxx"
@@ -52,19 +56,17 @@ namespace Graphics
 		/// Global Variables
 		////////////////////////////////////////////////////////////
 		int fps;
-		int framerate;
-		int framecount;
-		Color backcolor(255.0f, 255.0f, 255.0f, 255.0f);
+		int frameRate_;
+		int frameCount_;
+		Color backcolor; // (255.0f, 255.0f, 255.0f, 255.0f);
 		int brightness;
-		double framerate_interval;
+		double frameInterval_;
 		std::map< VALUE, boost::shared_ptr< Drawable > > drawableMap_;
-		std::map< VALUE, boost::shared_ptr< Drawable > >::iterator it_drawable_map;
-		std::list<ZObj> zlist;
-		std::list<ZObj>::iterator it_zlist;
+		std::list< ZObj > zlist_;
 		long creation;
-		long last_tics;
-		long last_tics_wait;
-		long next_tics_fps;
+		long lastTics_;
+		long lastTicsWait_;
+		long nextTicsFps_;
 	}
 
 	int getFPS() { return fps; }
@@ -97,14 +99,13 @@ namespace Graphics
 	void Init()
 	{
 		fps = 0;
-		framerate = 40;
-		framecount = 0;
+		setFrameRate(40);
+		frameCount_ = 0;
 		backcolor = Color(0, 0, 0, 0);
 		brightness = 255;
 		creation = 0;
-		framerate_interval = 1000.0 / framerate;
-		last_tics = Time::getTime() + (long)framerate_interval;
-		next_tics_fps = Time::getTime() + 1000;
+		lastTics_ = Time::getTime() + long(frameInterval_);
+		nextTicsFps_ = Time::getTime() + 1000;
 
 		InitOpenGL();
 
@@ -134,9 +135,9 @@ namespace Graphics
 					 (GLclampf)(backcolor.blue  / 255.0f),
 					 (GLclampf)(backcolor.alpha / 255.0f));
 		glClearDepth(1.0);
-		glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT);
 
-		// Player::swapBuffers();
+		Player::swapBuffers();
 	}
 
 	////////////////////////////////////////////////////////////
@@ -153,8 +154,8 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void RefreshAll()
 	{
-		for (it_drawable_map = drawableMap_.begin(); it_drawable_map != drawableMap_.end(); it_drawable_map++) {
-			it_drawable_map->second->RefreshBitmaps();
+		for (std::map< VALUE, boost::shared_ptr< Drawable > >::iterator it = drawableMap_.begin(); it != drawableMap_.end(); ++it) {
+			it->second->RefreshBitmaps();
 		}
 		Bitmap::RefreshBitmaps();
 	}
@@ -164,7 +165,7 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void TimerWait()
 	{
-		last_tics_wait = Time::getTime();
+		lastTicsWait_ = Time::getTime();
 	}
 
 	////////////////////////////////////////////////////////////
@@ -172,8 +173,8 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void TimerContinue()
 	{
-		last_tics += Time::getTime() - last_tics_wait;
-		next_tics_fps += Time::getTime() - last_tics_wait;
+		lastTics_ += Time::getTime() - lastTicsWait_;
+		nextTicsFps_ += Time::getTime() - lastTicsWait_;
 	}
 
 	////////////////////////////////////////////////////////////
@@ -181,53 +182,49 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void Update()
 	{
-		// Player::getMainWindow().makeCurrent();
-
 		static long tics;
-		// static long tics_fps = Time::getTime();
+		// static long ticsFps = Time::getTime();
 		static long frames = 0;
-		// static double waitframes = 0;
-		// static double cyclesleftover;
+		// static double waitFrames = 0;
+		// static double cyclesLeftOver;
 
 		Player::Update();
-		/*if (waitframes >= 1) {
-			waitframes -= 1;
-			return;
-		}*/
+//		if (waitFrames >= 1) {
+//			waitFrames -= 1;
+//			return;
+//		}
 		tics = Time::getTime();
 
-		// std::cout << tics << std::endl;
+		if ((tics - lastTics_) >= frameInterval_) {// || (frameInterval_ - tics + lastTics_) < 12) {
+			//cyclesLeftOver = waitFrames;
+			//waitFrames = (double)(tics - lastTics_) / frameInterval_ - cyclesleftover;
+			//lastTics_ += (tics - lastTics_);
+			lastTics_ = tics;
 
-		if ((tics - last_tics) >= framerate_interval) {// || (framerate_interval - tics + last_tics) < 12) {
-			//cyclesleftover = waitframes;
-			//waitframes = (double)(tics - last_tics) / framerate_interval - cyclesleftover;
-			//last_tics += (tics - last_tics);
-			last_tics = tics;
+			drawFrame();
 
-			DrawFrame();
-
-			framecount++;
+			frameCount_++;
 			frames++;
 
-			if (tics >= next_tics_fps) {
-				next_tics_fps += 1000;
+			if (tics >= nextTicsFps_) {
+				nextTicsFps_ += 1000;
 				fps = frames;
 				frames = 0;
 
 				Player::getMainWindow().setTitle( ( boost::format("%s - %d FPS") % System::getTitle() % fps ).str() );
 			}
-		} else Time::SleepMs((long)(framerate_interval) - (tics - last_tics));
+		} else Time::sleepMs((long)(frameInterval_) - (tics - lastTics_));
 	}
 
 	////////////////////////////////////////////////////////////
 	/// Draw Frame
 	////////////////////////////////////////////////////////////
-	void DrawFrame()
+	void drawFrame()
 	{
-		glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT);
 
-		for (it_zlist = zlist.begin(); it_zlist != zlist.end(); it_zlist++) {
-			drawableMap_[it_zlist->getId()]->Draw(it_zlist->getZ());
+		for (std::list< ZObj >::iterator it = zlist_.begin(); it != zlist_.end(); ++it) {
+			drawableMap_[it->getId()]->draw(it->getZ());
 		}
 
 		if (brightness < 255) {
@@ -243,7 +240,21 @@ namespace Graphics
 			glEnd();
 		}
 
-		// Player::swapBuffers();
+		std::srand( std::time(NULL) );
+		glColor4f(
+			std::rand() % 255 / 255.0f,
+			std::rand() % 255 / 255.0f,
+			std::rand() % 255 / 255.0f,
+			std::rand() % 255 / 255.0f
+		);
+		glBegin(GL_LINE_LOOP);
+		for(int i = 0, len = std::rand() % 20; i < len; i++) {
+			glVertex2i( std::rand() % Player::getWidth(), std::rand() % Player::getHeight() );
+		}
+		glEnd();
+		std::cout << "Graphics::drawFrame()" << std::endl;
+
+		Player::swapBuffers();
 	}
 
 	////////////////////////////////////////////////////////////
@@ -267,8 +278,8 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void FrameReset()
 	{
-		last_tics = Time::getTime();
-		next_tics_fps = Time::getTime() + 1000;
+		lastTics_ = Time::getTime();
+		nextTicsFps_ = Time::getTime() + 1000;
 	}
 
 	////////////////////////////////////////////////////////////
@@ -298,9 +309,9 @@ namespace Graphics
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-		glClear(GL_COLOR_BUFFER_BIT | GL_STENCIL_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glClear(GL_COLOR_BUFFER_BIT);
 
-		// Player::swapBuffers();
+		Player::swapBuffers();
 	}
 
 	////////////////////////////////////////////////////////////
@@ -349,20 +360,20 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	int getFrameRate()
 	{
-		return framerate;
+		return frameRate_;
 	}
 	void setFrameRate(int nframerate)
 	{
-		framerate = nframerate;
-		framerate_interval = 1000.0 / framerate;
+		frameRate_ = nframerate;
+		frameInterval_ = 1000.0 / frameRate_;
 	}
 	int getFrameCount()
 	{
-		return framecount;
+		return frameCount_;
 	}
 	void setFrameCount(int nframecount)
 	{
-		framecount = nframecount;
+		frameCount_ = nframecount;
 	}
 	VALUE getBackColor()
 	{
@@ -403,14 +414,14 @@ namespace Graphics
 		creation += 1;
 		ZObj zobj(z, creation, id);
 
-		zlist.push_back(zobj);
-		zlist.sort(SortZObj);
+		zlist_.push_back(zobj);
+		zlist_.sort(SortZObj);
 	}
 	void RegisterZObj(long z, VALUE id, bool multiz)
 	{
 		ZObj zobj(z, 999999, id);
-		zlist.push_back(zobj);
-		zlist.sort(SortZObj);
+		zlist_.push_back(zobj);
+		zlist_.sort(SortZObj);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -424,7 +435,7 @@ namespace Graphics
 	};
 	void RemoveZObj(VALUE id)
 	{
-		zlist.remove_if (remove_zobj_id(id));
+		zlist_.remove_if (remove_zobj_id(id));
 	}
 
 	////////////////////////////////////////////////////////////
@@ -432,12 +443,12 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void UpdateZObj(VALUE id, long z)
 	{
-		for(it_zlist = zlist.begin(); it_zlist != zlist.end(); it_zlist++) {
-			if (it_zlist->getId() == id) {
-				it_zlist->setZ(z);
+		for(std::list< ZObj >::iterator it = zlist_.begin(); it != zlist_.end(); ++it) {
+			if (it->getId() == id) {
+				it->setZ(z);
 				break;
 			}
 		}
-		zlist.sort(SortZObj);
+		zlist_.sort(SortZObj);
 	}
 } // namespace Graphics

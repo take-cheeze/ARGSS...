@@ -1,5 +1,9 @@
 #include "windowui.hxx"
 #include "../graphics.hxx"
+#include "../player.hxx"
+
+#include <ctime>
+#include <cstdlib>
 
 #include <iostream>
 
@@ -20,29 +24,28 @@ WindowUi::WindowUi(long iwidth, long iheight, std::string const& title, bool cen
 	setCursor( QCursor(Qt::ArrowCursor) );
 	// setIcon();
 
-	if(fs_flag) ToggleFullscreen();
+	if(fs_flag) toggleFullscreen();
 	else if(center) {
 		QSize centerPos = ( QApplication::desktop()->screenGeometry().size() - frameSize() ) / 2;
 		move( QPoint( centerPos.width(), centerPos.height() ) );
 	}
 
-	setAutoFillBackground(true);
-	setAutoBufferSwap(true);
+	setAutoFillBackground(false);
+	setAutoBufferSwap(false);
 
 	setVisible(true);
 
-	makeCurrent();
+	QGLWidget::makeCurrent();
 }
 WindowUi::~WindowUi()
 {
 }
 
-/*
 void WindowUi::swapBuffers()
 {
-	if( !autoBufferSwap() ) swapBuffers();
+	glFlush();
+	if( !autoBufferSwap() ) QGLWidget::swapBuffers();
 }
- */
 
 bool WindowUi::getEvent(Event& ev)
 {
@@ -54,6 +57,9 @@ bool WindowUi::getEvent(Event& ev)
 	} else return false;
 }
 
+void WindowUi::paintGL()
+{
+}
 void WindowUi::initializeGL()
 {
 	Graphics::InitOpenGL();
@@ -175,6 +181,8 @@ Input::Keys::InputKey WindowUi::QtK2IK(QKeyEvent* event)
 void WindowUi::wheelEvent(QWheelEvent* event)
 {
 	mouseWheel_ = event->delta();
+
+	QGLWidget::wheelEvent(event);
 }
 void WindowUi::keyPressEvent(QKeyEvent* event)
 {
@@ -184,6 +192,8 @@ void WindowUi::keyPressEvent(QKeyEvent* event)
 	evnt.param1 = key;
 	events_.push(evnt);
 	keys_[key] = true;
+
+	QGLWidget::keyPressEvent(event);
 }
 void WindowUi::keyReleaseEvent(QKeyEvent* event)
 {
@@ -193,11 +203,15 @@ void WindowUi::keyReleaseEvent(QKeyEvent* event)
 	evnt.param1 = key;
 	events_.push(evnt);
 	keys_[key] = false;
+
+	QGLWidget::keyReleaseEvent(event);
 }
 void WindowUi::mouseMoveEvent(QMouseEvent* event)
 {
 	mouseX_ = event->x();
 	mouseY_ = event->y();
+
+	QGLWidget::mouseMoveEvent(event);
 }
 void WindowUi::mousePressEvent(QMouseEvent* event)
 {
@@ -207,6 +221,8 @@ void WindowUi::mousePressEvent(QMouseEvent* event)
 	if(but & Qt::MidButton) keys_[Input::Keys::MOUSE_MIDDLE] = true;
 	if(but & Qt::XButton1) keys_[Input::Keys::MOUSE_XBUTTON1] = true;
 	if(but & Qt::XButton2) keys_[Input::Keys::MOUSE_XBUTTON2] = true;
+
+	QGLWidget::mousePressEvent(event);
 }
 void WindowUi::mouseReleaseEvent(QMouseEvent* event)
 {
@@ -216,6 +232,8 @@ void WindowUi::mouseReleaseEvent(QMouseEvent* event)
 	if(but & Qt::MidButton) keys_[Input::Keys::MOUSE_MIDDLE] = false;
 	if(but & Qt::XButton1) keys_[Input::Keys::MOUSE_XBUTTON1] = false;
 	if(but & Qt::XButton2) keys_[Input::Keys::MOUSE_XBUTTON2] = false;
+
+	QGLWidget::mouseReleaseEvent(event);
 }
 void WindowUi::focusInEvent(QFocusEvent* event)
 {
@@ -224,6 +242,8 @@ void WindowUi::focusInEvent(QFocusEvent* event)
 	events_.push(evnt);
 
 	if( event->reason() == Qt::MouseFocusReason ) mouseFocus_ = true;
+
+	QGLWidget::focusInEvent(event);
 }
 void WindowUi::focusOutEvent(QFocusEvent* event)
 {
@@ -232,22 +252,14 @@ void WindowUi::focusOutEvent(QFocusEvent* event)
 	events_.push(evnt);
 
 	if( event->reason() == Qt::MouseFocusReason ) mouseFocus_ = false;
+
+	QGLWidget::focusOutEvent(event);
 }
 bool WindowUi::event(QEvent* event)
 {
 	Event evnt;
 	bool ret = true;
 	switch ( event->type() ) {
-		case QEvent::WindowActivate:
-		case QEvent::FocusIn:
-			evnt.type = Event::GainFocus;
-			events_.push(evnt);
-			break;
-		case QEvent::WindowDeactivate:
-		case QEvent::FocusOut:
-			evnt.type = Event::LostFocus;
-			events_.push(evnt);
-			break;
 		case QEvent::Close:
 			evnt.type = Event::Quit;
 			events_.push(evnt);

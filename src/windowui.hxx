@@ -28,14 +28,12 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#ifdef WIN32
-	#include "qt/windowui.hxx"
-#else
-	#include "qt/windowui.hxx"
-/*
-#else
-	#include "sdl/windowui.hxx"
- */
+#if defined(ARGSS_WIN32)
+	#include "WIN32/windowui.hxx"
+#elif defined(ARGSS_Qt)
+	#include "Qt/windowui.hxx"
+#elif defined(ARGSS_SDL)
+	#include "SDL/windowui.hxx"
 #endif
 
 #endif

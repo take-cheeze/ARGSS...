@@ -28,14 +28,12 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#ifdef WIN32
-	#include "win32/filefinder.hxx"
-#else
-	#include "qt/filefinder.hxx"
-/*
-#else
-	#include "sdl/filefinder.hxx"
- */
+#if defined(ARGSS_WIN32)
+	#include "WIN32/filefinder.hxx"
+#elif defined(ARGSS_Qt)
+	#include "Qt/filefinder.hxx"
+#elif defined(ARGSS_SDL)
+	#include "SDL/filefinder.hxx"
 #endif
 
 #endif

@@ -28,14 +28,12 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#ifdef WIN32
-	#include "wi32/console.hxx"
-#else
-	#include "qt/console.hxx"
-/*
-#else
-	#include "sdl/console.hxx"
- */
+#if defined(ARGSS_WIN32)
+	#include "WIN32/console.hxx"
+#elif defined(ARGSS_Qt)
+	#include "Qt/console.hxx"
+#elif defined(ARGSS_SDL)
+	#include "SDL/console.hxx"
 #endif
 
 #endif

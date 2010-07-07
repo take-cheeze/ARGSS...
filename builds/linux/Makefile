@@ -2,7 +2,9 @@ TARGET = ARGSS
 
 BIN_DIR = ../../bin
 
-PLATFORM = qt
+PLATFORM = SDL
+# PLATFORM = Qt
+# PLATFORM = WIN32
 
 SRC_DIR = ../../src
 SRC_CXX = $(wildcard $(SRC_DIR)/*.cxx)
@@ -27,16 +29,19 @@ CFLAGS = \
 	-Isrc \
 	-I$(SRC_DIR) \
 	-I/usr/include/wine/windows \
+	-D_FORTIFY_SOURCE=1 -fstack-protector-all \
+	-DARGSS_$(PLATFORM) \
 
-CFLAGS += -D_FORTIFY_SOURCE=1 -fstack-protector-all
-CXXFLAGS = $(CFLAGS) -I/usr/include/qt4
+CXXFLAGS = $(CFLAGS)
 LDFLAGS = --enable-gold
+
+LD = $(CXX)
 
 LIBS = \
 	$(shell sdl-config --libs) \
 	$(shell pkg-config gl --libs) \
 	$(shell freetype-config --libs) \
-	-lSDL_mixer -lQtGui -lQtCore -lQtOpenGL -lwine \
+	-lSDL_mixer \
 
 # ruby version things
 
@@ -60,6 +65,11 @@ CFLAGS += \
 	-I/usr/include/ruby-$(RUBY_VERSION) \
 	-I/usr/include/ruby-$(RUBY_VERSION)/$(RUBY_BUILD)
 LIBS += -lruby-$(RUBY_VERSION)
+endif
+
+ifeq ($(PLATFORM),Qt)
+LIBS += -lQtGui -lQtCore -lQtOpenGL
+CXXFLAGS += -I/usr/include/qt4
 endif
 
 CFLAGS += -include /usr/include/time.h

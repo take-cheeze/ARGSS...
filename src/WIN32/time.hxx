@@ -22,79 +22,17 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _TILEMAP_XP_HXX_
-#define _TILEMAP_XP_HXX_
+#ifndef _TIME_WIN32_HXX_
+#define _TIME_WIN32_HXX_
 
 ////////////////////////////////////////////////////////////
-/// Headers
+/// Time namespace
 ////////////////////////////////////////////////////////////
-#include <map>
-#include <string>
-#include <vector>
-
-#include "bitmap.hxx"
-#include "drawable.hxx"
-
-////////////////////////////////////////////////////////////
-/// Tilemap class
-////////////////////////////////////////////////////////////
-class Tilemap : public Drawable
+namespace Time
 {
-public:
-	Tilemap(VALUE iid);
-	~Tilemap();
+	long getTime();
 
-	static void Init();
-	static bool IsDisposed(VALUE id);
-	static void New(VALUE id);
-	static Tilemap& get(VALUE id);
-	static void Dispose(VALUE id);
-
-	void RefreshBitmaps();
-	void draw(long z);
-	void draw(long z, Bitmap* dst_bitmap);
-	void RefreshData();
-
-	void Update();
-	VALUE getViewport();
-	void setViewport(VALUE nviewport);
-	VALUE getTileset();
-	void setTileset(VALUE ntileset);
-	VALUE getMapData();
-	void setMapData(VALUE nmap_data);
-	VALUE getFlashData();
-	void setFlashData(VALUE nflash_data);
-	VALUE getPriorities();
-	void setPriorities(VALUE npriorities);
-	bool getVisible();
-	void setVisible(bool nvisible);
-	int getOx();
-	void setOx(int nox);
-	int getOy();
-	void setOy(int noy);
-
-private:
-	VALUE id;
-	VALUE viewport;
-	VALUE tileset;
-	VALUE autotiles;
-	VALUE map_data;
-	VALUE flash_data;
-	VALUE priorities;
-	bool visible;
-	int ox;
-	int oy;
-	int autotile_frame;
-	int autotile_time;
-
-	std::map<VALUE, std::map<int, std::map<int, Bitmap*> > > autotiles_cache;
-	static int autotiles_id[6][8][4];
-
-	struct TileData {
-		int id;
-		int priority;
-	};
-	std::vector<std::vector<std::vector<TileData> > > data_cache;
-}; // class Tilemap
+	void sleepMs(long ms);
+} // namespace Time
 
 #endif

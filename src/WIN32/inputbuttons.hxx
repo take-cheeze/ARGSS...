@@ -22,17 +22,23 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _TIME_WIN32_HXX_
-#define _TIME_WIN32_HXX_
+#ifndef _INPUTBUTTONS_WIN32_HXX_
+#define _INPUTBUTTONS_WIN32_HXX_
 
 ////////////////////////////////////////////////////////////
-/// Time namespace
+/// Headers
 ////////////////////////////////////////////////////////////
-namespace Time
+#include <map>
+#include <vector>
+
+////////////////////////////////////////////////////////////
+/// Keys namespace
+////////////////////////////////////////////////////////////
+namespace Input
 {
-	long getTime();
+	std::map< int, std::vector<int> >& getButtons();
 
-	void SleepMs(long ms);
-} // namespace Time
+	void InitButtons();
+} // namespace Input
 
 #endif
