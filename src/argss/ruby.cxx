@@ -41,6 +41,7 @@
 	#define ruby_errinfo rb_errinfo()
 #endif
 
+
 namespace ARGSS
 {
 	void defineMethodsImplement(VALUE klassID, FuncTableElement const* table, unsigned int elmNum)
@@ -116,6 +117,11 @@ namespace ARGSS
 								report += RSTRING_PTR(RARRAY_PTR(ary)[i]);
 							}
 						}
+
+						// disabling "exit(EXIT_FAILURE)"
+						std::cout << report << std::endl;
+						assert(false);
+
 						Output::ErrorStr(report);
 						return;
 					}

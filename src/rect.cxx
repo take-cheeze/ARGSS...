@@ -38,14 +38,16 @@ Rect::Rect()
 }
 Rect::Rect(VALUE rect)
 {
+/*
 	if( NIL_P(rect) ) {
 		x = y = width = height = 0;
 	} else {
+ */
 		x = NUM2INT(rb_iv_get(rect, "@x"));
 		y = NUM2INT(rb_iv_get(rect, "@y"));
 		width = NUM2INT(rb_iv_get(rect, "@width"));
 		height = NUM2INT(rb_iv_get(rect, "@height"));
-	}
+//	}
 }
 Rect::Rect(int ix, int iy, int iwidth, int iheight)
 : x(ix), y(iy)

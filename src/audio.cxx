@@ -25,6 +25,11 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <map>
+
+#include <SDL.h>
+#include <SDL_mixer.h>
+
 #include <argss/error.hxx>
 #include <argss/ruby.hxx>
 
@@ -48,18 +53,18 @@ namespace Audio
 		Mix_Music* me;
 		bool me_playing;
 		std::map< int, Mix_Chunk* > sounds;
-		std::map< int, Mix_Chunk* >::iterator it_sounds;
 	} // namespace
 
 	////////////////////////////////////////////////////////////
 	/// Initialize
 	////////////////////////////////////////////////////////////
-	void Init() {
+	void Init()
+	{
 		if (SDL_InitSubSystem(SDL_INIT_AUDIO) < 0) { 
 			Output::Error("ARGSS couldn't initialize audio.\n%s\n", SDL_GetError());
 		}
 
-		if (Mix_OpenAudio(22050, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
+		if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
 			Output::Error("ARGSS couldn't initialize audio.\n%s\n", Mix_GetError());
 		}
 		bgm = NULL;
@@ -72,7 +77,8 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	/// Audio Pause
 	////////////////////////////////////////////////////////////
-	void Pause() {
+	void Pause()
+	{
 		Mix_Pause(-1);
 		Mix_PauseMusic();
 	}
@@ -80,7 +86,8 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	/// Audio Continue
 	////////////////////////////////////////////////////////////
-	void Continue() {
+	void Continue()
+	{
 		Mix_Resume(-1);
 		Mix_ResumeMusic();
 	}
@@ -99,7 +106,8 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	/// BGM play
 	////////////////////////////////////////////////////////////
-	void BGM_Play(std::string const& file, int volume, int pitch) {
+	void BGM_Play(std::string const& file, int volume, int pitch)
+	{
 		std::string path = FileFinder::FindMusic(file);
 		if ( path.empty() ) {
 			VALUE enoent = rb_const_get(rb_mErrno, rb_intern("ENOENT"));
@@ -111,9 +119,7 @@ namespace Audio
 			rb_raise(ARGSS::AError::getID(), "couldn't load %s BGM.\n%s\n", file.c_str(), Mix_GetError());
 		}
 		bgm_volume = volume * MIX_MAX_VOLUME / 100;
-		if (me_playing) {
-			Mix_HookMusicFinished(me_finish);
-		}
+		if (me_playing) Mix_HookMusicFinished(me_finish);
 		else {
 			bgm_playing = true;
 			Mix_VolumeMusic(bgm_volume);
@@ -127,7 +133,8 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	/// BGM stop
 	////////////////////////////////////////////////////////////
-	void BGM_Stop() {
+	void BGM_Stop()
+	{
 		if (bgm_playing) {
 			Mix_HaltMusic();
 			bgm_playing = false;
@@ -138,7 +145,8 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	/// BGM fade
 	////////////////////////////////////////////////////////////
-	void BGM_Fade(int fade) {
+	void BGM_Fade(int fade)
+	{
 		if (bgm_playing) {
 			Mix_FadeOutMusic(fade);
 			bgm_playing = false;
@@ -149,7 +157,8 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	/// BGS play
 	////////////////////////////////////////////////////////////
-	void BGS_Play(std::string const& file, int volume, int pitch) {
+	void BGS_Play(std::string const& file, int volume, int pitch)
+	{
 		std::string path = FileFinder::FindMusic(file);
 		if ( path.empty() ) {
 			VALUE enoent = rb_const_get(rb_mErrno, rb_intern("ENOENT"));
@@ -170,21 +179,24 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	/// BGS stop
 	////////////////////////////////////////////////////////////
-	void BGS_Stop() {
-		if (Mix_Playing(bgs_channel)) Mix_HaltChannel(bgs_channel);
+	void BGS_Stop()
+	{
+		if ( Mix_Playing(bgs_channel) ) Mix_HaltChannel(bgs_channel);
 	}
 
 	////////////////////////////////////////////////////////////
 	/// BGS fade
 	////////////////////////////////////////////////////////////
-	void BGS_Fade(int fade) {
+	void BGS_Fade(int fade)
+	{
 		Mix_FadeOutChannel(bgs_channel, fade);
 	}
 
 	////////////////////////////////////////////////////////////
 	/// ME play
 	////////////////////////////////////////////////////////////
-	void ME_Play(std::string const& file, int volume, int pitch) {
+	void ME_Play(std::string const& file, int volume, int pitch)
+	{
 		std::string path = FileFinder::FindMusic(file);
 		if ( path.empty() ) {
 			VALUE enoent = rb_const_get(rb_mErrno, rb_intern("ENOENT"));
@@ -209,7 +221,8 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	/// ME stop
 	////////////////////////////////////////////////////////////
-	void ME_Stop() {
+	void ME_Stop()
+	{
 		if (me_playing) {
 			Mix_HaltMusic();
 			me_playing = false;
@@ -219,7 +232,8 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	/// ME fade
 	////////////////////////////////////////////////////////////
-	void ME_Fade(int fade) {
+	void ME_Fade(int fade)
+	{
 		if (me_playing) {
 			Mix_FadeOutMusic(fade);
 			me_playing = false;
@@ -229,15 +243,13 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	/// SE play
 	////////////////////////////////////////////////////////////
-	void SE_Play(std::string const& file, int volume, int pitch) {
-		it_sounds = sounds.begin();
-		while(it_sounds != sounds.end()) {
-			if (!Mix_Playing(it_sounds->first)) {
-				Mix_FreeChunk(it_sounds->second);
-				sounds.erase(it_sounds++);
-			}
-			else {
-				it_sounds++;
+	void SE_Play(std::string const& file, int volume, int pitch)
+	{
+		;
+		for(std::map< int, Mix_Chunk* >::iterator it = sounds.begin(); it != sounds.end(); ++it) {
+			if (!Mix_Playing(it->first)) {
+				Mix_FreeChunk(it->second);
+				sounds.erase(it);
 			}
 		}
 		if (sounds.size() >= 7) return;
@@ -256,16 +268,17 @@ namespace Audio
 		if (channel == -1) {
 			rb_raise(ARGSS::AError::getID(), "couldn't play %s SE.\n%s\n", file.c_str(), Mix_GetError());
 		}
-		sounds[channel] = sound;
+		sounds.insert( std::map< int, Mix_Chunk* >::value_type(channel, sound) );
 	}
 
 	////////////////////////////////////////////////////////////
 	/// SE stop
 	////////////////////////////////////////////////////////////
-	void SE_Stop() {
-		for (it_sounds = sounds.begin(); it_sounds != sounds.end(); it_sounds++) {
-			if (Mix_Playing(it_sounds->first)) Mix_HaltChannel(it_sounds->first);
-			Mix_FreeChunk(it_sounds->second);
+	void SE_Stop()
+	{
+		for (std::map< int, Mix_Chunk* >::iterator it = sounds.begin(); it != sounds.end(); ++it) {
+			if (Mix_Playing(it->first)) Mix_HaltChannel(it->first);
+			Mix_FreeChunk(it->second);
 		}
 		sounds.clear();
 	}

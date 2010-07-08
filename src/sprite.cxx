@@ -45,7 +45,7 @@
 Sprite::Sprite(VALUE iid)
 : id(iid)
 , viewport_( rb_iv_get(id, "@viewport") )
-, bitmap_(Qnil), srcRect_( rb_iv_get(id, "@srcRect_") )
+, bitmap_(Qnil), srcRect_( rb_iv_get(id, "@src_rect") )
 , visible(true)
 , x(0), y(0), z(0), ox(0), oy(0)
 , zoom_x(1.0), zoom_y(1.0)

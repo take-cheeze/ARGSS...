@@ -53,7 +53,8 @@ namespace ARGSS
 			////////////////////////////////////////////////////////////
 			/// ARGSS RPG::Sprite ruby functions
 			////////////////////////////////////////////////////////////
-			VALUE rinitialize(int argc, VALUE* argv, VALUE self) {
+			VALUE rinitialize(int argc, VALUE* argv, VALUE self)
+			{
 				if (argc > 1) raise_argn(argc, 1);
 				VALUE viewport = Qnil;
 				if (argc == 1) viewport = argv[0];
@@ -67,13 +68,15 @@ namespace ARGSS
 				rb_iv_set(self, "@_blink", Qfalse);
 				return self;
 			}
-			VALUE rdispose(VALUE self) {
+			VALUE rdispose(VALUE self)
+			{
 				rdispose_damage(self);
 				rdispose_animation(self);
 				rdispose_loop_animation(self);
 				return rb_call_super(0, 0);
 			}
-			VALUE rwhiten(VALUE self) {
+			VALUE rwhiten(VALUE self)
+			{
 				ARGSS::ASprite::rblend_typeE(self, INT2NUM(0));
 				rb_funcall(rb_iv_get(rb_iv_get(rb_iv_get(self, "@bitmap"), "@font"), "@color"), rb_intern("set"), 4, INT2NUM(255), INT2NUM(255), INT2NUM(255), INT2NUM(128));
 				ARGSS::ASprite::ropacityE(self, INT2NUM(255));
@@ -82,8 +85,9 @@ namespace ARGSS
 				rb_iv_set(self, "@_escape_duration", INT2NUM(0));
 				return rb_iv_set(self, "@_collapse_duration", INT2NUM(0));
 			}
-			VALUE rappear(VALUE self) {
-			ARGSS::ASprite::rblend_typeE(self, INT2NUM(0));
+			VALUE rappear(VALUE self)
+			{
+				ARGSS::ASprite::rblend_typeE(self, INT2NUM(0));
 				rb_funcall(rb_iv_get(rb_iv_get(rb_iv_get(self, "@bitmap"), "@font"), "@color"), rb_intern("set"), 4, INT2NUM(0), INT2NUM(0), INT2NUM(0), INT2NUM(0));
 				ARGSS::ASprite::ropacityE(self, INT2NUM(0));
 				rb_iv_set(self, "@_appear_duration", INT2NUM(16));
@@ -91,7 +95,8 @@ namespace ARGSS
 				rb_iv_set(self, "@_escape_duration", INT2NUM(0));
 				return rb_iv_set(self, "@_collapse_duration", INT2NUM(0));
 			}
-			VALUE rescape(VALUE self) {
+			VALUE rescape(VALUE self)
+			{
 				ARGSS::ASprite::rblend_typeE(self, INT2NUM(0));
 				rb_funcall(rb_iv_get(rb_iv_get(rb_iv_get(self, "@bitmap"), "@font"), "@color"), rb_intern("set"), 4, INT2NUM(0), INT2NUM(0), INT2NUM(0), INT2NUM(0));
 				ARGSS::ASprite::ropacityE(self, INT2NUM(255));
@@ -100,7 +105,8 @@ namespace ARGSS
 				rb_iv_set(self, "@_appear_duration", INT2NUM(0));
 				return rb_iv_set(self, "@_collapse_duration", INT2NUM(0));
 			}
-			VALUE rcollapse(VALUE self) {
+			VALUE rcollapse(VALUE self)
+			{
 				ARGSS::ASprite::rblend_typeE(self, INT2NUM(1));
 				rb_funcall(rb_iv_get(rb_iv_get(rb_iv_get(self, "@bitmap"), "@font"), "@color"), rb_intern("set"), 4, INT2NUM(255), INT2NUM(64), INT2NUM(64), INT2NUM(255));
 				ARGSS::ASprite::ropacityE(self, INT2NUM(255));
@@ -109,7 +115,8 @@ namespace ARGSS
 				rb_iv_set(self, "@_appear_duration", INT2NUM(0));
 				return rb_iv_set(self, "@_escape_duration", INT2NUM(0));
 			}
-			VALUE rdamage(VALUE self, VALUE value, VALUE critical) {
+			VALUE rdamage(VALUE self, VALUE value, VALUE critical)
+			{
 				rdispose_damage(self);
 				VALUE damage_string;
 				if (rb_obj_is_kind_of(value, rb_cNumeric)) {
@@ -156,7 +163,8 @@ namespace ARGSS
 				rb_iv_set(self, "@_damage_sprite", damage_sprite);
 				return rb_iv_set(self, "@_damage_duration", INT2NUM(40));
 			}
-			VALUE ranimation(VALUE self, VALUE animation, VALUE hit) {
+			VALUE ranimation(VALUE self, VALUE animation, VALUE hit)
+			{
 				rb_funcall(self, rb_intern("dispose_animation"), 0);
 				rb_iv_set(self, "@_animation", animation);
 				if (animation == Qnil) return Qnil;
@@ -188,7 +196,8 @@ namespace ARGSS
 				}
 				return rb_funcall(self, rb_intern("update_animation"), 0);
 			}
-			VALUE rloop_animation(VALUE self, VALUE animation) {
+			VALUE rloop_animation(VALUE self, VALUE animation)
+			{
 				if (animation == rb_iv_get(self, "@_loop_animation")) return Qnil;
 				rb_funcall(self, rb_intern("dispose_loop_animation"), 0);
 				rb_iv_set(self, "@_loop_animation", animation);
@@ -214,7 +223,8 @@ namespace ARGSS
 				}
 				return rb_funcall(self, rb_intern("update_loop_animation"), 0);
 			}
-			VALUE rdispose_damage(VALUE self) {
+			VALUE rdispose_damage(VALUE self)
+			{
 				VALUE damage_sprite = rb_iv_get(self, "@_damage_sprite");
 				if (damage_sprite != Qnil) {
 					rb_funcall(rb_iv_get(damage_sprite, "@bitmap"), rb_intern("dispose"), 0);
@@ -224,7 +234,8 @@ namespace ARGSS
 				}
 				return Qnil;
 			}
-			VALUE rdispose_animation(VALUE self) {
+			VALUE rdispose_animation(VALUE self)
+			{
 				VALUE animation_sprites = rb_iv_get(self, "@_animation_sprites");
 				if (animation_sprites != Qnil) {
 					VALUE sprite = rb_ary_entry(animation_sprites, 0);
@@ -244,7 +255,8 @@ namespace ARGSS
 				}
 				return Qnil;
 			}
-			VALUE rdispose_loop_animation(VALUE self) {
+			VALUE rdispose_loop_animation(VALUE self)
+			{
 				VALUE loop_animation_sprites = rb_iv_get(self, "@_loop_animation_sprites");
 				if (loop_animation_sprites != Qnil) {
 					VALUE sprite = rb_ary_entry(loop_animation_sprites, 0);
@@ -264,24 +276,28 @@ namespace ARGSS
 				}
 				return Qnil;
 			}
-			VALUE rblink_on(VALUE self) {
+			VALUE rblink_on(VALUE self)
+			{
 				if (rb_iv_get(self, "@_blink") == Qfalse) {
 					rb_iv_set(self, "@_blink", Qtrue);
 					rb_iv_set(self, "@_blink_count", INT2NUM(0));
 				}
 				return Qnil;
 			}
-			VALUE rblink_off(VALUE self) {
+			VALUE rblink_off(VALUE self)
+			{
 				if (rb_iv_get(self, "@_blink") == Qtrue) {
 					rb_iv_set(self, "@_blink", Qfalse);
 					rb_funcall(rb_iv_get(self, "@color"), rb_intern("set"), 4, INT2NUM(0), INT2NUM(0), INT2NUM(0), INT2NUM(0));
 				}
 				return Qnil;
 			}
-			VALUE rblinkQ(VALUE self) {
+			VALUE rblinkQ(VALUE self)
+			{
 				return rb_iv_get(self, "@_blink");
 			}
-			VALUE reffectQ(VALUE self) {
+			VALUE reffectQ(VALUE self)
+			{
 				  return BOOL2NUM(NUM2INT(rb_iv_get(self, "@_whiten_duration")) > 0 ||
 								  NUM2INT(rb_iv_get(self, "@_appear_duration")) > 0 ||
 								  NUM2INT(rb_iv_get(self, "@_escape_duration")) > 0 ||
@@ -289,7 +305,8 @@ namespace ARGSS
 								  NUM2INT(rb_iv_get(self, "@_damage_duration")) > 0 ||
 								  NUM2INT(rb_iv_get(self, "@_animation_duration")) > 0);
 			}
-			VALUE rupdate(VALUE self) {
+			VALUE rupdate(VALUE self)
+			{
 				rb_call_super(0, 0);
 				if (NUM2INT(rb_iv_get(self, "@_whiten_duration")) > 0) {
 					rb_iv_set(self, "@_whiten_duration", INT2NUM(NUM2INT(rb_iv_get(self, "@_whiten_duration")) - 1));
@@ -353,7 +370,8 @@ namespace ARGSS
 				}
 				return rb_ary_clear(rb_cvar_get(id, rb_intern("@@_animations")));
 			}
-			VALUE rupdate_animation(VALUE self) {
+			VALUE rupdate_animation(VALUE self)
+			{
 				int val_animation_duration = NUM2INT(rb_iv_get(self, "@_animation_duration"));
 				if (val_animation_duration > 0) {
 					VALUE animation = rb_iv_get(self, "@_animation");
@@ -374,7 +392,8 @@ namespace ARGSS
 				}
 				return Qnil;
 			}
-			VALUE rupdate_loop_animation(VALUE self) {
+			VALUE rupdate_loop_animation(VALUE self)
+			{
 				VALUE loop_animation = rb_iv_get(self, "@_loop_animation");
 				VALUE frame_index = rb_iv_get(self, "@_loop_animation_index");
 				VALUE cell_data = rb_iv_get(rb_ary_entry(rb_iv_get(loop_animation, "@frames"), NUM2INT(frame_index)), "@cell_data");
@@ -389,7 +408,8 @@ namespace ARGSS
 				}
 				return Qnil;
 			}
-			VALUE ranimation_set_sprites(VALUE self, VALUE sprites, VALUE cell_data, VALUE position) {
+			VALUE ranimation_set_sprites(VALUE self, VALUE sprites, VALUE cell_data, VALUE position)
+			{
 				for (int i = 0; i < 16; i++) {
 					VALUE sprite = rb_ary_entry(sprites, i);
 					VALUE cell_table_data = rb_iv_get(cell_data, "@data");
@@ -403,7 +423,7 @@ namespace ARGSS
 					}
 					rb_iv_set(sprite, "@visible", Qtrue);
 					int val_pattern = NUM2INT(pattern);
-					rb_funcall(rb_iv_get(sprite, "@srcRect"), rb_intern("set"), 4, INT2NUM((val_pattern % 5) * 192), INT2NUM(val_pattern / 5 * 192), INT2NUM(192), INT2NUM(192));
+					rb_funcall(rb_iv_get(sprite, "@src_rect"), rb_intern("set"), 4, INT2NUM((val_pattern % 5) * 192), INT2NUM(val_pattern / 5 * 192), INT2NUM(192), INT2NUM(192));
 					if (position == INT2NUM(3)) {
 						VALUE viewport = rb_iv_get(self, "@viewport");
 						VALUE viewport_rect = rb_funcall(viewport, rb_intern("rect"), 0);
@@ -417,7 +437,7 @@ namespace ARGSS
 						}
 					}
 					else {
-						VALUE srcRect = rb_iv_get(self, "@srcRect");
+						VALUE srcRect = rb_iv_get(self, "@src_rect");
 						int val_x = NUM2INT(rb_iv_get(self, "@x"));
 						int val_y = NUM2INT(rb_iv_get(self, "@y"));
 						int val_ox = NUM2INT(rb_iv_get(self, "@ox"));
@@ -450,7 +470,8 @@ namespace ARGSS
 				}
 				return Qnil;
 			}
-			VALUE ranimation_process_timing(VALUE self, VALUE timing, VALUE hit) {
+			VALUE ranimation_process_timing(VALUE self, VALUE timing, VALUE hit)
+			{
 				int val_condition = NUM2INT(rb_iv_get(timing, "@condition"));
 				if ((val_condition == 0) ||
 					(val_condition == 1 && hit == Qtrue) ||
@@ -480,7 +501,8 @@ namespace ARGSS
 				}
 				return Qnil;
 			}
-			VALUE rxE(VALUE self, VALUE x) {
+			VALUE rxE(VALUE self, VALUE x)
+			{
 				int sx = NUM2INT(x) - NUM2INT(rb_iv_get(self, "@x"));
 				if (sx != 0) {
 					VALUE animation_sprites = rb_iv_get(self, "@_animation_sprites");
@@ -502,7 +524,8 @@ namespace ARGSS
 				}
 				return rb_call_super(1, &x);
 			}
-			VALUE ryE(VALUE self, VALUE y) {
+			VALUE ryE(VALUE self, VALUE y)
+			{
 				int sy = NUM2INT(y) - NUM2INT(rb_iv_get(self, "@y"));
 				if (sy != 0) {
 					VALUE animation_sprites = rb_iv_get(self, "@_animation_sprites");

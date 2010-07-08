@@ -38,15 +38,15 @@ LDFLAGS = --enable-gold
 LD = $(CXX)
 
 LIBS = \
+	-lSDL_mixer \
 	$(shell sdl-config --libs) \
 	$(shell pkg-config gl --libs) \
 	$(shell freetype-config --libs) \
-	-lSDL_mixer \
 
 # ruby version things
 
-# RUBY_VERSION = 1.9.2
-RUBY_VERSION = 1.9.1
+RUBY_VERSION = 1.9.2
+# RUBY_VERSION = 1.9.1
 # RUBY_VERSION = 1.9.0
 # RUBY_VERSION = 1.8
 
@@ -60,6 +60,13 @@ CFLAGS += \
 	-I/usr/include/ruby-$(RUBY_VERSION) \
 	-I/usr/include/ruby-$(RUBY_VERSION)/$(RUBY_BUILD)
 LIBS += -lruby1.9
+else ifeq ($(RUBY_VERSION),1.9.2)
+RUBY_VERSION = 1.9.1
+RUBY_BUILD = i686-linux
+CFLAGS += \
+	-I/usr/local/include/ruby-$(RUBY_VERSION) \
+	-I/usr/local/include/ruby-$(RUBY_VERSION)/$(RUBY_BUILD)
+LIBS += -L/usr/local/lib -lruby -lcrypt
 else
 CFLAGS += \
 	-I/usr/include/ruby-$(RUBY_VERSION) \

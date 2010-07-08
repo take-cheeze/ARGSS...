@@ -1,6 +1,8 @@
 #include "windowui.hxx"
 #include "../graphics.hxx"
 
+#include <SDL_opengl.h>
+
 #include <cassert>
 #include <cstdlib>
 
@@ -109,15 +111,6 @@ namespace
 	}
 
 	std::stack< WindowUi* > currentWindowUI_;
-
-	int processEvent(void* arg)
-	{
-		SDL_Event sdlEv;
-		while( SDL_WaitEvent(&sdlEv) ) {
-			(void)reinterpret_cast< WindowUi* >(arg)->event(sdlEv);
-		}
-		return 0;
-	}
 } // namespace
 
 WindowUi::WindowUi(long iwidth, long iheight, std::string const& title, bool center, bool fs_flag)
@@ -130,11 +123,9 @@ WindowUi::WindowUi(long iwidth, long iheight, std::string const& title, bool cen
 	assert( SDL_InitSubSystem(SDL_INIT_EVENTTHREAD) == 0 );
 	atexit( SDL_Quit );
 
-/*
 	int flagRet = 0;
 	flagRet = SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 	assert(flagRet == 0);
- */
 	Uint32 flags = SDL_OPENGL;
 	if( isFullscreen() ) flags |= SDL_FULLSCREEN;
 	assert( SDL_SetVideoMode(width_, height_, 0, flags) );
@@ -146,10 +137,6 @@ WindowUi::WindowUi(long iwidth, long iheight, std::string const& title, bool cen
 	// setCursor();
 	// setIcon();
 
-	// clearing event queue
-	SDL_Event sdlEv;
-	while( SDL_PollEvent(&sdlEv) );
-
 /*
 	if(center) {
 		QSize centerPos = ( QApplication::desktop()->screenGeometry().size() - frameSize() ) / 2;
@@ -158,18 +145,15 @@ WindowUi::WindowUi(long iwidth, long iheight, std::string const& title, bool cen
  */
 
 	currentWindowUI_.push(this);
-
-	eventThread_ = SDL_CreateThread(processEvent, this);
 }
 WindowUi::~WindowUi()
 {
 	currentWindowUI_.pop();
-	SDL_KillThread(eventThread_);
 }
 
 void WindowUi::toggleFullscreen()
 {
-	isFullScreen_ = !isFullScreen_;
+	isFullScreen_ = isFullScreen_ ? false : true;
 
 	resize(width_, height_);
 }
@@ -180,6 +164,7 @@ void WindowUi::setTitle(std::string const& name)
 
 void WindowUi::swapBuffers()
 {
+	// glFlush();
 	SDL_GL_SwapBuffers();
 }
 void WindowUi::resize(long width, long height)
@@ -198,6 +183,9 @@ void WindowUi::resize(long width, long height)
 
 bool WindowUi::getEvent(Event& ev)
 {
+	SDL_Event sdlEv;
+	while( SDL_PollEvent(&sdlEv) ) (void) this->event(sdlEv);
+
 	if( !events_.empty() ) {
 		ev = events_.front();
 		events_.pop();

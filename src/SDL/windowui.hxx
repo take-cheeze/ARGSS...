@@ -46,7 +46,6 @@ private:
 	long width_, height_;
 
 	bool isFullScreen_;
-	SDL_Thread* eventThread_;
 }; // class WindowUi
 
 #endif

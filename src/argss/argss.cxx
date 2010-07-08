@@ -55,9 +55,12 @@
 /// ARGSS initialize
 ////////////////////////////////////////////////////////////
 void ARGSS::Init() {
-	VALUE lastGcSatate = rb_gc_disable();
-
 	ARGSS::ARuby::Init();
+
+	/*
+	 * initialize ruby before disabling GC
+	 */
+	VALUE lastGcSatate = rb_gc_disable();
 
 	ARGSS::AOutput::Init();
 	ARGSS::AAudio::Init();

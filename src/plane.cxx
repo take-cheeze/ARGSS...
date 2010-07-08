@@ -44,7 +44,7 @@
 /// Constructor
 ////////////////////////////////////////////////////////////
 Plane::Plane(VALUE iid)
-: id(iid), viewport_( rb_iv_get(id, "@viewport_") ), bitmap_(Qnil)
+: id(iid), viewport_( rb_iv_get(id, "@viewport") ), bitmap_(Qnil)
 , visible_(true), z(0), ox(0),  oy(0), zoom_x(1.0), zoom_y(1.0)
 , opacity(255), blendType_(Blend::NORMAL)
 , color( rb_iv_get(id, "@color") ), tone( rb_iv_get(id, "@tone") )

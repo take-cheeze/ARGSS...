@@ -53,17 +53,17 @@ namespace ARGSS
 		////////////////////////////////////////////////////////////
 		/// ARGSS Sprite ruby functions
 		////////////////////////////////////////////////////////////
-		VALUE rinitialize(int argc, VALUE *argv, VALUE self) {
+		VALUE rinitialize(int argc, VALUE *argv, VALUE self)
+		{
 			if (argc == 1) {
 				Check_Classes_N(argv[0], ARGSS::AViewport::getID());
 				rb_iv_set(self, "@viewport", argv[0]);
 			}
-			else if (argc == 0) {
-				rb_iv_set(self, "@viewport", Qnil);
-			}
+			else if (argc == 0) rb_iv_set(self, "@viewport", Qnil);
 			else raise_argn(argc, 1);
+
 			rb_iv_set(self, "@bitmap", Qnil);
-			rb_iv_set(self, "@srcRect", ARGSS::ARect::New(0, 0, 0, 0));
+			rb_iv_set(self, "@src_rect", ARGSS::ARect::New(0, 0, 0, 0));
 			rb_iv_set(self, "@visible", Qtrue);
 			rb_iv_set(self, "@x", INT2NUM(0));
 			rb_iv_set(self, "@y", INT2NUM(0));
@@ -80,11 +80,13 @@ namespace ARGSS
 			rb_iv_set(self, "@blend_type", INT2NUM(0));
 			rb_iv_set(self, "@color", ARGSS::AColor::New());
 			rb_iv_set(self, "@tone", ARGSS::ATone::New());
+
 			Sprite::New(self);
 			ARGSS::ARuby::AddObject(self);
 			return self;
 		}
-		VALUE rdispose(VALUE self) {
+		VALUE rdispose(VALUE self)
+		{
 			if (!Sprite::IsDisposed(self)) {
 				Check(self);
 				Sprite::Dispose(self);
@@ -106,39 +108,46 @@ namespace ARGSS
 			}
 			return Qnil;
 		}
-		VALUE rupdate(VALUE self) {
+		VALUE rupdate(VALUE self)
+		{
 			Check(self);
 			Sprite::get(self).Update();
 			return Qnil;
 		}
-		VALUE rwidth(VALUE self) {
+		VALUE rwidth(VALUE self)
+		{
 			Check(self);
-			return rb_iv_get(rb_iv_get(self, "@srcRect"), "@width");
+			return rb_iv_get(rb_iv_get(self, "@src_rect"), "@width");
 		}
-		VALUE rheight(VALUE self) {
+		VALUE rheight(VALUE self)
+		{
 			Check(self);
-			return rb_iv_get(rb_iv_get(self, "@srcRect"), "@height");
+			return rb_iv_get(rb_iv_get(self, "@src_rect"), "@height");
 		}
-		VALUE rviewport(VALUE self) {
+		VALUE rviewport(VALUE self)
+		{
 			Check(self);
 			return rb_iv_get(self, "@viewport");
 		}
-		VALUE rviewportE(VALUE self, VALUE viewport) {
+		VALUE rviewportE(VALUE self, VALUE viewport)
+		{
 			Check(self);
 			Check_Classes_N(viewport, ARGSS::AViewport::getID());
 			if (viewport != Qnil) ARGSS::AViewport::CheckDisposed(viewport);
 			Sprite::get(self).setViewport(viewport);
 			return rb_iv_set(self, "@viewport", viewport);
 		}
-		VALUE rbitmap(VALUE self) {
+		VALUE rbitmap(VALUE self)
+		{
 			Check(self);
 			return rb_iv_get(self, "@bitmap");
 		}
-		VALUE rbitmapE(VALUE self, VALUE bitmap) {
+		VALUE rbitmapE(VALUE self, VALUE bitmap)
+		{
 			Check(self);
 			Check_Classes_N(bitmap, ARGSS::ABitmap::getID());
 			if (bitmap != Qnil) {
-				VALUE srcRect = rb_iv_get(self, "@srcRect");
+				VALUE srcRect = rb_iv_get(self, "@src_rect");
 				rb_iv_set(srcRect, "@x", INT2NUM(0));
 				rb_iv_set(srcRect, "@y", INT2NUM(0));
 				if (!Bitmap::IsDisposed(bitmap)) {
@@ -153,17 +162,17 @@ namespace ARGSS
 			Sprite::get(self).setBitmap(bitmap);
 			return rb_iv_set(self, "@bitmap", bitmap);
 		}
-		VALUE rsrcRect(VALUE self)
+		VALUE rsrc_rect(VALUE self)
 		{
 			Check(self);
-			return rb_iv_get(self, "@srcRect");
+			return rb_iv_get(self, "@src_rect");
 		}
-		VALUE rsrcRectE(VALUE self, VALUE srcRect)
+		VALUE rsrc_rectE(VALUE self, VALUE srcRect)
 		{
 			Check(self);
 			Check_Class(srcRect, ARGSS::ARect::getID());
 			Sprite::get(self).setSrcRect(srcRect);
-			return rb_iv_set(self, "@srcRect", srcRect);
+			return rb_iv_set(self, "@src_rect", srcRect);
 		}
 		VALUE rvisible(VALUE self)
 		{
@@ -235,34 +244,41 @@ namespace ARGSS
 			Check(self);
 			return rb_iv_get(self, "@oy");
 		}
-		VALUE royE(VALUE self, VALUE oy) {
+		VALUE royE(VALUE self, VALUE oy)
+		{
 			Check(self);
 			Sprite::get(self).setOy(NUM2INT(oy));
 			return rb_iv_set(self, "@oy", oy);
 		}
-		VALUE rzoom_x(VALUE self) {
+		VALUE rzoom_x(VALUE self)
+		{
 			Check(self);
 			return rb_iv_get(self, "@zoom_x");
 		}
-		VALUE rzoom_xE(VALUE self, VALUE zoom_x) {
+		VALUE rzoom_xE(VALUE self, VALUE zoom_x)
+		{
 			Check(self);
 			Sprite::get(self).setZoomX((float)NUM2DBL(zoom_x));
 			return rb_iv_set(self, "@zoom_x", rb_Float(zoom_x));
 		}
-		VALUE rzoom_y(VALUE self) {
+		VALUE rzoom_y(VALUE self)
+		{
 			Check(self);
 			return rb_iv_get(self, "@zoom_y");
 		}
-		VALUE rzoom_yE(VALUE self, VALUE zoom_y) {
+		VALUE rzoom_yE(VALUE self, VALUE zoom_y)
+		{
 			Check(self);
 			Sprite::get(self).setZoomY((float)NUM2DBL(zoom_y));
 			return rb_iv_set(self, "@zoom_y", rb_Float(zoom_y));
 		}
-		VALUE rangle(VALUE self) {
+		VALUE rangle(VALUE self)
+		{
 			Check(self);
 			return rb_iv_get(self, "@angle");
 		}
-		VALUE rangleE(VALUE self, VALUE angle) {
+		VALUE rangleE(VALUE self, VALUE angle)
+		{
 			Check(self);
 			Sprite::get(self).setAngle((float)NUM2DBL(angle));
 			return rb_iv_set(self, "@angle", rb_Float(angle));
@@ -373,7 +389,7 @@ namespace ARGSS
 				{ ARGSS_FUNC(height), 0 },
 				ARGSS_GETTER_SETTER(viewport),
 				ARGSS_GETTER_SETTER(bitmap),
-				ARGSS_GETTER_SETTER(srcRect),
+				ARGSS_GETTER_SETTER(src_rect),
 				ARGSS_GETTER_SETTER(visible),
 				ARGSS_GETTER_SETTER(x), { ARGSS_FUNC(fx), 0 },
 				ARGSS_GETTER_SETTER(y), { ARGSS_FUNC(fy), 0 },
