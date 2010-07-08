@@ -118,9 +118,11 @@ namespace ARGSS
 							}
 						}
 
+					/*
 						// disabling "exit(EXIT_FAILURE)"
 						std::cout << report << std::endl;
 						assert(false);
+					 */
 
 						Output::ErrorStr(report);
 						return;
@@ -153,6 +155,11 @@ namespace ARGSS
 			}
 			VALUE require_wrap(VALUE arg)
 			{
+				/*
+				 * current directory is excluded from load path at 1.9.2
+				 */
+				rb_eval_string("$: << File.dirname('.')");
+
 				return rb_require( slasher(System::getScriptsPath()).c_str() );
 			}
 		} // namespace

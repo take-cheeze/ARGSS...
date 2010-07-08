@@ -72,8 +72,8 @@ namespace ARGSS
 /// Ruby macros
 ////////////////////////////////////////////////////////////
 #define BOOL2NUM(x) (x ? Qtrue : Qfalse)
-#define INT2BOOL(x) (x == 0 ? (VALUE)0 : (VALUE)2)
-#define NUM2BOOL(x) (x == (VALUE)2)
+#define INT2BOOL(x) (x != 0 ? Qtrue : Qfalse) // (x == 0 ? (VALUE)0 : (VALUE)2)
+#define NUM2BOOL(x) (x == Qtrue) // (x == (VALUE)2)
 #define raise_argn(a, n) (rb_raise(rb_eArgError, "wrong number of arguments(%i for %i)", a, n))
 
 ////////////////////////////////////////////////////////////

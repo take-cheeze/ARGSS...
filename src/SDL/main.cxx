@@ -43,7 +43,7 @@
 /// Main
 ////////////////////////////////////////////////////////////
 
-int main(int argc, char **argv)
+int main() // int argc, char **argv)
 {
 	assert( SDL_Init(SDL_INIT_EVENTTHREAD) == 0 );
 

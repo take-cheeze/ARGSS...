@@ -95,10 +95,12 @@ namespace ARGSS
 			}
 			return self;
 		}
-		VALUE rdisposedQ(VALUE self) {
+		VALUE rdisposedQ(VALUE self)
+		{
 			return INT2BOOL(Sprite::IsDisposed(self));
 		}
-		VALUE rflash(VALUE self, VALUE color, VALUE duration) {
+		VALUE rflash(VALUE self, VALUE color, VALUE duration)
+		{
 			Check(self);
 			if (color == Qnil) {
 				Sprite::get(self).Flash(NUM2INT(duration));
@@ -327,16 +329,19 @@ namespace ARGSS
 			Sprite::get(self).setBushDepth(NUM2INT(bush_depth));
 			return rb_iv_set(self, "@bush_depth", bush_depth);
 		}
-		VALUE ropacity(VALUE self) {
+		VALUE ropacity(VALUE self)
+		{
 			Check(self);
 			return rb_iv_get(self, "@opacity");
 		}
-		VALUE ropacityE(VALUE self, VALUE opacity) {
+		VALUE ropacityE(VALUE self, VALUE opacity)
+		{
 			Check(self);
 			Sprite::get(self).setOpacity(NUM2INT(opacity));
 			return rb_iv_set(self, "@opacity", opacity);
 		}
-		VALUE rblend_type(VALUE self) {
+		VALUE rblend_type(VALUE self)
+		{
 			Check(self);
 			return rb_iv_get(self, "@blend_type");
 		}
