@@ -28,6 +28,8 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <boost/smart_ptr.hpp>
+
 #include <map>
 #include <string>
 #include <vector>
@@ -56,23 +58,22 @@ public:
 	void RefreshData();
 
 	void Update();
-	VALUE getViewport();
+	VALUE getViewport() const { return viewport; }
 	void setViewport(VALUE nviewport);
-	VALUE getTileset();
-	void setTileset(VALUE ntileset);
-	VALUE getMapData();
+	VALUE getTileset() const { return tileset; }
+	void setTileset(VALUE ntileset) { tileset = ntileset; }
+	VALUE getMapData() const { return map_data; }
 	void setMapData(VALUE nmap_data);
-	VALUE getFlashData();
-	void setFlashData(VALUE nflash_data);
-	VALUE getPriorities();
+	VALUE getFlashData() const { return flash_data; }
+	void setFlashData(VALUE nflash_data) { flash_data = nflash_data; }
+	VALUE getPriorities() const { return priorities; }
 	void setPriorities(VALUE npriorities);
-	bool getVisible();
-	void setVisible(bool nvisible);
-	int getOx();
-	void setOx(int nox);
-	int getOy();
-	void setOy(int noy);
-
+	bool getVisible() const { return visible; }
+	void setVisible(bool nvisible) { visible = nvisible; }
+	int getOx() const { return ox; }
+	int getOy() const { return oy; }
+	void setOx(int nox) { ox = nox; }
+	void setOy(int noy) { oy = noy; }
 private:
 	VALUE id;
 	VALUE viewport;
@@ -87,14 +88,14 @@ private:
 	int autotile_frame;
 	int autotile_time;
 
-	std::map<VALUE, std::map<int, std::map<int, Bitmap*> > > autotiles_cache;
+	std::map< VALUE, std::map< int, std::map< int, boost::shared_ptr< Bitmap > > > > autotiles_cache;
 	static int autotiles_id[6][8][4];
 
 	struct TileData {
 		int id;
 		int priority;
 	};
-	std::vector<std::vector<std::vector<TileData> > > data_cache;
+	std::vector< std::vector< std::vector< TileData > > > data_cache;
 }; // class Tilemap
 
 #endif

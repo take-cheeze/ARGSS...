@@ -84,12 +84,8 @@ namespace ARGSS
 		VALUE rflash(VALUE self, VALUE color, VALUE duration)
 		{
 			CheckDisposed(self);
-			if (color == Qnil) {
-				Viewport::get(self).Flash(NUM2INT(duration));
-			}
-			else {
-				Viewport::get(self).Flash(Color(color), NUM2INT(duration));
-			}
+			if ( NIL_P(color) ) Viewport::get(self).Flash(NUM2INT(duration));
+			else Viewport::get(self).Flash(Color(color), NUM2INT(duration));
 			return Qnil;
 		}
 		VALUE rupdate(VALUE self)

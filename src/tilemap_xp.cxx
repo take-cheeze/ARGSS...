@@ -82,17 +82,8 @@ Tilemap::Tilemap(VALUE iid)
 ////////////////////////////////////////////////////////////
 /// Destructor
 ////////////////////////////////////////////////////////////
-Tilemap::~Tilemap() {
-	std::map<VALUE, std::map<int, std::map<int, Bitmap*> > >::iterator it1_autotiles_cache;
-	std::map<int, std::map<int, Bitmap*> >::iterator it2_autotiles_cache;
-	std::map<int, Bitmap*>::iterator it3_autotiles_cache;
-	for (it1_autotiles_cache = autotiles_cache.begin(); it1_autotiles_cache != autotiles_cache.end(); it1_autotiles_cache++) {
-		for (it2_autotiles_cache = it1_autotiles_cache->second.begin(); it2_autotiles_cache != it1_autotiles_cache->second.end(); it2_autotiles_cache++) {
-			for (it3_autotiles_cache = it2_autotiles_cache->second.begin(); it3_autotiles_cache != it2_autotiles_cache->second.end(); it3_autotiles_cache++) {
-				delete it3_autotiles_cache->second;
-			}
-		}
-	}
+Tilemap::~Tilemap()
+{
 }
 
 ////////////////////////////////////////////////////////////
@@ -125,7 +116,7 @@ Tilemap& Tilemap::get(VALUE id)
 ////////////////////////////////////////////////////////////
 void Tilemap::Dispose(VALUE id)
 {
-	if (Tilemap::get(id).viewport != Qnil) Viewport::get(Tilemap::get(id).viewport).RemoveZObj(id);
+	if ( ! NIL_P( Tilemap::get(id).viewport ) ) Viewport::get(Tilemap::get(id).viewport).RemoveZObj(id);
 	else Graphics::RemoveZObj(id);
 
 	Graphics::eraseDrawable(id);
@@ -134,7 +125,8 @@ void Tilemap::Dispose(VALUE id)
 ////////////////////////////////////////////////////////////
 /// Update
 ////////////////////////////////////////////////////////////
-void Tilemap::Update() {
+void Tilemap::Update()
+{
 	autotile_time += 1;
 	if (autotile_time == 8) {
 		autotile_time = 0;
@@ -145,10 +137,11 @@ void Tilemap::Update() {
 ////////////////////////////////////////////////////////////
 /// Refresh Bitmaps
 ////////////////////////////////////////////////////////////
-void Tilemap::RefreshBitmaps() {
-	std::map<VALUE, std::map<int, std::map<int, Bitmap*> > >::iterator it1_autotiles_cache;
-	std::map<int, std::map<int, Bitmap*> >::iterator it2_autotiles_cache;
-	std::map<int, Bitmap*>::iterator it3_autotiles_cache;
+void Tilemap::RefreshBitmaps()
+{
+	std::map< VALUE, std::map< int, std::map< int, boost::shared_ptr< Bitmap > > > >::iterator it1_autotiles_cache;
+	std::map< int, std::map< int, boost::shared_ptr< Bitmap > > >::iterator it2_autotiles_cache;
+	std::map< int, boost::shared_ptr< Bitmap > >::iterator it3_autotiles_cache;
 	for (it1_autotiles_cache = autotiles_cache.begin(); it1_autotiles_cache != autotiles_cache.end(); it1_autotiles_cache++) {
 		for (it2_autotiles_cache = it1_autotiles_cache->second.begin(); it2_autotiles_cache != it1_autotiles_cache->second.end(); it2_autotiles_cache++) {
 			for (it3_autotiles_cache = it2_autotiles_cache->second.begin(); it3_autotiles_cache != it2_autotiles_cache->second.end(); it3_autotiles_cache++) {
@@ -161,9 +154,10 @@ void Tilemap::RefreshBitmaps() {
 ////////////////////////////////////////////////////////////
 /// Draw
 ////////////////////////////////////////////////////////////
-void Tilemap::draw(long z_level) {
+void Tilemap::draw(long z_level)
+{
 	if (!visible) return;
-	if (tileset == Qnil || map_data == Qnil || priorities == Qnil) return;
+	if ( NIL_P(tileset) || NIL_P(map_data) || NIL_P(priorities) ) return;
 
 	if (z_level == 0) {
 		RefreshData();
@@ -182,7 +176,7 @@ void Tilemap::draw(long z_level) {
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	if (viewport != Qnil) {
+	if ( ! NIL_P(viewport) ) {
 		Rect const& rect = Viewport::get(viewport).getViewportRect();
 
 		glEnable(GL_SCISSOR_TEST);
@@ -226,7 +220,7 @@ void Tilemap::draw(long z_level) {
 							if (autotiles_cache.count(bitmap_id) == 0 ||
 									autotiles_cache[bitmap_id].count(tile_id) == 0 ||
 									autotiles_cache[bitmap_id][tile_id].count(frame) == 0) {
-								autotiles_cache[bitmap_id][tile_id][frame] = new Bitmap(32, 32);
+								autotiles_cache[bitmap_id][tile_id][frame] = boost::shared_ptr< Bitmap >( new Bitmap(32, 32) );
 								int* tiles = autotiles_id[tile_id >> 3][tile_id & 7];
 								for (int i = 0; i < 4; i++) {
 									Rect rect(((tiles[i] % 6) << 4) + frame * 96, (tiles[i] / 6) << 4, 16, 16);
@@ -241,7 +235,7 @@ void Tilemap::draw(long z_level) {
 							}
 							autotiles_cache[bitmap_id][tile_id][frame]->BindBitmap();
 
-							glBegin(GL_QUADS);
+							glBegin(GL_TRIANGLE_FAN); // GL_QUADS);
 								glTexCoord2f(0.0f, 0.0f); glVertex2f(dst_x, dst_y);
 								glTexCoord2f(1.0f, 0.0f); glVertex2f(dst_x + 32.0f, dst_y);
 								glTexCoord2f(1.0f, 1.0f); glVertex2f(dst_x + 32.0f, dst_y + 32.0f);
@@ -256,7 +250,7 @@ void Tilemap::draw(long z_level) {
 						float bmpw = (float)Bitmap::get(tileset).getWidth();
 						float bmph = (float)Bitmap::get(tileset).getHeight();
 
-						glBegin(GL_QUADS);
+						glBegin(GL_TRIANGLE_FAN); // GL_QUADS);
 							glTexCoord2f(src_x / bmpw, src_y / bmph);					   glVertex2f(dst_x, dst_y);
 							glTexCoord2f((src_x + 32.0f) / bmpw, src_y / bmph); 		   glVertex2f(dst_x + 32.0f, dst_y);
 							glTexCoord2f((src_x + 32.0f) / bmpw, (src_y + 32.0f) / bmph);  glVertex2f(dst_x + 32.0f, dst_y + 32.0f);
@@ -270,14 +264,15 @@ void Tilemap::draw(long z_level) {
 
 	glDisable(GL_SCISSOR_TEST);
 }
-void Tilemap::draw(long z, Bitmap* dst_bitmap) {
-
+void Tilemap::draw(long z, Bitmap* dst_bitmap)
+{
 }
 
 ////////////////////////////////////////////////////////////
 /// Refresh Data
 ////////////////////////////////////////////////////////////
-void Tilemap::RefreshData() {
+void Tilemap::RefreshData()
+{
 	bool update = false;
 	if (rb_iv_get(map_data, "@modified") == Qtrue) {
 		rb_iv_set(map_data, "@modified", Qfalse);
@@ -315,19 +310,17 @@ void Tilemap::RefreshData() {
 ////////////////////////////////////////////////////////////
 /// Properties
 ////////////////////////////////////////////////////////////
-VALUE Tilemap::getViewport() {
-	return viewport;
-}
-void Tilemap::setViewport(VALUE nviewport) {
+void Tilemap::setViewport(VALUE nviewport)
+{
 	if (viewport != nviewport) {
-		if (viewport != Qnil) {
+		if ( ! NIL_P(viewport) ) {
 			Viewport::get(viewport).RemoveZObj(id);
 		}
 		else {
 			Graphics::RemoveZObj(id);
 		}
 		int height = NUM2INT(rb_iv_get(map_data, "@ysize"));
-		if (nviewport != Qnil) {
+		if ( ! NIL_P(nviewport) ) {
 			for (int i = 0; i < height + 5; i++) {
 				Viewport::get(nviewport).RegisterZObj(i * 32, id, true);
 			}
@@ -340,24 +333,16 @@ void Tilemap::setViewport(VALUE nviewport) {
 	}
 	viewport = nviewport;
 }
-VALUE Tilemap::getTileset() {
-	return tileset;
-}
-void Tilemap::setTileset(VALUE ntileset) {
-	tileset = ntileset;
-}
-VALUE Tilemap::getMapData() {
-	return map_data;
-}
-void Tilemap::setMapData(VALUE nmap_data) {
+void Tilemap::setMapData(VALUE nmap_data)
+{
 	if (map_data != nmap_data) {
-		if (viewport != Qnil) Viewport::get(viewport).RemoveZObj(id);
+		if ( ! NIL_P(viewport) ) Viewport::get(viewport).RemoveZObj(id);
 		else Graphics::RemoveZObj(id);
 
-		if (nmap_data != Qnil) {
+		if ( ! NIL_P(nmap_data) ) {
 			rb_iv_set(nmap_data, "@modified", Qtrue);
 			int height = NUM2INT(rb_iv_get(nmap_data, "@ysize"));
-			if (viewport != Qnil) {
+			if ( ! NIL_P(viewport) ) {
 				for (int i = 0; i < height + 8; i++) {
 					Viewport::get(viewport).RegisterZObj(i * 32, id, true);
 				}
@@ -371,34 +356,8 @@ void Tilemap::setMapData(VALUE nmap_data) {
 	}
 	map_data = nmap_data;
 }
-VALUE Tilemap::getFlashData() {
-	return flash_data;
-}
-void Tilemap::setFlashData(VALUE nflash_data) {
-	flash_data = nflash_data;
-}
-VALUE Tilemap::getPriorities() {
-	return priorities;
-}
-void Tilemap::setPriorities(VALUE npriorities) {
+void Tilemap::setPriorities(VALUE npriorities)
+{
 	if (priorities != npriorities) rb_iv_set(npriorities, "@modified", Qtrue);
 	priorities = npriorities;
-}
-bool Tilemap::getVisible() {
-	return visible;
-}
-void Tilemap::setVisible(bool nvisible) {
-	visible = nvisible;
-}
-int Tilemap::getOx() {
-	return ox;
-}
-void Tilemap::setOx(int nox) {
-	ox = nox;
-}
-int Tilemap::getOy() {
-	return oy;
-}
-void Tilemap::setOy(int noy) {
-	oy = noy;
 }

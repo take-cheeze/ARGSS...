@@ -167,7 +167,7 @@ namespace ARGSS
 			{
 				rb_funcall(self, rb_intern("dispose_animation"), 0);
 				rb_iv_set(self, "@_animation", animation);
-				if (animation == Qnil) return Qnil;
+				if ( NIL_P(animation) ) return Qnil;
 				rb_iv_set(self, "@_animation_hit", hit);
 				rb_iv_set(self, "@_animation_duration", rb_iv_get(animation, "@frame_max"));
 				VALUE animation_name = rb_iv_get(animation, "@animation_name");
@@ -201,7 +201,7 @@ namespace ARGSS
 				if (animation == rb_iv_get(self, "@_loop_animation")) return Qnil;
 				rb_funcall(self, rb_intern("dispose_loop_animation"), 0);
 				rb_iv_set(self, "@_loop_animation", animation);
-				if (animation == Qnil) return Qnil;
+				if ( NIL_P(animation) ) return Qnil;
 				rb_iv_set(self, "@_loop_animation_index", INT2NUM(0));
 				VALUE animation_name = rb_iv_get(animation, "@animation_name");
 				VALUE animation_hue = rb_iv_get(animation, "@animation_hue");
@@ -226,7 +226,7 @@ namespace ARGSS
 			VALUE rdispose_damage(VALUE self)
 			{
 				VALUE damage_sprite = rb_iv_get(self, "@_damage_sprite");
-				if (damage_sprite != Qnil) {
+				if ( ! NIL_P(damage_sprite) ) {
 					rb_funcall(rb_iv_get(damage_sprite, "@bitmap"), rb_intern("dispose"), 0);
 					rb_funcall(damage_sprite, rb_intern("dispose"), 0);
 					rb_iv_set(self, "@_damage_sprite", Qnil);
@@ -237,9 +237,9 @@ namespace ARGSS
 			VALUE rdispose_animation(VALUE self)
 			{
 				VALUE animation_sprites = rb_iv_get(self, "@_animation_sprites");
-				if (animation_sprites != Qnil) {
+				if ( ! NIL_P(animation_sprites) ) {
 					VALUE sprite = rb_ary_entry(animation_sprites, 0);
-					if (sprite != Qnil) {
+					if ( ! NIL_P(sprite) ) {
 						VALUE bitmap = rb_iv_get(sprite, "@bitmap");
 						VALUE reference_count = rb_cvar_get(id, rb_intern("@@_reference_count"));
 						rb_hash_aset(reference_count, bitmap, INT2NUM(NUM2INT(rb_hash_aref(reference_count, bitmap)) - 1));
@@ -258,9 +258,9 @@ namespace ARGSS
 			VALUE rdispose_loop_animation(VALUE self)
 			{
 				VALUE loop_animation_sprites = rb_iv_get(self, "@_loop_animation_sprites");
-				if (loop_animation_sprites != Qnil) {
+				if ( ! NIL_P(loop_animation_sprites) ) {
 					VALUE sprite = rb_ary_entry(loop_animation_sprites, 0);
-					if (sprite != Qnil) {
+					if ( ! NIL_P(sprite) ) {
 						VALUE bitmap = rb_iv_get(sprite, "@bitmap");
 						VALUE reference_count = rb_cvar_get(id, rb_intern("@@_reference_count"));
 						rb_hash_aset(reference_count, bitmap, INT2NUM(NUM2INT(rb_hash_aref(reference_count, bitmap)) - 1));
@@ -347,11 +347,11 @@ namespace ARGSS
 						rb_funcall(self, rb_intern("dispose_damage"), 0);
 					}
 				}
-				if (rb_iv_get(self, "@_animation") != Qnil && NUM2INT(rb_funcall(ARGSS::AGraphics::getID(), rb_intern("frame_count"), 0)) % 2 == 0) {
+				if ( ! NIL_P(rb_iv_get(self, "@_animation") ) && NUM2INT(rb_funcall(ARGSS::AGraphics::getID(), rb_intern("frame_count"), 0)) % 2 == 0) {
 					rb_iv_set(self, "@_animation_duration", INT2NUM(NUM2INT(rb_iv_get(self, "@_animation_duration")) - 1));
 					rb_funcall(self, rb_intern("update_animation"), 0);
 				}
-				if (rb_iv_get(self, "@_loop_animation") != Qnil && NUM2INT(rb_funcall(ARGSS::AGraphics::getID(), rb_intern("frame_count"), 0)) % 2 == 0) {
+				if ( ! NIL_P(rb_iv_get(self, "@_loop_animation") ) && NUM2INT(rb_funcall(ARGSS::AGraphics::getID(), rb_intern("frame_count"), 0)) % 2 == 0) {
 					rb_funcall(self, rb_intern("update_loop_animation"), 0);
 					int val_frame_max = NUM2INT(rb_iv_get(rb_iv_get(self, "@_loop_animation"), "@frame_max"));
 					rb_iv_set(self, "@_loop_animation_index", INT2NUM((NUM2INT(rb_iv_get(self, "@_loop_animation_index")) + 1) % val_frame_max));
@@ -415,8 +415,8 @@ namespace ARGSS
 					VALUE cell_table_data = rb_iv_get(cell_data, "@data");
 					int cell_table_xsize = NUM2INT(rb_iv_get(cell_data, "@xsize"));
 					VALUE pattern = rb_ary_entry(cell_table_data, i);
-					if (sprite == Qnil || pattern == Qnil || pattern == INT2NUM(-1)) {
-						if (sprite != Qnil) {
+					if ( NIL_P(sprite) || NIL_P(pattern) || pattern == INT2NUM(-1)) {
+						if ( ! NIL_P(sprite) ) {
 							rb_iv_set(sprite, "@visible", Qfalse);
 						}
 						continue;
@@ -427,7 +427,7 @@ namespace ARGSS
 					if (position == INT2NUM(3)) {
 						VALUE viewport = rb_iv_get(self, "@viewport");
 						VALUE viewport_rect = rb_funcall(viewport, rb_intern("rect"), 0);
-						if (viewport != Qnil) {
+						if ( ! NIL_P(viewport) ) {
 							rb_funcall(sprite, rb_intern("x="), 1, INT2NUM(NUM2INT(rb_iv_get(viewport_rect, "@width")) / 2));
 							rb_funcall(sprite, rb_intern("y="), 1, INT2NUM(NUM2INT(rb_iv_get(viewport_rect, "@height")) - 160));
 						}
@@ -491,12 +491,13 @@ namespace ARGSS
 							rb_funcall(self, rb_intern("flash"), 2, flash_color, INT2NUM(val_flash_duration * 2));
 							break;
 						case 2:
-							if (viewport != Qnil) {
+							if ( ! NIL_P(viewport) ) {
 								rb_funcall(viewport, rb_intern("flash"), 2, flash_color, INT2NUM(val_flash_duration * 2));
 							}
 							break;
 						case 3:
 							rb_funcall(self, rb_intern("flash"), 2, Qnil, INT2NUM(val_flash_duration * 2));
+							break;
 					}
 				}
 				return Qnil;
@@ -506,7 +507,7 @@ namespace ARGSS
 				int sx = NUM2INT(x) - NUM2INT(rb_iv_get(self, "@x"));
 				if (sx != 0) {
 					VALUE animation_sprites = rb_iv_get(self, "@_animation_sprites");
-					if (animation_sprites != Qnil) {
+					if ( ! NIL_P(animation_sprites) ) {
 						for (int i = 0; i < 16; i++) {
 							VALUE sprite = rb_ary_entry(animation_sprites, i);
 							int val_x = NUM2INT(rb_iv_get(self, "@x"));
@@ -514,7 +515,7 @@ namespace ARGSS
 						}
 					}
 					VALUE loop_animation_sprites = rb_iv_get(self, "@_loop_animation_sprites");
-					if (loop_animation_sprites != Qnil) {
+					if ( ! NIL_P(loop_animation_sprites) ) {
 						for (int i = 0; i < 16; i++) {
 							VALUE sprite = rb_ary_entry(loop_animation_sprites, i);
 							int val_x = NUM2INT(rb_iv_get(self, "@x"));
@@ -529,7 +530,7 @@ namespace ARGSS
 				int sy = NUM2INT(y) - NUM2INT(rb_iv_get(self, "@y"));
 				if (sy != 0) {
 					VALUE animation_sprites = rb_iv_get(self, "@_animation_sprites");
-					if (animation_sprites != Qnil) {
+					if ( ! NIL_P(animation_sprites) ) {
 						for (int i = 0; i < 16; i++) {
 							VALUE sprite = rb_ary_entry(animation_sprites, i);
 							int val_y = NUM2INT(rb_iv_get(self, "@y"));
@@ -537,7 +538,7 @@ namespace ARGSS
 						}
 					}
 					VALUE loop_animation_sprites = rb_iv_get(self, "@_loop_animation_sprites");
-					if (loop_animation_sprites != Qnil) {
+					if ( ! NIL_P(loop_animation_sprites) ) {
 						for (int i = 0; i < 16; i++) {
 							VALUE sprite = rb_ary_entry(loop_animation_sprites, i);
 							int val_y = NUM2INT(rb_iv_get(self, "@y"));

@@ -28,6 +28,7 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <memory>
 #include <string>
 
 #include "bitmap.hxx"
@@ -122,7 +123,7 @@ private:
 	Color flash_color;
 	int flash_duration;
 	int flash_frame;
-	Bitmap* sprite;
+	std::auto_ptr< Bitmap > sprite_;
 	Rect srcRect_sprite;
 	Rect srcRect_last;
 	bool needs_refresh;

@@ -102,12 +102,8 @@ namespace ARGSS
 		VALUE rflash(VALUE self, VALUE color, VALUE duration)
 		{
 			Check(self);
-			if (color == Qnil) {
-				Sprite::get(self).Flash(NUM2INT(duration));
-			}
-			else {
-				Sprite::get(self).Flash(Color(color), NUM2INT(duration));
-			}
+			if ( NIL_P(color) ) Sprite::get(self).Flash(NUM2INT(duration));
+			else Sprite::get(self).Flash(Color(color), NUM2INT(duration));
 			return Qnil;
 		}
 		VALUE rupdate(VALUE self)
@@ -135,7 +131,7 @@ namespace ARGSS
 		{
 			Check(self);
 			Check_Classes_N(viewport, ARGSS::AViewport::getID());
-			if (viewport != Qnil) ARGSS::AViewport::CheckDisposed(viewport);
+			if ( ! NIL_P(viewport) ) ARGSS::AViewport::CheckDisposed(viewport);
 			Sprite::get(self).setViewport(viewport);
 			return rb_iv_set(self, "@viewport", viewport);
 		}
@@ -148,7 +144,7 @@ namespace ARGSS
 		{
 			Check(self);
 			Check_Classes_N(bitmap, ARGSS::ABitmap::getID());
-			if (bitmap != Qnil) {
+			if ( ! NIL_P(bitmap) ) {
 				VALUE srcRect = rb_iv_get(self, "@src_rect");
 				rb_iv_set(srcRect, "@x", INT2NUM(0));
 				rb_iv_set(srcRect, "@y", INT2NUM(0));

@@ -25,10 +25,15 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <boost/iostreams/filtering_streambuf.hpp>
+#include <boost/iostreams/copy.hpp>
+#include <boost/iostreams/filter/zlib.hpp>
+
 #include <cassert>
 
 #include <iomanip>
 #include <iostream>
+#include <sstream>
 #include <string>
 
 #include <argss/ruby.hxx>
@@ -174,15 +179,34 @@ namespace ARGSS
 
 			if( suffix == "rxdata" ) { // if (SCRIPTS_ZLIB) {
 				int error;
+/*
 				VALUE result = rb_require("zlib");
 				VALUE cZlib = rb_const_get(rb_cObject, rb_intern("Zlib"));
 				VALUE cInflate = rb_const_get(cZlib, rb_intern("Inflate"));
+ */
 				VALUE file = rb_file_open(target.c_str(), "rb");
 				VALUE scripts = rb_marshal_load(file);
 				RArray* arr = RARRAY(scripts);
 				for (int i = 0; i < RARRAY_LEN(arr); i++) {
 					VALUE section_arr = rb_ary_entry(scripts, i);
-					VALUE section = rb_funcall( cInflate, rb_intern("inflate"), 1, rb_ary_entry(section_arr, 2) );
+					// VALUE section = rb_funcall( cInflate, rb_intern("inflate"), 1, rb_ary_entry(section_arr, 2) );
+
+					/*
+					 * using boost.iostreams
+					 * TODO: more shorter
+					 */
+					VALUE srcVal = rb_ary_entry(section_arr, 2);
+					std::istringstream src(
+						std::string( RSTRING_PTR(srcVal), RSTRING_LEN(srcVal) ),
+						std::ios_base::in | std::ios_base::binary
+					);
+					std::ostringstream dst(std::ios_base::out | std::ios_base::binary);
+					boost::iostreams::filtering_streambuf< boost::iostreams::input > in;
+					in.push( boost::iostreams::zlib_decompressor() );
+					in.push(src);
+					boost::iostreams::copy(in, dst);
+					std::string dstStr = dst.str();
+					VALUE section = rb_str_new( dstStr.c_str(), dstStr.size() );
 
 /*
 					std::cout
@@ -321,6 +345,6 @@ void Check_Class(VALUE x, VALUE c)
 ////////////////////////////////////////////////////////////
 void Check_Classes_N(VALUE x, VALUE c)
 {
-	if (x == Qnil) return;
+	if ( NIL_P(x) ) return;
 	Check_Class(x, c);
 }

@@ -49,7 +49,7 @@ Plane::Plane(VALUE iid)
 , opacity(255), blendType_(Blend::NORMAL)
 , color( rb_iv_get(id, "@color") ), tone( rb_iv_get(id, "@tone") )
 {
-	if (viewport_ != Qnil) Viewport::get(viewport_).RegisterZObj(0, id);
+	if ( ! NIL_P(viewport_) ) Viewport::get(viewport_).RegisterZObj(0, id);
 	else Graphics::RegisterZObj(0, id);
 }
 
@@ -89,7 +89,7 @@ Plane& Plane::get(VALUE id)
 ////////////////////////////////////////////////////////////
 void Plane::Dispose(VALUE id)
 {
-	if (Plane::get(id).viewport_ != Qnil) Viewport::get(Plane::get(id).viewport_).RemoveZObj(id);
+	if ( ! NIL_P(Plane::get(id).viewport_) ) Viewport::get(Plane::get(id).viewport_).RemoveZObj(id);
 	else Graphics::RemoveZObj(id);
 
 	Graphics::eraseDrawable(id);
@@ -107,7 +107,7 @@ void Plane::RefreshBitmaps()
 ////////////////////////////////////////////////////////////
 void Plane::draw(long z)
 {
-	if( (!visible_) || (bitmap_ == Qnil) ) return;
+	if( (!visible_) || NIL_P(bitmap_) ) return;
 
 	Bitmap& bmp = Bitmap::get(bitmap_);
 	bmp.Refresh();
@@ -121,7 +121,7 @@ void Plane::draw(long z)
 
 	float rectw, recth;
 
-	if (viewport_ != Qnil) {
+	if ( ! NIL_P(viewport_) ) {
 		Rect const& rect = Viewport::get(viewport_).getViewportRect();
 
 		glEnable(GL_SCISSOR_TEST);
@@ -150,22 +150,25 @@ void Plane::draw(long z)
 	while (r_ox > 0) r_ox -= (int)bmpw;
 	while (r_oy > 0) r_oy -= (int)bmph;
 	// glBegin(GL_QUADS);
-		std::vector< GLfloat > vertexes(2 * 4 * tilesx * tilesy), texCoords(2 * 4 * tilesx * tilesy);
 		GLfloat coords[] = {
 			0.0f, 0.0f,
 			1.0f, 0.0f,
 			1.0f, 1.0f,
 			0.0f, 1.0f,
 		};
+		GLfloat vertexes[4][2];
+		glEnableClientState(GL_VERTEX_ARRAY);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 		for (float j = r_oy / bmph; j < tilesy; j++) {
 		for (float i = r_ox / bmpw; i < tilesx; i++) {
-			std::memcpy( &(texCoords[j * tilesx + i]), coords, sizeof(coords) );
+			vertexes[0][0] = i * bmpw; vertexes[0][1] = j * bmph;
+			vertexes[1][0] = (i + 1) * bmpw; vertexes[1][1] = j * bmph;
+			vertexes[2][0] = (i + 1) * bmpw; vertexes[2][1] = (j + 1) * bmph;
+			vertexes[3][0] = i * bmpw; vertexes[3][1] = (j + 1) * bmph;
 
-			std::vector< GLfloat >::iterator it = vertexes.begin() + (j * tilesx + i - 1);
-			*(++it) = i * bmpw; *(++it) = j * bmph;
-			*(++it) = (i + 1) * bmpw; *(++it) = j * bmph;
-			*(++it) = (i + 1) * bmpw; *(++it) = (j + 1) * bmph;
-			*(++it) = i * bmpw; *(++it) = (j + 1) * bmph;
+			glVertexPointer(2, GL_FLOAT, 0, vertexes);
+			glTexCoordPointer(2, GL_FLOAT, 0, coords);
+			glDrawArrays(GL_TRIANGLE_FAN, 0, 4); // GL_QUADS
 /*
 			glTexCoord2f(0.0f, 0.0f);  glVertex2f(i * bmpw, j * bmph);
 			glTexCoord2f(1.0f, 0.0f);  glVertex2f((i + 1) * bmpw, j * bmph);
@@ -174,11 +177,6 @@ void Plane::draw(long z)
 */
 		}
 		}
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		glVertexPointer( 2, GL_FLOAT, 0, &(vertexes[0]) );
-		glTexCoordPointer( 2, GL_FLOAT, 0, &(texCoords[0]) );
-		glDrawArrays(GL_QUADS, 0, tilesx * tilesy * 4);
 		glDisableClientState(GL_VERTEX_ARRAY);
 		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 	// glEnd();
@@ -195,11 +193,11 @@ void Plane::draw(long z, Bitmap* dst_bitmap)
 void Plane::setViewport(VALUE nviewport)
 {
 	if (viewport_ != nviewport) {
-		if (nviewport != Qnil) {
+		if ( ! NIL_P(nviewport) ) {
 			Graphics::RemoveZObj(id);
 			Viewport::get(nviewport).RegisterZObj(0, id);
 		} else {
-			if (viewport_ != Qnil) Viewport::get(viewport_).RemoveZObj(id);
+			if ( ! NIL_P(viewport_) ) Viewport::get(viewport_).RemoveZObj(id);
 			Graphics::RegisterZObj(0, id);
 		}
 	}
@@ -213,7 +211,7 @@ void Plane::setBitmap(VALUE nbitmap)
 void Plane::setZ(int nz)
 {
 	if (z != nz) {
-		if (viewport_ != Qnil) Viewport::get(viewport_).UpdateZObj(id, nz);
+		if ( !NIL_P(viewport_) ) Viewport::get(viewport_).UpdateZObj(id, nz);
 		else Graphics::UpdateZObj(id, nz);
 	}
 	z = nz;

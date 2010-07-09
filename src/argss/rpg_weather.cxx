@@ -114,21 +114,16 @@ namespace ARGSS
 				VALUE bitmap;
 				if (type == INT2NUM(1)) {
 					bitmap = rb_iv_get(self, "@rain_bitmap");
-				}
-				else if (type == INT2NUM(2)) {
+				} else if (type == INT2NUM(2)) {
 					bitmap = rb_iv_get(self, "@storm_bitmap");
-				}
-				else if (type == INT2NUM(3)) {
+				} else if (type == INT2NUM(3)) {
 					bitmap = rb_iv_get(self, "@snow_bitmap");
-				}
-				else {
-					bitmap = Qnil;
-				}
+				} else bitmap = Qnil;
 				int val_max = NUM2INT(rb_iv_get(self, "@max"));
 				VALUE sprites = rb_iv_get(self, "@sprites");
 				for (int i = 0; i < 40; i++) {
 					VALUE sprite = rb_ary_entry(sprites, i);
-					if (sprite != Qnil) {
+					if ( ! NIL_P(sprite) ) {
 						ARGSS::ASprite::rvisibleE(sprite, BOOL2NUM(i <= val_max));
 						ARGSS::ASprite::rbitmapE(sprite, bitmap);
 					}
@@ -141,7 +136,7 @@ namespace ARGSS
 				VALUE sprites = rb_iv_get(self, "@sprites");
 				for (int i = 0; i < 40; i++) {
 					VALUE sprite = rb_ary_entry(sprites, i);
-					if (sprite != Qnil) {
+					if ( ! NIL_P(sprite) ) {
 						ARGSS::ASprite::roxE(sprite, ox);
 					}
 				}
@@ -153,7 +148,7 @@ namespace ARGSS
 				VALUE sprites = rb_iv_get(self, "@sprites");
 				for (int i = 0; i < 40; i++) {
 					VALUE sprite = rb_ary_entry(sprites, i);
-					if (sprite != Qnil) {
+					if ( ! NIL_P(sprite) ) {
 						ARGSS::ASprite::royE(sprite, oy);
 					}
 				}
@@ -168,7 +163,7 @@ namespace ARGSS
 				VALUE sprites = rb_iv_get(self, "@sprites");
 				for (int i = 0; i < 40; i++) {
 					VALUE sprite = rb_ary_entry(sprites, i);
-					if (sprite != Qnil) {
+					if ( ! NIL_P(sprite) ) {
 						ARGSS::ASprite::rvisibleE(sprite, BOOL2NUM(i <= val_max));
 					}
 				}
@@ -179,7 +174,8 @@ namespace ARGSS
 				if (val_type == 0) return Qnil;
 				for (int i = 0; i < NUM2INT(rb_iv_get(self, "@max")); i++) {
 					VALUE sprite = rb_ary_entry(rb_iv_get(self, "@sprites"), i);
-					if (sprite == Qnil) continue;
+					if ( NIL_P(sprite) ) continue;
+
 					int val_x = NUM2INT(rb_iv_get(self, "@x"));
 					int val_y = NUM2INT(rb_iv_get(self, "@y"));
 					int val_opacity = NUM2INT(rb_iv_get(self, "@opacity"));

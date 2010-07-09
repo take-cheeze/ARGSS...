@@ -233,12 +233,25 @@ namespace Graphics
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			glColor4f(0.0f, 0.0f, 0.0f, (float)(1.0f - brightness / 255.0f));
+
+			GLshort vertexes[4][2];
+			vertexes[0][0] = 0; vertexes[0][1] = 0;
+			vertexes[1][0] = 0; vertexes[1][1] = Player::getHeight();
+			vertexes[2][0] = Player::getWidth(); vertexes[2][1] = Player::getHeight();
+			vertexes[3][0] = Player::getWidth(); vertexes[3][1] = 0;
+
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glVertexPointer(2, GL_SHORT, 0, vertexes);
+			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+			glDisableClientState(GL_VERTEX_ARRAY);
+/*
 			glBegin(GL_QUADS);
 				glVertex2i(0, 0);
 				glVertex2i(0, Player::getHeight());
 				glVertex2i(Player::getWidth(), Player::getHeight());
 				glVertex2i(Player::getWidth(), 0);
 			glEnd();
+ */
 		}
 
 /*
@@ -441,7 +454,7 @@ namespace Graphics
 	};
 	void RemoveZObj(VALUE id)
 	{
-		zlist_.remove_if (remove_zobj_id(id));
+		zlist_.remove_if( remove_zobj_id(id) );
 	}
 
 	////////////////////////////////////////////////////////////

@@ -60,7 +60,7 @@ namespace Player
 	////////////////////////////////////////////////////////////
 	void Init()
 	{
-		mainWindow_ = std::auto_ptr< WindowUi >(
+		mainWindow_.reset(
 			new WindowUi(System::getDefaultWidth(), System::getDefaultHeight(), System::getTitle(), true, RUN_FULLSCREEN)
 		);
 
@@ -131,7 +131,7 @@ namespace Player
 	void ToggleFullscreen()
 	{
 		bool toggle = !getMainWindow().isFullscreen();
-		mainWindow_ = std::auto_ptr< WindowUi >(
+		mainWindow_.reset(
 			new WindowUi(System::getDefaultWidth(), System::getDefaultHeight(), System::getTitle(), true, toggle)
 		);
 		Graphics::InitOpenGL();

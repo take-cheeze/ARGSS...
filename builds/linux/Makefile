@@ -37,11 +37,12 @@ LDFLAGS = --enable-gold
 
 LD = $(CXX)
 
-LIBS = \
+LIBS += \
 	-lSDL_mixer \
 	$(shell sdl-config --libs) \
 	$(shell pkg-config gl --libs) \
 	$(shell freetype-config --libs) \
+	-lboost_iostreams \
 
 # ruby version things
 

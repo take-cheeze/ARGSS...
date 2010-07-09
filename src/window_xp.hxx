@@ -52,43 +52,42 @@ public:
 	void draw(long z, Bitmap* dst_bitmap);
 
 	void Update();
-	VALUE getViewport();
+	VALUE getViewport() const { return viewport; }
 	void setViewport(VALUE nviewport);
-	VALUE getWindowskin();
-	void setWindowskin(VALUE nwindowskin);
-	VALUE getContents();
-	void setContents(VALUE ncontents);
-	bool getStretch();
-	void setStretch(bool nstretch);
-	VALUE getCursorRect();
-	void setCursorRect(VALUE ncursor_rect);
-	bool getActive();
-	void setActive(bool nactive);
-	bool getVisible();
-	void setVisible(bool nvisible);
-	bool getPause();
-	void setPause(bool npause);
-	int getX();
-	void setX(int nx);
-	int getY();
-	void setY(int ny);
-	int getWidth();
-	void setWidth(int nwidth);
-	int getHeight();
-	void setHeight(int nheight);
-	int getZ();
+	VALUE getWindowskin() const { return windowskin; }
+	void setWindowskin(VALUE nwindowskin) { windowskin = nwindowskin; }
+	VALUE getContents() const { return contents; }
+	void setContents(VALUE ncontents) { contents = ncontents; }
+	bool getStretch() const { return stretch; }
+	void setStretch(bool nstretch) { stretch = nstretch; }
+	VALUE getCursorRect() const { return cursor_rect; }
+	void setCursorRect(VALUE ncursor_rect) { cursor_rect = ncursor_rect; }
+	bool getActive() const { return active; }
+	void setActive(bool nactive) { active = nactive; }
+	bool getVisible() const { return visible; }
+	void setVisible(bool nvisible) { visible = nvisible; }
+	bool getPause() const { return pause; }
+	void setPause(bool npause) { pause = npause; }
+	int getX() const { return x; }
+	void setX(int nx) { x = nx; }
+	int getY() const { return y; }
+	void setY(int ny) { y = ny; }
+	int getWidth() const { return width; }
+	void setWidth(int nwidth) { width = nwidth; }
+	int getHeight() const { return height; }
+	void setHeight(int nheight) { height = nheight; }
+	int getZ() const { return z; }
 	void setZ(int nz);
-	int getOx();
-	void setOx(int nox);
-	int getOy();
-	void setOy(int noy);
-	int getOpacity();
-	void setOpacity(int nopacity);
-	int getBackOpacity();
-	void setBackOpacity(int nback_opacity);
-	int getContentsOpacity();
-	void setContentsOpacity(int ncontents_opacity);
-
+	int getOx() const { return ox; }
+	void setOx(int nox) { ox = nox; }
+	int getOy() const { return oy; }
+	void setOy(int noy) { oy = noy; }
+	int getOpacity() const { return opacity; }
+	void setOpacity(int nopacity) { opacity = nopacity; }
+	int getBackOpacity() const { return back_opacity; }
+	void setBackOpacity(int nback_opacity) { back_opacity = nback_opacity; }
+	int getContentsOpacity() const { return contents_opacity; }
+	void setContentsOpacity(int ncontents_opacity) { contents_opacity = ncontents_opacity; }
 private:
 	VALUE id;
 	VALUE viewport;
