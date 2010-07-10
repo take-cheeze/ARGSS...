@@ -59,6 +59,16 @@ namespace ARGSS
 			// std::cout << elm.name << std::endl;
 		}
 	}
+	void defineAttributesImplement(VALUE klassID, AttrTableElement const* table, unsigned int elmNum)
+	{
+		assert( elmNum );
+		for(unsigned int i = 0; i < elmNum; i++) {
+			AttrTableElement const& elm = table[i];
+
+			rb_define_attr(klassID, elm.name, elm.read, elm.write);
+			// std::cout << elm.name << std::endl;
+		}
+	}
 
 	namespace ARuby
 	{

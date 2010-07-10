@@ -41,6 +41,8 @@ namespace ARGSS
 	typedef VALUE (*RubyFunc)(...);
 	struct FuncTableElement { char const* name; RubyFunc func; unsigned int argc; };
 	typedef FuncTableElement FuncTable[];
+	struct AttrTableElement { char const* name; bool read, write; };
+	typedef AttrTableElement AttrTable[];
 
 	#define ARGSS_FUNC(name) #name, RubyFunc(r##name)
 	#define ARGSS_E(name) #name "=", RubyFunc(r##name##E)
@@ -51,6 +53,12 @@ namespace ARGSS
 	void defineMethodsImplement(VALUE klassID, FuncTableElement const* table, unsigned int elmNum);
 	template< unsigned int ElmNum >
 	void defineMethods(VALUE klassID, FuncTableElement const (&table)[ElmNum])
+	{
+		defineMethodsImplement(klassID, table, ElmNum);
+	}
+	void defineAttributesImplement(VALUE klassID, AttrTableElement const* table, unsigned int elmNum);
+	template< unsigned int ElmNum >
+	void defineAttributes(VALUE klassID, AttrTableElement const (&table)[ElmNum])
 	{
 		defineMethodsImplement(klassID, table, ElmNum);
 	}

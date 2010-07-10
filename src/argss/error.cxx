@@ -47,6 +47,7 @@ namespace ARGSS
 		void Init()
 		{
 			id = rb_define_class("ARGSSError", rb_eStandardError);
+			id = rb_define_class( "RGSSError", rb_eStandardError);
 		}
 	} // namespace AError
 } // namespace ARGSS

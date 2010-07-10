@@ -65,8 +65,6 @@ public:
 	void setBitmap(VALUE nbitmap);
 	VALUE getSrcRect() const { return srcRect_; }
 	void setSrcRect(VALUE nsrcRect) { nsrcRect = srcRect_; }
-	bool getVisible() const { return visible; }
-	void setVisible(bool nvisible) { visible = nvisible; }
 	int getX() const { return x; }
 	int getY() const { return y; }
 	int getZ() const { return z; }
@@ -97,6 +95,13 @@ public:
 	void setColor(VALUE ncolor) { color = ncolor; }
 	VALUE getTone() const { return tone; }
 	void setTone(VALUE ntone);
+
+	bool getVisible() const { return visible; }
+	void setVisible(bool nvisible) { visible = nvisible; }
+/*
+	bool getVisible() const { return NUM2BOOL( rb_iv_get(id, "@visible") ); }
+	void setVisible(bool nvisible) { rb_iv_set( id, "@visible", BOOL2NUM(nvisible) ); }
+ */
 private:
 	VALUE id;
 	VALUE viewport_;

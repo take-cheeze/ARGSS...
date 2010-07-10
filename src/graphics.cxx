@@ -254,25 +254,6 @@ namespace Graphics
  */
 		}
 
-/*
-		std::srand( std::time(NULL) );
-		glBegin(GL_LINE_LOOP);
-		for(int i = 0, len = std::rand() % 30; i < len; i++) {
-			glColor4f(
-				std::rand() % 255 / 255.0f,
-				std::rand() % 255 / 255.0f,
-				std::rand() % 255 / 255.0f,
-				std::rand() % 255 / 255.0f
-			);
-			glVertex2i(
-				std::rand() % Player::getWidth () - Player::getWidth () / 2,
-				std::rand() % Player::getHeight() - Player::getHeight() / 2
-			);
-		}
-		glEnd();
-		// std::cout << "Graphics::drawFrame()" << std::endl;
- */
-
 		Player::swapBuffers();
 	}
 

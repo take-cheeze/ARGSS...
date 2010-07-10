@@ -119,7 +119,7 @@ void Sprite::RefreshBitmaps()
 ////////////////////////////////////////////////////////////
 void Sprite::draw(long z)
 {
-	if( (!visible) || NIL_P(bitmap_) ) return;
+	if( !getVisible() || NIL_P(bitmap_) ) return;
 
 	Rect srcRectSprite(srcRect_);
 
@@ -241,7 +241,7 @@ void Sprite::draw(long z)
 	}
 
 	glDisable(GL_SCISSOR_TEST);
-	/*if (!visible) return;
+	/*if ( !getVisible() ) return;
 	if ( NIL_P(bitmap_) ) return;
 
 	srcRectSprite = Rect(srcRect_);
@@ -342,7 +342,7 @@ void Sprite::draw(long z)
 }
 void Sprite::draw(long z, Bitmap* dst_bitmap)
 {
-	/*if (!visible) return;
+	/*if ( !getVisible() ) return;
 	if (getWidth() <= 0 || getHeight() <= 0) return;
 	if (x < -getWidth() || x > dst_bitmap->getWidth() || y < -getHeight() || y > dst_bitmap->getHeight()) return;
 	if (!bitmap_) return;

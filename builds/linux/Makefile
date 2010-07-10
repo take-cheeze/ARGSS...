@@ -12,7 +12,7 @@ SRC_CXX += $(wildcard $(SRC_DIR)/argss/*.cxx)
 SRC_CXX += $(wildcard $(SRC_DIR)/$(PLATFORM)/*.cxx)
 OBJS_DIR = ./objs
 OBJS_CXX = $(subst $(SRC_DIR), $(OBJS_DIR), $(SRC_CXX:.cxx=.o))
-OBJS = $(OBJS_CXX) $(wildcard src/SOIL/projects/makefile/obj/*.o)
+OBJS = $(OBJS_CXX) $(wildcard src/SOIL/projects/makefile/obj/*.o) $(OBJS_DIR)/malloc_wrapper.o
 
 LINUX_SRC_DIR = src
 LINUX_SRC_C = $(wildcard $(LINUX_SRC_DIR)/*.c)
@@ -102,8 +102,10 @@ profile : run
 
 $(OBJS_DIR)/%.o : $(SRC_DIR)/%.cxx
 	$(CXX) $(CXXFLAGS) -c $< -o $@
-$(OBJS_DIR)/%.o : $(LINUX_SRC_DIR)/%.c
+$(OBJS_DIR)/%.o : src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
+$(OBJS_DIR)/malloc_wrapper.o : ../../dependencies/malloc/wrapper.cxx
+	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(TARGET) : make_objs_dir build_soil $(OBJS)
 	$(LD) $(LDFLAGS) $(OBJS) -o $(TARGET) $(LIBS)
