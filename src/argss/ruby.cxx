@@ -146,9 +146,9 @@ namespace ARGSS
 			}
 			std::string slasher(std::string const& str)
 			{
-				std::string ret;
-				for(std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
-					ret.push_back( (*it == '\\') ? '/' : *it );
+				std::string ret = str;
+				for(std::string::iterator it = ret.begin(); it < ret.end(); ++it) {
+					if( *it == '\\' ) *it = '/';
 				}
 				return ret;
 			}

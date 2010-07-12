@@ -31,62 +31,78 @@
 #include <windows.h>
 #include <stdio.h>
 #include <fcntl.h>
-#include <io.h>
+#ifdef _MSC_VER
+	#include <io.h>
+#else
+	#define _fdopen fdopen
+	#include <sys/io.h>
+#endif
 #include <iostream>
 #include <fstream>
-#include "console.hxx"
+#include "../console.hxx"
 
 ////////////////////////////////////////////////////////////
 /// Initialize Console
 ////////////////////////////////////////////////////////////
-void Console::Init() {
-	AllocConsole();
-	long lStdHandle = (long)getStdHandle(STD_INPUT_HANDLE);
-	int hConHandle = _open_osfhandle(lStdHandle, _O_TEXT);
-	FILE* fp = _fdopen( hConHandle, "r");
+void Console::Init()
+{
+	::AllocConsole();
+	long lStdHandle = (long)::GetStdHandle(STD_INPUT_HANDLE);
+	int hConHandle =
+	#ifdef WIN32
+		::_open_osfhandle(lStdHandle, _O_TEXT);
+	#else
+		0;
+	#endif
+	FILE* fp = ::_fdopen( hConHandle, "r");
 	*stdin = *fp;
-	setvbuf(stdin, NULL, _IONBF, 0);
+	::setvbuf(stdin, NULL, _IONBF, 0);
 	Sleep(10);
 }
 
 ////////////////////////////////////////////////////////////
 /// set console title
 ////////////////////////////////////////////////////////////
-void Console::setTitle(char* title) {
+void Console::setTitle(char* title)
+{
 	TCHAR* text = (TCHAR*)(title);
-	setConsoleTitle(text);
+	SetConsoleTitle(text);
 }
 
 ////////////////////////////////////////////////////////////
 /// set console max lines
 ////////////////////////////////////////////////////////////
-void Console::setLines(int lines) {
+void Console::setLines(int lines)
+{
 	CONSOLE_SCREEN_BUFFER_INFO coninfo;
-	getConsoleScreenBufferInfo(getStdHandle(STD_OUTPUT_HANDLE), &coninfo);
+	::GetConsoleScreenBufferInfo(::GetStdHandle(STD_OUTPUT_HANDLE), &coninfo);
 	coninfo.dwSize.Y = lines;
-	setConsoleScreenBufferSize(getStdHandle(STD_OUTPUT_HANDLE), coninfo.dwSize);
+	::SetConsoleScreenBufferSize(::GetStdHandle(STD_OUTPUT_HANDLE), coninfo.dwSize);
 }
 
 ////////////////////////////////////////////////////////////
 /// Free console
 ////////////////////////////////////////////////////////////
-void Console::Free() {
-	FreeConsole();
+void Console::Free()
+{
+	::FreeConsole();
 }
 
 ////////////////////////////////////////////////////////////
 /// get console active status
 ////////////////////////////////////////////////////////////
-bool Console::Active() {
-	return getConsoleWindow() != NULL;
+bool Console::Active()
+{
+	return ::GetConsoleWindow() != NULL;
 }
 
 ////////////////////////////////////////////////////////////
 /// Write message to console
 ////////////////////////////////////////////////////////////
-void Console::Write(std::string msg) {
-	VALUE n;
+void Console::Write(std::string const& msg)
+{
+	unsigned int n;
 	HANDLE out;
-	out = getStdHandle(STD_OUTPUT_HANDLE);
-	WriteConsoleA(out, msg.c_str(), msg.size(), &n, NULL);
+	out = ::GetStdHandle(STD_OUTPUT_HANDLE);
+	::WriteConsoleA(out, msg.c_str(), msg.size(), &n, NULL);
 }

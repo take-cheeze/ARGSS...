@@ -78,6 +78,8 @@ endif
 ifeq ($(PLATFORM),Qt)
 LIBS += -lQtGui -lQtCore -lQtOpenGL
 CXXFLAGS += -I/usr/include/qt4
+else ifeq ($(PLATFORM),WIN32)
+CFLAGS += -DNOMINMAX
 endif
 
 CFLAGS += -include /usr/include/time.h

@@ -28,12 +28,19 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#if defined(ARGSS_WIN32)
-	#include "WIN32/console.hxx"
-#elif defined(ARGSS_Qt)
-	#include "Qt/console.hxx"
-#elif defined(ARGSS_SDL)
-	#include "SDL/console.hxx"
-#endif
+#include <string>
+
+////////////////////////////////////////////////////////////
+/// Console Namespace
+////////////////////////////////////////////////////////////
+namespace Console
+{
+	void Init();
+	void setTitle(char* title);
+	void setLines(int lines);
+	void Free();
+	bool Active();
+	void Write(std::string const& msg);
+} // namespace Console
 
 #endif

@@ -36,7 +36,7 @@
  */
 #include <iostream>
 #include <fstream>
-#include "console.hxx"
+#include "../console.hxx"
 
 ////////////////////////////////////////////////////////////
 /// Initialize Console

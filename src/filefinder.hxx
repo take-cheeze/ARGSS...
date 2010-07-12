@@ -25,15 +25,14 @@
 #ifndef _FILEFINDER_HXX_
 #define _FILEFINDER_HXX_
 
-////////////////////////////////////////////////////////////
-/// Headers
-////////////////////////////////////////////////////////////
-#if defined(ARGSS_WIN32)
-	#include "WIN32/filefinder.hxx"
-#elif defined(ARGSS_Qt)
-	#include "Qt/filefinder.hxx"
-#elif defined(ARGSS_SDL)
-	#include "SDL/filefinder.hxx"
-#endif
+#include <string>
+
+namespace FileFinder
+{
+	void Init();
+	std::string FindImage(std::string const& name);
+	std::string FindMusic(std::string const& name);
+	std::string FindFont(std::string const& name);
+} // namespace FileFinder
 
 #endif

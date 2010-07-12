@@ -1,4 +1,4 @@
-#include "msgbox.hxx"
+#include "../msgbox.hxx"
 #include "../player.hxx"
 
 #include <QtGui/QMessageBox>

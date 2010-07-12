@@ -63,6 +63,11 @@ namespace ARGSS
 		defineMethodsImplement(klassID, table, ElmNum);
 	}
 
+	inline VALUE BOOL2NUM(bool val) { return val ? Qtrue : Qfalse; }
+	inline VALUE INT2BOOL(int x) { return (x != 0) ? Qtrue : Qfalse; } // (x == 0 ? (VALUE)0 : (VALUE)2)
+	inline bool NUM2BOOL(VALUE x) { return (x == Qtrue); } // (x == (VALUE)2)
+	#define raise_argn(a, n) (rb_raise(rb_eArgError, "wrong number of arguments(%i for %i)", a, n))
+
 	namespace ARuby
 	{
 		void Init();
@@ -75,14 +80,6 @@ namespace ARGSS
 		VALUE rsave_data(VALUE self, VALUE obj, VALUE filename);
 	} // namespace ARuby
 } // namespace ARGSS
-
-////////////////////////////////////////////////////////////
-/// Ruby macros
-////////////////////////////////////////////////////////////
-#define BOOL2NUM(x) (x ? Qtrue : Qfalse)
-#define INT2BOOL(x) (x != 0 ? Qtrue : Qfalse) // (x == 0 ? (VALUE)0 : (VALUE)2)
-#define NUM2BOOL(x) (x == Qtrue) // (x == (VALUE)2)
-#define raise_argn(a, n) (rb_raise(rb_eArgError, "wrong number of arguments(%i for %i)", a, n))
 
 ////////////////////////////////////////////////////////////
 /// Object type checking

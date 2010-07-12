@@ -472,8 +472,8 @@ void Bitmap::TextDraw(Rect const& rect, std::string const& text, int align)
 	VALUE name_id = rb_iv_get(font_id, "@name");
 	Color color = Color(rb_iv_get(font_id, "@color"));
 	int size = NUM2INT(rb_iv_get(font_id, "@size"));
-	bool bold = NUM2BOOL(rb_iv_get(font_id, "@bold"));
-	bool italic = NUM2BOOL(rb_iv_get(font_id, "@italic"));
+	bool bold = ARGSS::NUM2BOOL(rb_iv_get(font_id, "@bold"));
+	bool italic = ARGSS::NUM2BOOL(rb_iv_get(font_id, "@italic"));
 
 	std::auto_ptr< Bitmap > text_bmp = Text::draw(text, StringValuePtr(name_id), color, size, bold, italic, false);
 

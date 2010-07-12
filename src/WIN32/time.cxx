@@ -26,22 +26,22 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #include <windows.h>
-#include "time.hxx"
+#include "../time.hxx"
 
 ////////////////////////////////////////////////////////////
 /// get time
 ////////////////////////////////////////////////////////////
 long Time::getTime() {
 	static LARGE_INTEGER frequency;
-	static BOOL htimer = QueryPerformanceFrequency(&frequency);
+	static BOOL htimer = ::QueryPerformanceFrequency(&frequency);
 
 	if (htimer) {
 		LARGE_INTEGER tick;
-		QueryPerformanceCounter(&tick);
+		::QueryPerformanceCounter(&tick);
 
 		return (long)(((double)tick.QuadPart * 1000.0) / (double)frequency.QuadPart);
 	}
-	return getTickCount();
+	return ::GetTickCount();
 }
 
 ////////////////////////////////////////////////////////////

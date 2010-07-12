@@ -26,14 +26,13 @@
 #define _TIME_HXX_
 
 ////////////////////////////////////////////////////////////
-/// Headers
+/// Time namespace
 ////////////////////////////////////////////////////////////
-#if defined(ARGSS_WIN32)
-	#include "WIN32/time.hxx"
-#elif defined(ARGSS_Qt)
-	#include "Qt/time.hxx"
-#elif defined(ARGSS_SDL)
-	#include "SDL/time.hxx"
-#endif
+namespace Time
+{
+	long getTime();
+
+	void sleepMs(long ms);
+} // namespace Time
 
 #endif

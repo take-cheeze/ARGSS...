@@ -27,7 +27,7 @@
 ////////////////////////////////////////////////////////////
 #include "windowui.hxx"
 #include "../output.hxx"
-#include "../windows.hxx"
+#include "../window.hxx"
 
 ////////////////////////////////////////////////////////////
 /// Definitions
@@ -36,13 +36,13 @@
 	#ifndef _T
 		#define _T(x) L ## x
 	#endif
-	static std::wstring s2ws(const std::string& s) {
+	static std::basic_string< WCHAR > s2ws(const std::string& s) {
 		int len;
 		int slength = (int)s.length() + 1;
 		len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0); 
-		wchar_t* buf = new wchar_t[len];
+		WCHAR* buf = new WCHAR[len];
 		MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
-		std::wstring r(buf);
+		std::basic_string< WCHAR > r(buf);
 		delete[] buf;
 		return r;
 	}
@@ -72,14 +72,10 @@
 /// Event Process
 ////////////////////////////////////////////////////////////
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	WindowUi* window = (WindowUi*) getWindowLongPtr(hWnd, GWLP_USERDATA);
+	WindowUi* window = (WindowUi*) GetWindowLongPtr(hWnd, GWLP_USERDATA);
 
-	if (!window->ProccesEvents(hWnd, uMsg, wParam, lParam)) {
-		return 0;
-	}
-	else {
-		return DefWindowProc(hWnd, uMsg, wParam, lParam);
-	}
+	return (!window->ProccesEvents(hWnd, uMsg, wParam, lParam))?
+		0 : DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
 ////////////////////////////////////////////////////////////
@@ -97,8 +93,8 @@ WindowUi::WindowUi(long iwidth, long iheight, std::string title, bool center, bo
 
 	fullscreen = fs_flag;
 	
-	hinstance = getModuleHandle(NULL);
-	
+	hinstance = ::GetModuleHandle(NULL);
+
 #ifdef UNICODE
 	WNDCLASSEXW wc;
 #else 
@@ -126,15 +122,15 @@ WindowUi::WindowUi(long iwidth, long iheight, std::string title, bool center, bo
 	}
 	
 	if (fullscreen)	{
-		DEVMODE dmScreensettings;
-		memset(&dmScreensettings, 0, sizeof(dmScreensettings));
-		dmScreensettings.dmSize = sizeof(dmScreensettings);
-		dmScreensettings.dmPelsWidth = width;
-		dmScreensettings.dmPelsHeight = height;
-		dmScreensettings.dmBitsPerPel = 32;
-		dmScreensettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+		DEVMODE dmScreenSettings;
+		memset(&dmScreenSettings, 0, sizeof(dmScreenSettings));
+		dmScreenSettings.dmSize = sizeof(dmScreenSettings);
+		dmScreenSettings.dmPelsWidth = width;
+		dmScreenSettings.dmPelsHeight = height;
+		dmScreenSettings.dmBitsPerPel = 32;
+		dmScreenSettings.dmFields = DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
 
-		if (ChangeDisplaysettings(&dmScreensettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
+		if (ChangeDisplaySettings(&dmScreenSettings, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
 			Output::WarningStr("Current fullscreen mode is not supported. Windowed mode will be used.");
 		}
 	}
@@ -155,12 +151,12 @@ WindowUi::WindowUi(long iwidth, long iheight, std::string title, bool center, bo
 	long posy = 0;
 	if (!fullscreen && center) {
 		RECT scrrect;
-		if (SystemParametersInfo(SPI_GETWORKAREA, 0, &scrrect, SPIF_UPDATEINIFILE)) {
+		if (::SystemParametersInfo(SPI_GETWORKAREA, 0, &scrrect, SPIF_UPDATEINIFILE)) {
 			int centerx = scrrect.right / 2;
 			int centery = scrrect.bottom / 2;
 
-			int edge = getSystemMetrics(SM_CXEDGE);
-			int capt = getSystemMetrics(SM_CXFIXEDFRAME);
+			int edge = ::GetSystemMetrics(SM_CXEDGE);
+			int capt = ::GetSystemMetrics(SM_CXFIXEDFRAME);
 
 			posx = centerx - width / 2 - edge;
 			posy = centery - height / 2 - capt;
@@ -168,9 +164,9 @@ WindowUi::WindowUi(long iwidth, long iheight, std::string title, bool center, bo
 	}
 
 	RECT windowRect = {posx, posy, posx + iwidth, posy + iheight};
-	AdjustWindowRectEx(&windowRect, dwStyle, FALSE, dwExStyle);
+	::AdjustWindowRectEx(&windowRect, dwStyle, FALSE, dwExStyle);
 
-	hwnd = CreateWindowEx(dwExStyle, _T("ARGSS Player"), s2ws(title).c_str(), dwStyle | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, windowRect.left, windowRect.top, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, NULL, NULL, hinstance, NULL);
+	hwnd = ::CreateWindowEx(dwExStyle, _T("ARGSS Player"), s2ws(title).c_str(), dwStyle | WS_CLIPSIBLINGS | WS_CLIPCHILDREN, windowRect.left, windowRect.top, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top, NULL, NULL, hinstance, NULL);
 
 	if (!hwnd) {
 		Dispose();
@@ -187,16 +183,16 @@ WindowUi::WindowUi(long iwidth, long iheight, std::string title, bool center, bo
 	pfd.cDepthBits = 16;
 	pfd.iLayerType = PFD_MAIN_PLANE;
 	
-	if (!(hdc = getDC(hwnd)))	{
+	if (!(hdc = ::GetDC(hwnd))){
 		Dispose();
 		Output::ErrorStr("Failed to create opengl device context.");
 	}
 	unsigned int PixelFormat;
-	if (!(PixelFormat = ChoosePixelFormat(hdc, &pfd))) {
+	if (!(PixelFormat = ::ChoosePixelFormat(hdc, &pfd))) {
 		Dispose();
 		Output::ErrorStr("Couldn't find a suitable pixel format.");
 	}
-	if (!setPixelFormat(hdc, PixelFormat, &pfd)) {
+	if (!::SetPixelFormat(hdc, PixelFormat, &pfd)) {
 		Dispose();
 		Output::ErrorStr("Can't set the pixel format.");
 	}
@@ -209,34 +205,36 @@ WindowUi::WindowUi(long iwidth, long iheight, std::string title, bool center, bo
 		Output::ErrorStr("Can't activate opengl rendering context.");
 	}
 
-	setWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)this);
+	::SetWindowLongPtr(hwnd, GWLP_USERDATA, (LONG_PTR)this);
 
-	ShowWindow(hwnd, SW_SHOW);
-	setForegroundWindow(hwnd);
-	setFocus(hwnd);
+	::ShowWindow(hwnd, SW_SHOW);
+	::SetForegroundWindow(hwnd);
+	::SetFocus(hwnd);
 }
 
 ////////////////////////////////////////////////////////////
 /// Destructor
 ////////////////////////////////////////////////////////////
-WindowUi::~WindowUi() {
-
+WindowUi::~WindowUi()
+{
 }
 
 ////////////////////////////////////////////////////////////
 /// Swap Buffers
 ////////////////////////////////////////////////////////////
-void WindowUi::SwapBuffers() {
+void WindowUi::swapBuffers()
+{
 	::SwapBuffers(hdc);
 }
 
 ////////////////////////////////////////////////////////////
 /// Dispose
 ////////////////////////////////////////////////////////////
-void WindowUi::Dispose() {
+void WindowUi::Dispose()
+{
 	if (fullscreen)	{
-		ChangeDisplaysettings(NULL, 0);
-		ShowCursor(true);
+		::ChangeDisplaySettings(NULL, 0);
+		::ShowCursor(true);
 	}
 	if (hrc) {
 		wglMakeCurrent(NULL, NULL);
@@ -257,7 +255,8 @@ void WindowUi::Dispose() {
 ////////////////////////////////////////////////////////////
 /// Resize
 ////////////////////////////////////////////////////////////
-void WindowUi::Resize(long nwidth, long nheight) {
+void WindowUi::resize(long nwidth, long nheight)
+{
 	if (width != nwidth && height != nheight) {
 		width = nwidth;
 		height = nheight;
@@ -268,13 +267,14 @@ void WindowUi::Resize(long nwidth, long nheight) {
 /// set title
 ////////////////////////////////////////////////////////////
 void WindowUi::setTitle(std::string title) {
-	setWindowText(hwnd, s2ws(title).c_str());
+	::SetWindowText(hwnd, s2ws(title).c_str());
 }
 
 ////////////////////////////////////////////////////////////
 /// Toggle fullscreen
 ////////////////////////////////////////////////////////////
-void WindowUi::ToggleFullscreen() {
+void WindowUi::toggleFullscreen()
+{
 	if (fullscreen) {
 		DEVMODE devmode;
 		devmode.dmSize = sizeof(DEVMODE);
@@ -283,19 +283,19 @@ void WindowUi::ToggleFullscreen() {
 		devmode.dmBitsPerPel = 32;
 		devmode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
 
-		if (ChangeDisplaysettings(&devmode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
+		if (::ChangeDisplaySettings(&devmode, CDS_FULLSCREEN) != DISP_CHANGE_SUCCESSFUL) {
 			Output::Warning("Failed to toggle fullscreen mode");
 			return;
 		}
 
-		setWindowLong(hwnd, GWL_STYLE,   WS_POPUP);
-		setWindowLong(hwnd, GWL_EXSTYLE, WS_EX_APPWINDOW);
+		::SetWindowLong(hwnd, GWL_STYLE,   WS_POPUP);
+		::SetWindowLong(hwnd, GWL_EXSTYLE, WS_EX_APPWINDOW);
 
-		setWindowPos(hwnd, HWND_TOP, 0, 0, width, height, SWP_FRAMECHANGED);
-		ShowWindow(hwnd, SW_SHOW);
+		::SetWindowPos(hwnd, HWND_TOP, 0, 0, width, height, SWP_FRAMECHANGED);
+		::ShowWindow(hwnd, SW_SHOW);
 
-		long Style = getWindowLong(hwnd, GWL_STYLE);
-		setWindowLong(hwnd, GWL_STYLE, Style | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
+		long Style = ::GetWindowLong(hwnd, GWL_STYLE);
+		::SetWindowLong(hwnd, GWL_STYLE, Style | WS_CLIPCHILDREN | WS_CLIPSIBLINGS);
 
 		fullscreen = true;
 	}
@@ -594,7 +594,7 @@ Input::Keys::InputKey WindowUi::VK2IK(int vk) {
 ////////////////////////////////////////////////////////////
 /// Properties
 ////////////////////////////////////////////////////////////
-bool WindowUi::IsFullscreen() {
+bool WindowUi::isFullscreen() {
 	return fullscreen;
 }
 std::vector<bool> WindowUi::getKeyStates() {

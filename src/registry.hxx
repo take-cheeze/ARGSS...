@@ -32,7 +32,6 @@
 
 extern "C"
 {
-	#define UNICODE
 	#include <windows.h>
 }
 

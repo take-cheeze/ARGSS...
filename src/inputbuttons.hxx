@@ -25,15 +25,14 @@
 #ifndef _INPUTBUTTONS_HXX_
 #define _INPUTBUTTONS_HXX_
 
-////////////////////////////////////////////////////////////
-/// Headers
-////////////////////////////////////////////////////////////
-#if defined(ARGSS_WIN32)
-	#include "WIN32/inputbuttons.hxx"
-#elif defined(ARGSS_Qt)
-	#include "Qt/inputbuttons.hxx"
-#elif defined(ARGSS_SDL)
-	#include "SDL/inputbuttons.hxx"
-#endif
+#include <map>
+#include <vector>
+
+namespace Input
+{
+	void InitButtons();
+
+	std::map< int, std::vector<int> >& getButtons();
+} // namespace Input
 
 #endif

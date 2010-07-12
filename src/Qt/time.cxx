@@ -1,4 +1,4 @@
-#include "time.hxx"
+#include "..//time.hxx"
 
 #include <QtCore/QThread>
 #include <QtCore/QTime>

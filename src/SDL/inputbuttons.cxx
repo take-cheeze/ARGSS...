@@ -1,6 +1,6 @@
 #include <argss/ruby.hxx>
 
-#include "inputbuttons.hxx"
+#include "../inputbuttons.hxx"
 #include "../inputkeys.hxx"
 // #include "../registry.hxx"
 #include "../options.hxx"

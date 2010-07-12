@@ -25,11 +25,11 @@
 #define NETWORK_H
 
 // #include "buffer.hxx"
-#ifdef WIN32
+#ifdef ARGSS_WIN32
 	#define WIN32_LEAN_AND_MEAN
-	#include <Windows.h>
-	#include <WinSock2.h>
-	#include <WS2tcpip.h>
+	#include <winsock2.h>
+	#include <windows.h>
+	// #include <ws2tcpip.h>
 #else
 	#include <sys/socket.h>
 	#include <arpa/inet.h>
@@ -41,6 +41,7 @@
 #include <vector>
 
 #include <stdint.h>
+
 
 class Socket
 {

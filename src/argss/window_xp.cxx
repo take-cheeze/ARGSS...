@@ -346,6 +346,7 @@ namespace ARGSS
 				ARGSS_GETTER_SETTER(stretch),
 				ARGSS_GETTER_SETTER(cursor_rect),
 				ARGSS_GETTER_SETTER(active),
+				{ "visible?", RubyFunc(rvisible), 0 },
 				ARGSS_GETTER_SETTER(visible),
 				ARGSS_GETTER_SETTER(pause),
 				ARGSS_GETTER_SETTER(x), { "fx", RubyFunc(rx), 0 },

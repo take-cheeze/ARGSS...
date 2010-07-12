@@ -1,7 +1,8 @@
-#include "msgbox.hxx"
+#include "../msgbox.hxx"
 #include "../player.hxx"
 
 #include <iostream>
+
 
 void MsgBox::OK(std::string const& msg, std::string const& title)
 {

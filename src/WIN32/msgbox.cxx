@@ -25,27 +25,30 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#include "msgbox.hxx"
+#include "../msgbox.hxx"
 #include <windows.h>
 
-static std::wstring s2ws(const std::string& s) {
-	int len;
-	int slength = (int)s.length() + 1;
-	len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0); 
-	wchar_t* buf = new wchar_t[len];
-	MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
-	std::wstring r(buf);
-	delete[] buf;
-	return r;
-}
+#ifdef UNICODE
+	static std::basic_string< WCHAR > s2ws(std::string const& s)
+	{
+		int len;
+		int slength = (int)s.length() + 1;
+		len = MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, 0, 0); 
+		WCHAR* buf = new WCHAR[len];
+		MultiByteToWideChar(CP_ACP, 0, s.c_str(), slength, buf, len);
+		std::basic_string< WCHAR > r(buf);
+		delete[] buf;
+		return r;
+	}
+#endif
 
 ////////////////////////////////////////////////////////////
 /// Default Message Box with OK button
 ////////////////////////////////////////////////////////////
-void MsgBox::OK(std::string msg, std::string title) {
+void MsgBox::OK(std::string const& msg, std::string const& title) {
 	if (msg.length() == 0) return;
 	if (msg.length() == 1 && (msg[0] == '\n' || msg[0] == '\r')) return;
-#ifdef MSVC
+#ifdef UNICODE
 	MessageBox(0, s2ws(msg).c_str(), s2ws(title).c_str(), MB_OK);
 #else
 	MessageBox(0, msg.c_str(), title.c_str(), MB_OK);
@@ -55,10 +58,10 @@ void MsgBox::OK(std::string msg, std::string title) {
 ////////////////////////////////////////////////////////////
 /// Error Message Box
 ////////////////////////////////////////////////////////////
-void MsgBox::Error(std::string msg, std::string title) {
+void MsgBox::Error(std::string const& msg, std::string const& title) {
 	if (msg.length() == 0) return;
 	if (msg.length() == 1 && (msg[0] == '\n' || msg[0] == '\r')) return;
-#ifdef MSVC
+#ifdef UNICODE
 	MessageBox(0, s2ws(msg).c_str(), s2ws(title).c_str(), MB_OK | MB_ICONERROR);
 #else
 	MessageBox(0, msg.c_str(), title.c_str(), MB_OK | MB_ICONERROR);
@@ -68,10 +71,10 @@ void MsgBox::Error(std::string msg, std::string title) {
 ////////////////////////////////////////////////////////////
 /// Warning Message Box
 ////////////////////////////////////////////////////////////
-void MsgBox::Warning(std::string msg, std::string title) {
+void MsgBox::Warning(std::string const& msg, std::string const& title) {
 	if (msg.length() == 0) return;
 	if (msg.length() == 1 && (msg[0] == '\n' || msg[0] == '\r')) return;
-#ifdef MSVC
+#ifdef UNICODE
 	MessageBox(0, s2ws(msg).c_str(), s2ws(title).c_str(), MB_OK | MB_ICONEXCLAMATION);
 #else
 	MessageBox(0, msg.c_str(), title.c_str(), MB_OK | MB_ICONEXCLAMATION);

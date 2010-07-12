@@ -32,7 +32,7 @@
 #include <fstream>
 #include <vector>
 
-#include "filefinder.hxx"
+#include "../filefinder.hxx"
 #include "../system.hxx"
 #include "../registry.hxx"
 #include "../options.hxx"

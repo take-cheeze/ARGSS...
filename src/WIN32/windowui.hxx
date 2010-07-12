@@ -45,17 +45,17 @@ public:
 	~WindowUi();
 
 	void Dispose();
-	void SwapBuffers();
-	void Resize(long nwidth, long nheight);
+	void swapBuffers();
+	void resize(long nwidth, long nheight);
 	void setTitle(std::string title);
-	void ToggleFullscreen();
+	void toggleFullscreen();
 	long getWidth();
 	long getHeight();
 
 	bool getEvent(Event& evnt);
 	int ProccesEvents(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
-	bool IsFullscreen();
+	bool isFullscreen();
 	std::vector<bool> getKeyStates();
 	bool getMouseFocus();
 	int getMouseWheel();

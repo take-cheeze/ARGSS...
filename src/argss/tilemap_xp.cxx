@@ -189,6 +189,7 @@ namespace ARGSS
 				ARGSS_GETTER_SETTER(map_data),
 				ARGSS_GETTER_SETTER(flash_data),
 				ARGSS_GETTER_SETTER(priorities),
+				{ "visible?", RubyFunc(rvisible), 0 },
 				ARGSS_GETTER_SETTER(visible),
 				ARGSS_GETTER_SETTER(ox),
 				ARGSS_GETTER_SETTER(oy),

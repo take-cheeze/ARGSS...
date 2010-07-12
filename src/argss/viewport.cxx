@@ -188,6 +188,7 @@ namespace ARGSS
 				{ ARGSS_FUNC(flash), 2 },
 				{ ARGSS_FUNC(update), 0 },
 				ARGSS_GETTER_SETTER(rect),
+				{ "visible?", RubyFunc(rvisible), 0 },
 				ARGSS_GETTER_SETTER(visible),
 				ARGSS_GETTER_SETTER(z),
 				ARGSS_GETTER_SETTER(ox),

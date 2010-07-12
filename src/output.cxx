@@ -28,6 +28,10 @@
 #include <iostream>
 #include <fstream>
 
+#ifdef ARGSS_WIN32
+	#include <winsock2.h>
+#endif
+
 #include <cstdarg>
 #include <cstdlib>
 #include <cstdio>

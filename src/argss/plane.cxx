@@ -235,6 +235,7 @@ namespace ARGSS
 				{ ARGSS_FUNC(dispose), 0 }, { ARGSS_Q(disposed), 0 },
 				ARGSS_GETTER_SETTER(viewport),
 				ARGSS_GETTER_SETTER(bitmap),
+				{ "visible?", RubyFunc(rvisible), 0 },
 				ARGSS_GETTER_SETTER(visible),
 				ARGSS_GETTER_SETTER(z),
 				ARGSS_GETTER_SETTER(ox),
