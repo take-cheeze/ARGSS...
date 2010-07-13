@@ -36,11 +36,14 @@
 #include <sstream>
 #include <string>
 
-#include <argss/ruby.hxx>
-#include <options.hxx>
-#include <system.hxx>
-#include <player.hxx>
-#include <output.hxx>
+#include "ruby.hxx"
+
+#include "../filefinder.hxx"
+#include "../fileio.hxx"
+#include "../options.hxx"
+#include "../system.hxx"
+#include "../player.hxx"
+#include "../output.hxx"
 
 #ifndef RUBY_VERSION_1_8
 	#define ruby_errinfo rb_errinfo()
@@ -82,10 +85,20 @@ namespace ARGSS
 		////////////////////////////////////////////////////////////
 		VALUE rload_data(VALUE self, VALUE filename)
 		{
+			std::vector< uint8_t > const& data = FileFinder::FindFile( StringValueCStr(filename) );
+			(void)rb_require("stringio");
+			VALUE strIOargv[] = {
+				rb_str_new( reinterpret_cast< char const* >( &(data[0]) ), data.size() ),
+				rb_str_new_cstr("rb"),
+			};
+			VALUE file = rb_class_instance_methods( sizeof(strIOargv) / sizeof(VALUE), strIOargv, rb_intern("StringIO") );
+			return rb_marshal_load(file);
+/*
 			VALUE file = rb_file_open(StringValuePtr(filename), "rb");
 			VALUE obj = rb_marshal_load(file);
 			rb_io_close(file);
 			return obj;
+ */
 		}
 		VALUE rsave_data(VALUE self, VALUE obj, VALUE filename)
 		{
@@ -132,70 +145,53 @@ namespace ARGSS
 								report += RSTRING_PTR(RARRAY_PTR(ary)[i]);
 							}
 						}
-
-					/*
-						// disabling "exit(EXIT_FAILURE)"
-						std::cout << report << std::endl;
-						assert(false);
-					 */
-
 						Output::ErrorStr(report);
 						return;
 					}
 				}
 			}
-			std::string slasher(std::string const& str)
-			{
-				std::string ret = str;
-				for(std::string::iterator it = ret.begin(); it < ret.end(); ++it) {
-					if( *it == '\\' ) *it = '/';
-				}
-				return ret;
-			}
 			VALUE eval_wrap(VALUE arg)
 			{
-/*
-				std::cout
-					<< RSTRING_PTR( rb_ary_entry(arg, 1) ) << std::endl
-					<< RSTRING_PTR( rb_ary_entry(arg, 0) ) << std::endl
-				;
- */
 				return rb_funcall(
 					rb_cObject, rb_intern("eval"), 4,
 					rb_ary_entry(arg, 0),
 					Qnil,
-					rb_ary_entry(arg, 1),
-					INT2NUM(1)
+					rb_ary_entry(arg, 1), INT2NUM(1)
 				);
 			}
 			VALUE require_wrap(VALUE arg)
 			{
-				/*
-				 * current directory is excluded from load path at 1.9.2
-				 */
-				rb_eval_string("$: << File.dirname('.')");
-
-				return rb_require( slasher(System::getScriptsPath()).c_str() );
+				std::string const& script = System::getScriptsPath();
+				std::vector< uint8_t > const& data = FileFinder::FindFile(script);
+				return rb_funcall(
+					rb_cObject, rb_intern("eval"), 4,
+					rb_str_new( reinterpret_cast< char const* >( &(data[0]) ), data.size() ),
+					Qnil,
+					rb_str_new( script.data(), script.size() ), INT2NUM(1)
+				);
+				// return rb_require( FileIO::toSlash(System::getScriptsPath()).c_str() );
 			}
 		} // namespace
+
 		void Run()
 		{
 			int error;
 			VALUE result;
 
-			std::string
-				target = slasher(System::getScriptsPath()),
-				suffix = target.substr( target.find_last_of('.') + 1 );
+			// current directory is excluded from load path at 1.9.2
+			rb_eval_string("$: << File.dirname('.')");
 
-			if( suffix == "rxdata" ) { // if (SCRIPTS_ZLIB) {
-				int error;
+			std::string
+				scriptName = System::getScriptsPath(),
+				suffix = scriptName.substr( scriptName.find_last_of('.') + 1 );
+
+			if( suffix == "rxdata" ) {
 /*
 				VALUE result = rb_require("zlib");
 				VALUE cZlib = rb_const_get(rb_cObject, rb_intern("Zlib"));
 				VALUE cInflate = rb_const_get(cZlib, rb_intern("Inflate"));
  */
-				VALUE file = rb_file_open(target.c_str(), "rb");
-				VALUE scripts = rb_marshal_load(file);
+				VALUE scripts = rload_data( Qnil, rb_str_new( scriptName.data(), scriptName.size() ) );
 				RArray* arr = RARRAY(scripts);
 				for (int i = 0; i < RARRAY_LEN(arr); i++) {
 					VALUE section_arr = rb_ary_entry(scripts, i);

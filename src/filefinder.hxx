@@ -25,14 +25,18 @@
 #ifndef _FILEFINDER_HXX_
 #define _FILEFINDER_HXX_
 
+#include <stdint.h>
+
 #include <string>
+#include <vector>
 
 namespace FileFinder
 {
 	void Init();
-	std::string FindImage(std::string const& name);
-	std::string FindMusic(std::string const& name);
-	std::string FindFont(std::string const& name);
+	std::vector< uint8_t > const& FindImage(std::string const& name);
+	std::vector< uint8_t > const& FindMusic(std::string const& name);
+	std::vector< uint8_t > const& FindFont(std::string const& name);
+	std::vector< uint8_t > const& FindFile(std::string const& name);
 } // namespace FileFinder
 
 #endif

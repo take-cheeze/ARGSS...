@@ -29,10 +29,11 @@
 #include <boost/array.hpp>
 
 #include <iostream>
-#include <fstream>
 #include <vector>
+#include <stdexcept>
 
 #include "../filefinder.hxx"
+#include "../fileio.hxx"
 #include "../system.hxx"
 #include "../registry.hxx"
 #include "../options.hxx"
@@ -48,36 +49,12 @@ namespace FileFinder
 		std::string rtp_paths[3];
 		std::string fonts_path;
 
-		template< typename T, int ElmNum >
-		int elmNum( T const (&arg)[ElmNum] ) { return ElmNum; }
-
 		typedef boost::array< char const*, 5 > ImageSuffix;
 		typedef boost::array< char const*, 5 > MusicSuffix;
 		typedef boost::array< char const*, 4 >  FontSuffix;
-		ImageSuffix imageSuffix = { { ".bmp", ".gif", ".jpg", ".jpeg", ".png", } };
-		MusicSuffix musicSuffix = { { ".wav", ".mid", ".midi", ".ogg", ".mp3", } };
-		 FontSuffix fontSuffix = { { ".ttf", ".otf", ".tfb", ".fnt", } };
-
-		////////////////////////////////////////////////////////////
-		/// Check if file exists
-		////////////////////////////////////////////////////////////
-		bool fexists(std::string const& filename)
-		{
-			std::ifstream file(filename.c_str());
-			return file.is_open();
-		}
-
-		////////////////////////////////////////////////////////////
-		/// Make path
-		////////////////////////////////////////////////////////////
-		std::string slasher(std::string const& str)
-		{
-			std::string ret;
-			for(std::string::const_iterator it = str.begin(); it != str.end(); ++it) {
-				ret.push_back( (*it == '\\') ? '/' : *it );
-			}
-			return ret;
-		}
+		ImageSuffix imageSuffix_ = { { ".bmp", ".gif", ".jpg", ".jpeg", ".png", } };
+		MusicSuffix musicSuffix_ = { { ".wav", ".mid", ".midi", ".ogg", ".mp3", } };
+		 FontSuffix  fontSuffix_ = { { ".ttf", ".otf", ".tfb", ".fnt", } };
 	}
 
 	////////////////////////////////////////////////////////////
@@ -85,6 +62,8 @@ namespace FileFinder
 	////////////////////////////////////////////////////////////
 	void Init()
 	{
+		FileIO::init();
+
 		for (int i = 0; i < 3; i++) {
 			std::string const& rtp = System::getRTP(i);
 			if (rtp.empty()) continue;
@@ -120,89 +99,96 @@ namespace FileFinder
 	////////////////////////////////////////////////////////////
 	/// Find image
 	////////////////////////////////////////////////////////////
-	std::string FindImage(std::string const& name)
+	std::vector< uint8_t > const& FindImage(std::string const& name)
 	{
-		std::string target = slasher(name), path = target;
+		std::string target = FileIO::toSlash(name), path = target;
 
-		if (fexists(path)) return path;
-		for(ImageSuffix::const_iterator it = imageSuffix.begin(); it < imageSuffix.end(); ++it) {
+		if (FileIO::exists(path)) return FileIO::get(path);
+		for(ImageSuffix::const_iterator it = imageSuffix_.begin(); it < imageSuffix_.end(); ++it) {
 			path = target + *it;
-			if (fexists(path)) return path;
+			if (FileIO::exists(path)) return FileIO::get(path);
 		}
 		for (int i = 0; i < 3; i++) {
 			if ( !rtp_paths[i].empty() ) {
-				std::string rtp_path = slasher(rtp_paths[i]) + target;
+				std::string rtp_path = FileIO::toSlash(rtp_paths[i]) + target;
 				path = rtp_path;
-				if (fexists(path)) return path;
-				for(ImageSuffix::const_iterator it = imageSuffix.begin(); it < imageSuffix.end(); ++it) {
+				if (FileIO::exists(path)) return FileIO::get(path);
+				for(ImageSuffix::const_iterator it = imageSuffix_.begin(); it < imageSuffix_.end(); ++it) {
 					path = rtp_path + target + *it;
-					if (fexists(path)) return path;
+					if (FileIO::exists(path)) return FileIO::get(path);
 				}
 			}
 		}
 
-		return std::string();
+		throw std::runtime_error("file not found");
 	}
 
 	////////////////////////////////////////////////////////////
 	/// Find music
 	////////////////////////////////////////////////////////////
-	std::string FindMusic(std::string const& name)
+	std::vector< uint8_t > const& FindMusic(std::string const& name)
 	{
-		std::string target = slasher(name), path = target;
+		std::string target = FileIO::toSlash(name), path = target;
 
-		if (fexists(path)) return path;
-		for(MusicSuffix::const_iterator it = musicSuffix.begin(); it < musicSuffix.end(); ++it) {
+		if (FileIO::exists(path)) return FileIO::get(path);
+		for(MusicSuffix::const_iterator it = musicSuffix_.begin(); it < musicSuffix_.end(); ++it) {
 			path = target + *it;
-			if (fexists(path)) return path;
+			if (FileIO::exists(path)) return FileIO::get(path);
 		}
 		for (int i = 0; i < 3; i++) {
 			if ( rtp_paths[i].empty() ) {
-				std::string rtp_path = slasher(rtp_paths[i]);
+				std::string rtp_path = FileIO::toSlash(rtp_paths[i]);
 				rtp_path += target;
 				path = rtp_path;
-				if (fexists(path)) return path;
-				for(MusicSuffix::const_iterator it = musicSuffix.begin(); it < musicSuffix.end(); ++it) {
+				if (FileIO::exists(path)) return FileIO::get(path);
+				for(MusicSuffix::const_iterator it = musicSuffix_.begin(); it < musicSuffix_.end(); ++it) {
 					path = rtp_path + target + *it;
-					if (fexists(path)) return path;
+					if (FileIO::exists(path)) return FileIO::get(path);
 				}
 			}
 		}
 
-		return std::string();
+		throw std::runtime_error("file not found");
 	}
 
 	////////////////////////////////////////////////////////////
 	/// Find font
 	////////////////////////////////////////////////////////////
-	std::string FindFont(std::string const& name)
+	std::vector< uint8_t > const& FindFont(std::string const& name)
 	{
-		std::string target = slasher(name), path = target;
-		if (fexists(path)) return path;
+		std::string target = FileIO::toSlash(name), path = target;
+		if (FileIO::exists(path)) return FileIO::get(path);
 		path = target + ".ttf";
-		if (fexists(path)) return path;
+		if (FileIO::exists(path)) return FileIO::get(path);
 
 		path = fonts_path + target;
-		if (fexists(path)) return path;
+		if (FileIO::exists(path)) return FileIO::get(path);
 		path = fonts_path + target + ".ttf";
-		if (fexists(path)) return path;
+		if (FileIO::exists(path)) return FileIO::get(path);
 		std::string real_target;
 		real_target = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts", target + " (TrueType)");
 		if (real_target.length() > 0) {
 			path = real_target;
-			if (fexists(path)) return path;
+			if (FileIO::exists(path)) return FileIO::get(path);
 			path = fonts_path; path += real_target;
-			if (fexists(path)) return path;
+			if (FileIO::exists(path)) return FileIO::get(path);
 		}
 
 		real_target = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion\\Fonts", target + " (TrueType)");
 		if (real_target.length() > 0) {
 			path = real_target;
-			if (fexists(path)) return path;
+			if (FileIO::exists(path)) return FileIO::get(path);
 			path = fonts_path; path += real_target;
-			if (fexists(path)) return path;
+			if (FileIO::exists(path)) return FileIO::get(path);
 		}
 
-		return std::string();
+		throw std::runtime_error("file not found");
+	}
+
+	std::vector< uint8_t > const& FindFile(std::string const& name)
+	{
+		if( FileIO::exists(name) ) return FileIO::get(name);
+
+		throw std::runtime_error("file not found");
 	}
 } // namespace FileFinder

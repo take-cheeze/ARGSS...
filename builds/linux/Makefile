@@ -102,12 +102,18 @@ run : $(TARGET)
 profile : run
 	gprof $(BIN_DIR)/$(TARGET) gmon.out > $(TARGET).profile
 
+# it's not $(SRC_DIR)
+$(OBJS_DIR)/rgssad.o : src/rgssad.cxx
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+# nedmalloc wrapper
+$(OBJS_DIR)/malloc_wrapper.o : ../../dependencies/malloc/wrapper.cxx
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
 $(OBJS_DIR)/%.o : $(SRC_DIR)/%.cxx
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 $(OBJS_DIR)/%.o : src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
-$(OBJS_DIR)/malloc_wrapper.o : ../../dependencies/malloc/wrapper.cxx
-	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(TARGET) : make_objs_dir build_soil $(OBJS)
 	$(LD) $(LDFLAGS) $(OBJS) -o $(TARGET) $(LIBS)

@@ -25,6 +25,8 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <cassert>
+
 #include <map>
 
 #include <SDL.h>
@@ -45,13 +47,10 @@ namespace Audio
 		////////////////////////////////////////////////////////////
 		/// Global Variables
 		////////////////////////////////////////////////////////////
-		Mix_Music* bgm;
-		int bgm_volume;
-		bool bgm_playing;
-		Mix_Chunk* bgs;
-		int bgs_channel;
-		Mix_Music* me;
-		bool me_playing;
+		Mix_Music* bgm_; int bgm_volume; bool bgm_playing;
+		Mix_Chunk* bgs_; int bgs_channel;
+		Mix_Music*  me_; bool me_playing;
+
 		std::map< int, Mix_Chunk* > sounds;
 	} // namespace
 
@@ -67,9 +66,9 @@ namespace Audio
 		if (Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, 2, 4096) == -1) {
 			Output::Error("ARGSS couldn't initialize audio.\n%s\n", Mix_GetError());
 		}
-		bgm = NULL;
-		bgs = NULL;
-		me = NULL;
+		bgm_ = NULL;
+		bgs_ = NULL;
+		me_ = NULL;
 		bgm_playing = false;
 		me_playing = false;
 	}
@@ -95,9 +94,10 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	/// ME finish callback
 	////////////////////////////////////////////////////////////
-	void me_finish() {
+	void me_finish()
+	{
 		Mix_VolumeMusic(bgm_volume);
-		Mix_FadeInMusic(bgm, -1, 1000);
+		Mix_FadeInMusic(bgm_, -1, 1000);
 		bgm_playing = true;
 		me_playing = false;
 		Mix_HookMusicFinished(NULL);
@@ -108,22 +108,26 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	void BGM_Play(std::string const& file, int volume, int pitch)
 	{
-		std::string path = FileFinder::FindMusic(file);
-		if ( path.empty() ) {
+		std::vector< uint8_t > const& bin = FileFinder::FindMusic(file);
+		if ( bin.empty() ) {
 			VALUE enoent = rb_const_get(rb_mErrno, rb_intern("ENOENT"));
 			rb_raise(enoent, "No such file or directory - %s", file.c_str());
 		}
-		if (bgm != NULL) Mix_FreeMusic(bgm);
-		bgm = Mix_LoadMUS(path.c_str());
-		if (!bgm) {
+
+		if (bgm_ != NULL) Mix_FreeMusic(bgm_);
+		SDL_RWops* rw = SDL_RWFromConstMem( &(bin[0]), bin.size() ); assert(rw);
+		bgm_ = Mix_LoadMUS_RW(rw);
+		SDL_FreeRW(rw);
+		if (!bgm_) {
 			rb_raise(ARGSS::AError::getID(), "couldn't load %s BGM.\n%s\n", file.c_str(), Mix_GetError());
 		}
+
 		bgm_volume = volume * MIX_MAX_VOLUME / 100;
 		if (me_playing) Mix_HookMusicFinished(me_finish);
 		else {
 			bgm_playing = true;
 			Mix_VolumeMusic(bgm_volume);
-			if (Mix_PlayMusic(bgm, -1) == -1) {
+			if (Mix_PlayMusic(bgm_, -1) == -1) {
 				rb_raise(ARGSS::AError::getID(), "couldn't play %s BGM.\n%s\n", file.c_str(), Mix_GetError());
 			}
 			Mix_HookMusicFinished(NULL);
@@ -145,10 +149,10 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	/// BGM fade
 	////////////////////////////////////////////////////////////
-	void BGM_Fade(int fade)
+	void BGM_Fade(int ms)
 	{
 		if (bgm_playing) {
-			Mix_FadeOutMusic(fade);
+			Mix_FadeOutMusic(ms);
 			bgm_playing = false;
 		}
 		Mix_HookMusicFinished(NULL);
@@ -159,17 +163,20 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	void BGS_Play(std::string const& file, int volume, int pitch)
 	{
-		std::string path = FileFinder::FindMusic(file);
-		if ( path.empty() ) {
+		std::vector< uint8_t > const& bin = FileFinder::FindMusic(file);
+		if ( bin.empty() ) {
 			VALUE enoent = rb_const_get(rb_mErrno, rb_intern("ENOENT"));
 			rb_raise(enoent, "No such file or directory - %s", file.c_str());
 		}
-		if (bgs != NULL) Mix_FreeChunk(bgs);
-		bgs = Mix_LoadWAV(path.c_str());
-		if (!bgs) {
+
+		if (bgs_ != NULL) Mix_FreeChunk(bgs_);
+		SDL_RWops* rw = SDL_RWFromConstMem( &(bin[0]), bin.size() ); assert(rw);
+		bgs_ = Mix_LoadWAV_RW(rw, 1);
+		if (!bgs_) {
 			rb_raise(ARGSS::AError::getID(), "couldn't load %s BGS.\n%s\n", file.c_str(), Mix_GetError());
 		}
-		bgs_channel = Mix_PlayChannel(-1, bgs, -1);
+
+		bgs_channel = Mix_PlayChannel(-1, bgs_, -1);
 		Mix_Volume(bgs_channel, volume * MIX_MAX_VOLUME / 100);
 		if (bgs_channel == -1) {
 			rb_raise(ARGSS::AError::getID(), "couldn't play %s BGS.\n%s\n", file.c_str(), Mix_GetError());
@@ -187,9 +194,9 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	/// BGS fade
 	////////////////////////////////////////////////////////////
-	void BGS_Fade(int fade)
+	void BGS_Fade(int ms)
 	{
-		Mix_FadeOutChannel(bgs_channel, fade);
+		Mix_FadeOutChannel(bgs_channel, ms);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -197,18 +204,22 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	void ME_Play(std::string const& file, int volume, int pitch)
 	{
-		std::string path = FileFinder::FindMusic(file);
-		if ( path.empty() ) {
+		std::vector< uint8_t > const& bin = FileFinder::FindMusic(file);
+		if ( bin.empty() ) {
 			VALUE enoent = rb_const_get(rb_mErrno, rb_intern("ENOENT"));
 			rb_raise(enoent, "No such file or directory - %s", file.c_str());
 		}
-		if (me != NULL) Mix_FreeMusic(me);
-		me = Mix_LoadMUS(path.c_str());
-		if (!me) {
+
+		if (me_ != NULL) Mix_FreeMusic(me_);
+		SDL_RWops* rw = SDL_RWFromConstMem( &(bin[0]), bin.size() ); assert(rw);
+		me_ = Mix_LoadMUS_RW(rw);
+		SDL_FreeRW(rw);
+		if (!me_) {
 			rb_raise(ARGSS::AError::getID(), "couldn't load %s ME.\n%s\n", file.c_str(), Mix_GetError());
 		}
+
 		Mix_VolumeMusic(volume * MIX_MAX_VOLUME / 100);
-		if (Mix_PlayMusic(me, 1) == -1) {
+		if (Mix_PlayMusic(me_, 1) == -1) {
 			rb_raise(ARGSS::AError::getID(), "couldn't play %s ME.\n%s\n", file.c_str(), Mix_GetError());
 		}
 		me_playing = true;
@@ -232,10 +243,10 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	/// ME fade
 	////////////////////////////////////////////////////////////
-	void ME_Fade(int fade)
+	void ME_Fade(int ms)
 	{
 		if (me_playing) {
-			Mix_FadeOutMusic(fade);
+			Mix_FadeOutMusic(ms);
 			me_playing = false;
 		}
 	}
@@ -245,7 +256,6 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	void SE_Play(std::string const& file, int volume, int pitch)
 	{
-		;
 		for(std::map< int, Mix_Chunk* >::iterator it = sounds.begin(); it != sounds.end(); ++it) {
 			if (!Mix_Playing(it->first)) {
 				Mix_FreeChunk(it->second);
@@ -254,15 +264,18 @@ namespace Audio
 		}
 		if (sounds.size() >= 7) return;
 
-		std::string path = FileFinder::FindMusic(file);
-		if ( path.empty() ) {
+		std::vector< uint8_t > const& bin = FileFinder::FindMusic(file);
+		if ( bin.empty() ) {
 			VALUE enoent = rb_const_get(rb_mErrno, rb_intern("ENOENT"));
 			rb_raise(enoent, "No such file or directory - %s", file.c_str());
 		}
-		Mix_Chunk* sound = Mix_LoadWAV(path.c_str());
+
+		SDL_RWops* rw = SDL_RWFromConstMem( &(bin[0]), bin.size() ); assert(rw);
+		Mix_Chunk* sound = Mix_LoadWAV_RW(rw, 1);
 		if (!sound) {
 			rb_raise(ARGSS::AError::getID(), "couldn't load %s SE.\n%s\n", file.c_str(), Mix_GetError());
 		}
+
 		int channel = Mix_PlayChannel(-1, sound, 0);
 		Mix_Volume(channel, volume * MIX_MAX_VOLUME / 100);
 		if (channel == -1) {

@@ -41,13 +41,13 @@ namespace Audio
 
 	void BGM_Play(std::string const& file, int volume, int pitch);
 	void BGM_Stop();
-	void BGM_Fade(int fade);
+	void BGM_Fade(int ms);
 	void BGS_Play(std::string const& file, int volume, int pitch);
 	void BGS_Stop();
-	void BGS_Fade(int fade);
+	void BGS_Fade(int ms);
 	void ME_Play(std::string const& file, int volume, int pitch);
 	void ME_Stop();
-	void ME_Fade(int fade);
+	void ME_Fade(int ms);
 	void SE_Play(std::string const& file, int volume, int pitch);
 	void SE_Stop();
 } // namespace Audio

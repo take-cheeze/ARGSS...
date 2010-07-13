@@ -58,15 +58,18 @@ Bitmap::Bitmap(int iwidth, int iheight)
 }
 Bitmap::Bitmap(VALUE iid, std::string const& filename)
 {
-	std::string path = FileFinder::FindImage(filename);
-	if ( path.empty() ) {
+	std::vector< uint8_t > const& bin = FileFinder::FindImage(filename);
+	if ( bin.empty() ) {
 		return;
 		VALUE enoent = rb_const_get(rb_mErrno, rb_intern("ENOENT"));
 		rb_raise(enoent, "No such file or directory - %s", filename.c_str());
 	}
 
 	int rwidth, rheight, channels;
-	unsigned char* load_pixels = SOIL_load_image(path.c_str(), &rwidth, &rheight, &channels, SOIL_LOAD_RGBA);
+	unsigned char* load_pixels = SOIL_load_image_from_memory(
+		reinterpret_cast< unsigned char const* const >( &(bin[0]) ), bin.size(),
+		&rwidth, &rheight, &channels, SOIL_LOAD_RGBA
+	);
 
 	if (!load_pixels) {
 		rb_raise(ARGSS::AError::getID(), "couldn't load %s image.\n%s\n", filename.c_str(), SOIL_last_result());
