@@ -150,11 +150,11 @@ void Plane::draw(long z)
 	while (r_ox > 0) r_ox -= (int)bmpw;
 	while (r_oy > 0) r_oy -= (int)bmph;
 	// glBegin(GL_QUADS);
-		GLfloat coords[] = {
-			0.0f, 0.0f,
-			1.0f, 0.0f,
-			1.0f, 1.0f,
-			0.0f, 1.0f,
+		GLfloat coords[4][2] = {
+			{ 0.0f, 0.0f, },
+			{ 1.0f, 0.0f, },
+			{ 1.0f, 1.0f, },
+			{ 0.0f, 1.0f, },
 		};
 		GLfloat vertexes[4][2];
 		glEnableClientState(GL_VERTEX_ARRAY);

@@ -70,10 +70,10 @@ public:
 	void setPriorities(VALUE npriorities);
 	bool getVisible() const { return visible; }
 	void setVisible(bool nvisible) { visible = nvisible; }
-	int getOx() const { return ox; }
-	int getOy() const { return oy; }
-	void setOx(int nox) { ox = nox; }
-	void setOy(int noy) { oy = noy; }
+	int getOx() const { return ox_; }
+	int getOy() const { return oy_; }
+	void setOx(int nox) { ox_ = nox; }
+	void setOy(int noy) { oy_ = noy; }
 private:
 	VALUE id;
 	VALUE viewport;
@@ -83,8 +83,8 @@ private:
 	VALUE flash_data;
 	VALUE priorities;
 	bool visible;
-	int ox;
-	int oy;
+	int ox_;
+	int oy_;
 	int autotile_frame;
 	int autotile_time;
 

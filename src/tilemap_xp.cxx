@@ -38,15 +38,42 @@
 ////////////////////////////////////////////////////////////
 /// Static Variables
 ////////////////////////////////////////////////////////////
-int Tilemap::autotiles_id[6][8][4];
+int Tilemap::autotiles_id[6][8][4] =
+{
+	{
+		{ 26, 27, 32, 33, }, {  4, 27, 32, 33, }, { 26,  5, 32, 33, }, {  4,  5, 32, 33, },
+		{ 26, 27, 32, 11, }, {  4, 27, 32, 11, }, { 26,  5, 32, 11, }, {  4,  5, 32, 11, },
+	}, {
+		{ 26, 27, 10, 33, }, {  4, 27, 10, 33, }, { 26,  5, 10, 33, }, {  4,  5, 10, 33, },
+		{ 26, 27, 10, 11, }, {  4, 27, 10, 11, }, { 26,  5, 10, 11, }, {  4,  5, 10, 11, },
+	}, {
+		{ 24, 25, 30, 31, }, { 24,  5, 30, 31, }, { 24, 25, 30, 11, }, { 24,  5, 30, 11, },
+		{ 14, 15, 20, 21, }, { 14, 15, 20, 11, }, { 14, 15, 10, 21, }, { 14, 15, 10, 11, },
+	}, {
+		{ 28, 29, 34, 35, }, { 28, 29, 10, 35, }, {  4, 29, 34, 35, }, {  4, 29, 10, 35, },
+		{ 38, 39, 44, 45, }, {  4, 39, 44, 45, }, { 38,  5, 44, 45, }, {  4,  5, 44, 45, },
+	}, {
+		{ 24, 29, 30, 35, }, { 14, 15, 44, 45, }, { 12, 13, 18, 19, }, { 12, 13, 18, 11, },
+		{ 16, 17, 22, 23, }, { 16, 17, 10, 23, }, { 40, 41, 46, 47, }, {  4, 41, 46, 47, },
+	}, {
+		{ 36, 37, 42, 43, }, { 36,  5, 42, 43, }, { 12, 17, 18, 23, }, { 12, 13, 42, 43, },
+		{ 36, 41, 42, 47, }, { 16, 17, 46, 47, }, { 12, 17, 42, 47, }, {  0,  1,  6,  7, },
+	},
+};
+
+namespace
+{
+	int const TILE_SIZE = 32;
+}
 
 ////////////////////////////////////////////////////////////
 /// Class Init
 ////////////////////////////////////////////////////////////
 void Tilemap::Init()
 {
-	int temp[192] = { 26, 27, 32, 33,  4, 27, 32, 33, 26,  5, 32, 33,  4,  5, 32, 33,
-					  26, 27, 32, 11,  4, 27, 32, 11, 26,  5, 32, 11,  4,  5, 32, 11,
+/*
+	int temp[192] = { 26, 27, TILE_SIZE, 33,  4, 27, TILE_SIZE, 33, 26,  5, TILE_SIZE, 33,  4,  5, TILE_SIZE, 33,
+					  26, 27, TILE_SIZE, 11,  4, 27, TILE_SIZE, 11, 26,  5, TILE_SIZE, 11,  4,  5, TILE_SIZE, 11,
 					  26, 27, 10, 33,  4, 27, 10, 33, 26,  5, 10, 33,  4,  5, 10, 33,
 					  26, 27, 10, 11,  4, 27, 10, 11, 26,  5, 10, 11,  4,  5, 10, 11,
 					  24, 25, 30, 31, 24,  5, 30, 31, 24, 25, 30, 11, 24,  5, 30, 11,
@@ -58,6 +85,7 @@ void Tilemap::Init()
 					  36, 37, 42, 43, 36,  5, 42, 43, 12, 17, 18, 23, 12, 13, 42, 43,
 					  36, 41, 42, 47, 16, 17, 46, 47, 12, 17, 42, 47,  0,  1,  6,  7};
 	memcpy(autotiles_id, temp, 192 * sizeof(int)); 
+ */
 }
 
 ////////////////////////////////////////////////////////////
@@ -72,8 +100,8 @@ Tilemap::Tilemap(VALUE iid)
 , flash_data(Qnil)
 , priorities(Qnil)
 , visible(true)
-, ox(0)
-, oy(0)
+, ox_(0)
+, oy_(0)
 , autotile_frame(0)
 , autotile_time(0)
 {
@@ -139,13 +167,13 @@ void Tilemap::Update()
 ////////////////////////////////////////////////////////////
 void Tilemap::RefreshBitmaps()
 {
-	std::map< VALUE, std::map< int, std::map< int, boost::shared_ptr< Bitmap > > > >::iterator it1_autotiles_cache;
-	std::map< int, std::map< int, boost::shared_ptr< Bitmap > > >::iterator it2_autotiles_cache;
-	std::map< int, boost::shared_ptr< Bitmap > >::iterator it3_autotiles_cache;
-	for (it1_autotiles_cache = autotiles_cache.begin(); it1_autotiles_cache != autotiles_cache.end(); it1_autotiles_cache++) {
-		for (it2_autotiles_cache = it1_autotiles_cache->second.begin(); it2_autotiles_cache != it1_autotiles_cache->second.end(); it2_autotiles_cache++) {
-			for (it3_autotiles_cache = it2_autotiles_cache->second.begin(); it3_autotiles_cache != it2_autotiles_cache->second.end(); it3_autotiles_cache++) {
-				it3_autotiles_cache->second->Changed();
+	std::map< VALUE, std::map< int, std::map< int, boost::shared_ptr< Bitmap > > > >::iterator it1;
+	std::map< int, std::map< int, boost::shared_ptr< Bitmap > > >::iterator it2;
+	std::map< int, boost::shared_ptr< Bitmap > >::iterator it3;
+	for (it1 = autotiles_cache.begin(); it1 != autotiles_cache.end(); it1++) {
+		for (it2 = it1->second.begin(); it2 != it1->second.end(); it2++) {
+			for (it3 = it2->second.begin(); it3 != it2->second.end(); it3++) {
+				it3->second->Changed();
 			}
 		}
 	}
@@ -187,30 +215,40 @@ void Tilemap::draw(long z_level)
 
 	glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
-	int tiles_x = (int)ceil(Player::getWidth() / 32.0);
-	int tiles_y = (int)ceil(Player::getHeight() / 32.0);
+	int tiles_x = (int)std::ceil(Player::getWidth () / double(TILE_SIZE));
+	int tiles_y = (int)std::ceil(Player::getHeight() / double(TILE_SIZE));
 
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	for (int z = 0; z < layers; z++) {
 		for (int y = 0; y <= tiles_y; y++) {
 			for (int x = 0; x <= tiles_x; x++) {
-				int map_x = ox / 32 + x;
-				int map_y = oy / 32 + y;
+				int map_x = ox_ / TILE_SIZE + x;
+				int map_y = oy_ / TILE_SIZE + y;
 
 				if (map_x >= width || map_y >= height) continue;
 
-				TileData tile = data_cache[map_x][map_y][z];
+				TileData const& tile = data_cache[map_x][map_y][z];
 
 				int tile_z;
 				if (tile.priority == 0) tile_z = 0;
 				else {
-					tile_z = tile.priority * 32 + y * 32 + z * 32;
-					if (map_y == 0 && tile.priority == 1) tile_z += 32;
+					tile_z = tile.priority * TILE_SIZE + y * TILE_SIZE + z * TILE_SIZE;
+					if (map_y == 0 && tile.priority == 1) tile_z += TILE_SIZE;
 				}
 
-				if (tile_z == z_level) {
-					float dst_x = (float)(x * 32 - ox % 32);
-					float dst_y = (float)(y * 32 - oy % 32);
-					if (tile.id < 384 && tile.id != 0) {
+				if( (tile_z == z_level) && (tile.id != 0) ) {
+					float dst_x = (float)(x * TILE_SIZE - ox_ % TILE_SIZE);
+					float dst_y = (float)(y * TILE_SIZE - oy_ % TILE_SIZE);
+					GLfloat texCoords[4][2];
+					GLfloat vertexes[4][2];
+
+					vertexes[0][0] = dst_x; vertexes[0][1] = dst_y;
+					vertexes[1][0] = dst_x + TILE_SIZE; vertexes[1][1] = dst_y;
+					vertexes[2][0] = dst_x + TILE_SIZE; vertexes[2][1] = dst_y + TILE_SIZE;
+					vertexes[3][0] = dst_x; vertexes[3][1] = dst_y + TILE_SIZE;
+
+					if(tile.id < 384) {
 						VALUE bitmap_id = rb_ary_entry(rb_iv_get(autotiles, "@autotiles"), tile.id / 48 - 1);
 						if (Bitmap::IsDisposed(bitmap_id)) continue;
 						Bitmap& autotile_bitmap = Bitmap::get(bitmap_id);
@@ -220,7 +258,7 @@ void Tilemap::draw(long z_level)
 						if (autotiles_cache.count(bitmap_id) == 0 ||
 								autotiles_cache[bitmap_id].count(tile_id) == 0 ||
 								autotiles_cache[bitmap_id][tile_id].count(frame) == 0) {
-							autotiles_cache[bitmap_id][tile_id][frame] = boost::shared_ptr< Bitmap >( new Bitmap(32, 32) );
+							autotiles_cache[bitmap_id][tile_id][frame] = boost::shared_ptr< Bitmap >( new Bitmap(TILE_SIZE, TILE_SIZE) );
 							int* tiles = autotiles_id[tile_id >> 3][tile_id & 7];
 							for (int i = 0; i < 4; i++) {
 								Rect rect(((tiles[i] % 6) << 4) + frame * 96, (tiles[i] / 6) << 4, 16, 16);
@@ -235,32 +273,33 @@ void Tilemap::draw(long z_level)
 						}
 						autotiles_cache[bitmap_id][tile_id][frame]->BindBitmap();
 
-						glBegin(GL_TRIANGLE_FAN); // GL_QUADS);
-							glTexCoord2f(0.0f, 0.0f); glVertex2f(dst_x, dst_y);
-							glTexCoord2f(1.0f, 0.0f); glVertex2f(dst_x + 32.0f, dst_y);
-							glTexCoord2f(1.0f, 1.0f); glVertex2f(dst_x + 32.0f, dst_y + 32.0f);
-							glTexCoord2f(0.0f, 1.0f); glVertex2f(dst_x, dst_y + 32.0f);
-						glEnd();
-					} else if (tile.id != 0) {
-						float src_x = (float)((tile.id - 384) % 8 * 32);
-						float src_y = (float)((tile.id - 384) / 8 * 32);
+						texCoords[0][0] = 0.f; texCoords[0][1] = 0.f;
+						texCoords[1][0] = 1.f; texCoords[1][1] = 0.f;
+						texCoords[2][0] = 1.f; texCoords[2][1] = 1.f;
+						texCoords[3][0] = 0.f; texCoords[3][1] = 1.f;
+					} else {
+						float src_x = (float)((tile.id - 384) % 8 * TILE_SIZE);
+						float src_y = (float)((tile.id - 384) / 8 * TILE_SIZE);
 
 						Bitmap::get(tileset).BindBitmap();
 
 						float bmpw = (float)Bitmap::get(tileset).getWidth();
 						float bmph = (float)Bitmap::get(tileset).getHeight();
 
-						glBegin(GL_TRIANGLE_FAN); // GL_QUADS);
-							glTexCoord2f(src_x / bmpw, src_y / bmph);					   glVertex2f(dst_x, dst_y);
-							glTexCoord2f((src_x + 32.0f) / bmpw, src_y / bmph); 		   glVertex2f(dst_x + 32.0f, dst_y);
-							glTexCoord2f((src_x + 32.0f) / bmpw, (src_y + 32.0f) / bmph);  glVertex2f(dst_x + 32.0f, dst_y + 32.0f);
-							glTexCoord2f(src_x / bmpw, (src_y + 32.0f) / bmph);			   glVertex2f(dst_x, dst_y + 32.0f);
-						glEnd();
+						texCoords[0][0] = src_x / bmpw; texCoords[0][1] = src_y / bmph;
+						texCoords[1][0] = (src_x + TILE_SIZE) / bmpw; texCoords[1][1] = src_y / bmph;
+						texCoords[2][0] = (src_x + TILE_SIZE) / bmpw; texCoords[2][1] = (src_y + TILE_SIZE) / bmph;
+						texCoords[3][0] = src_x / bmpw; texCoords[3][1] = (src_y + TILE_SIZE) / bmph;
 					}
+					glVertexPointer(2, GL_FLOAT, 0, vertexes);
+					glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
+					glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 				}
 			}
 		}
 	}
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	glDisable(GL_SCISSOR_TEST);
 }
@@ -288,7 +327,7 @@ void Tilemap::RefreshData()
 	int width = NUM2INT(rb_iv_get(map_data, "@xsize"));
 	int height = NUM2INT(rb_iv_get(map_data, "@ysize"));
 	int layers = NUM2INT(rb_iv_get(map_data, "@zsize"));
-	
+
 	VALUE map_data_array = rb_iv_get(map_data, "@data");
 	VALUE priorities_array = rb_iv_get(priorities, "@data");
 
@@ -313,21 +352,17 @@ void Tilemap::RefreshData()
 void Tilemap::setViewport(VALUE nviewport)
 {
 	if (viewport != nviewport) {
-		if ( ! NIL_P(viewport) ) {
-			Viewport::get(viewport).RemoveZObj(id);
-		}
-		else {
-			Graphics::RemoveZObj(id);
-		}
+		if ( ! NIL_P(viewport) ) Viewport::get(viewport).RemoveZObj(id);
+		else Graphics::RemoveZObj(id);
+
 		int height = NUM2INT(rb_iv_get(map_data, "@ysize"));
 		if ( ! NIL_P(nviewport) ) {
 			for (int i = 0; i < height + 5; i++) {
-				Viewport::get(nviewport).RegisterZObj(i * 32, id, true);
+				Viewport::get(nviewport).RegisterZObj(i * TILE_SIZE, id, true);
 			}
-		}
-		else {
+		} else {
 			for (int i = 0; i < height + 5; i++) {
-				Graphics::RegisterZObj(i * 32, id, true);
+				Graphics::RegisterZObj(i * TILE_SIZE, id, true);
 			}
 		}
 	}
@@ -344,12 +379,11 @@ void Tilemap::setMapData(VALUE nmap_data)
 			int height = NUM2INT(rb_iv_get(nmap_data, "@ysize"));
 			if ( ! NIL_P(viewport) ) {
 				for (int i = 0; i < height + 8; i++) {
-					Viewport::get(viewport).RegisterZObj(i * 32, id, true);
+					Viewport::get(viewport).RegisterZObj(i * TILE_SIZE, id, true);
 				}
-			}
-			else {
+			} else {
 				for (int i = 0; i < height + 8; i++) {
-					Graphics::RegisterZObj(i * 32, id, true);
+					Graphics::RegisterZObj(i * TILE_SIZE, id, true);
 				}
 			}
 		}
