@@ -33,8 +33,11 @@
 ////////////////////////////////////////////////////////////
 /// Cap tone value between 0 and 255
 ////////////////////////////////////////////////////////////
-double CapToneValue(double v) {
-	return (v > 255) ? 255 : (v < -255) ? -255 : v;
+double CapToneValue(double v, int min = -255, int max = 255) {
+	return
+		(v > max) ? max :
+		(v < min) ? min :
+		v;
 }
 
 namespace ARGSS
@@ -59,12 +62,8 @@ namespace ARGSS
 			rb_iv_set(self, "@red", rb_float_new(CapToneValue(NUM2DBL(argv[0]))));
 			rb_iv_set(self, "@green", rb_float_new(CapToneValue(NUM2DBL(argv[1]))));
 			rb_iv_set(self, "@blue", rb_float_new(CapToneValue(NUM2DBL(argv[2]))));
-			if (argc == 4) {
-				rb_iv_set(self, "@gray", rb_float_new(CapToneValue(NUM2DBL(argv[3]))));
-			}
-			else {
-				rb_iv_set(self, "@gray", rb_float_new(0));
-			}
+			if (argc == 4) rb_iv_set( self, "@gray", rb_float_new( CapToneValue(NUM2DBL(argv[3]), 0) ) );
+			else rb_iv_set(self, "@gray", rb_float_new(0));
 			return self;
 		}
 		VALUE rset(int argc, VALUE *argv, VALUE self) {
@@ -73,12 +72,9 @@ namespace ARGSS
 			rb_iv_set(self, "@red", rb_float_new(CapToneValue(NUM2DBL(argv[0]))));
 			rb_iv_set(self, "@green", rb_float_new(CapToneValue(NUM2DBL(argv[1]))));
 			rb_iv_set(self, "@blue", rb_float_new(CapToneValue(NUM2DBL(argv[2]))));
-			if (argc == 4) {
-				rb_iv_set(self, "@gray", rb_float_new(CapToneValue(NUM2DBL(argv[3]))));
-			}
-			else {
-				rb_iv_set(self, "@gray", rb_float_new(255));
-			}
+			if (argc == 4) rb_iv_set(self, "@gray", rb_float_new( CapToneValue(NUM2DBL(argv[3]), 0) ) );
+			else rb_iv_set(self, "@gray", rb_float_new(255));
+
 			return self;
 		}
 		VALUE rred(VALUE self) {
@@ -103,7 +99,7 @@ namespace ARGSS
 			return rb_iv_get(self, "@gray");
 		}
 		VALUE rgrayE(VALUE self, VALUE g) {
-			return rb_iv_set(self, "@gray", rb_float_new(CapToneValue(NUM2DBL(g))));
+			return rb_iv_set(self, "@gray", rb_float_new(CapToneValue(NUM2DBL(g), 0)));
 		}
 		VALUE rinspect(VALUE self) {
 			std::string str = ( boost::format("(%f, %f, %f, %f)")
@@ -150,11 +146,13 @@ namespace ARGSS
 		////////////////////////////////////////////////////////////
 		/// ARGSS Tone new ruby instance
 		////////////////////////////////////////////////////////////
-		VALUE New(double r, double g, double b, double gray) {
+		VALUE New(double r, double g, double b, double gray)
+		{
 			VALUE args[4] = {rb_float_new(r), rb_float_new(g), rb_float_new(b), rb_float_new(gray)};
 			return rb_class_new_instance(4, args, id);
 		}
-		VALUE New() {
+		VALUE New()
+		{
 			VALUE args[4] = {rb_float_new(0), rb_float_new(0), rb_float_new(0), rb_float_new(0)};
 			return rb_class_new_instance(4, args, id);
 		}

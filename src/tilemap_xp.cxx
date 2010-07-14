@@ -211,36 +211,36 @@ void Tilemap::draw(long z_level)
 					float dst_x = (float)(x * 32 - ox % 32);
 					float dst_y = (float)(y * 32 - oy % 32);
 					if (tile.id < 384 && tile.id != 0) {
-							VALUE bitmap_id = rb_ary_entry(rb_iv_get(autotiles, "@autotiles"), tile.id / 48 - 1);
-							if (Bitmap::IsDisposed(bitmap_id)) continue;
-							Bitmap& autotile_bitmap = Bitmap::get(bitmap_id);
-							int tile_id = tile.id % 48;
-							int frame = autotile_frame % (autotile_bitmap.getWidth() / 96);
+						VALUE bitmap_id = rb_ary_entry(rb_iv_get(autotiles, "@autotiles"), tile.id / 48 - 1);
+						if (Bitmap::IsDisposed(bitmap_id)) continue;
+						Bitmap& autotile_bitmap = Bitmap::get(bitmap_id);
+						int tile_id = tile.id % 48;
+						int frame = autotile_frame % (autotile_bitmap.getWidth() / 96);
 
-							if (autotiles_cache.count(bitmap_id) == 0 ||
-									autotiles_cache[bitmap_id].count(tile_id) == 0 ||
-									autotiles_cache[bitmap_id][tile_id].count(frame) == 0) {
-								autotiles_cache[bitmap_id][tile_id][frame] = boost::shared_ptr< Bitmap >( new Bitmap(32, 32) );
-								int* tiles = autotiles_id[tile_id >> 3][tile_id & 7];
-								for (int i = 0; i < 4; i++) {
-									Rect rect(((tiles[i] % 6) << 4) + frame * 96, (tiles[i] / 6) << 4, 16, 16);
-									autotiles_cache[bitmap_id][tile_id][frame]->Blit((i % 2) << 4, (i / 2) << 4, autotile_bitmap, rect, 255);
-								}
-								glPushMatrix();
-
-								autotiles_cache[bitmap_id][tile_id][frame]->Refresh();
-
-								glMatrixMode(GL_MODELVIEW);
-								glPopMatrix();
+						if (autotiles_cache.count(bitmap_id) == 0 ||
+								autotiles_cache[bitmap_id].count(tile_id) == 0 ||
+								autotiles_cache[bitmap_id][tile_id].count(frame) == 0) {
+							autotiles_cache[bitmap_id][tile_id][frame] = boost::shared_ptr< Bitmap >( new Bitmap(32, 32) );
+							int* tiles = autotiles_id[tile_id >> 3][tile_id & 7];
+							for (int i = 0; i < 4; i++) {
+								Rect rect(((tiles[i] % 6) << 4) + frame * 96, (tiles[i] / 6) << 4, 16, 16);
+								autotiles_cache[bitmap_id][tile_id][frame]->Blit((i % 2) << 4, (i / 2) << 4, autotile_bitmap, rect, 255);
 							}
-							autotiles_cache[bitmap_id][tile_id][frame]->BindBitmap();
+							glPushMatrix();
 
-							glBegin(GL_TRIANGLE_FAN); // GL_QUADS);
-								glTexCoord2f(0.0f, 0.0f); glVertex2f(dst_x, dst_y);
-								glTexCoord2f(1.0f, 0.0f); glVertex2f(dst_x + 32.0f, dst_y);
-								glTexCoord2f(1.0f, 1.0f); glVertex2f(dst_x + 32.0f, dst_y + 32.0f);
-								glTexCoord2f(0.0f, 1.0f); glVertex2f(dst_x, dst_y + 32.0f);
-							glEnd();
+							autotiles_cache[bitmap_id][tile_id][frame]->Refresh();
+
+							glMatrixMode(GL_MODELVIEW);
+							glPopMatrix();
+						}
+						autotiles_cache[bitmap_id][tile_id][frame]->BindBitmap();
+
+						glBegin(GL_TRIANGLE_FAN); // GL_QUADS);
+							glTexCoord2f(0.0f, 0.0f); glVertex2f(dst_x, dst_y);
+							glTexCoord2f(1.0f, 0.0f); glVertex2f(dst_x + 32.0f, dst_y);
+							glTexCoord2f(1.0f, 1.0f); glVertex2f(dst_x + 32.0f, dst_y + 32.0f);
+							glTexCoord2f(0.0f, 1.0f); glVertex2f(dst_x, dst_y + 32.0f);
+						glEnd();
 					} else if (tile.id != 0) {
 						float src_x = (float)((tile.id - 384) % 8 * 32);
 						float src_y = (float)((tile.id - 384) / 8 * 32);
