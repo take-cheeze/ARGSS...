@@ -49,7 +49,7 @@ protected:
 	void init();
 public:
 	RgssAdExtracter(std::string const& name);
-	~RgssAdExtracter() { if(filePointer_) std::fclose(filePointer_); }
+	~RgssAdExtracter() { if(filePointer_) assert( std::fclose(filePointer_) == 0 ); }
 
 	std::vector< uint8_t > const& get(std::string const& name)
 	{

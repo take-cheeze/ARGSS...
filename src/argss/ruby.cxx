@@ -30,8 +30,8 @@
 #include <boost/iostreams/filter/zlib.hpp>
 
 #include <cassert>
+#include <cstdio>
 
-#include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -86,13 +86,10 @@ namespace ARGSS
 		VALUE rload_data(VALUE self, VALUE filename)
 		{
 			std::vector< uint8_t > const& data = FileFinder::FindFile( StringValueCStr(filename) );
-			(void)rb_require("stringio");
-			VALUE strIOargv[] = {
-				rb_str_new( reinterpret_cast< char const* >( &(data[0]) ), data.size() ),
-				rb_str_new_cstr("rb"),
-			};
-			VALUE file = rb_class_instance_methods( sizeof(strIOargv) / sizeof(VALUE), strIOargv, rb_intern("StringIO") );
-			return rb_marshal_load(file);
+
+			// std::cout << StringValueCStr(filename) << " : " << data.size() << std::endl;
+			// std::cout << std::string( reinterpret_cast< char const* >( &(data[0]) ), data.size() ) << std::endl;
+			return rb_marshal_load( rb_str_new( reinterpret_cast< char const* >( &(data[0]) ), data.size() ) );
 /*
 			VALUE file = rb_file_open(StringValuePtr(filename), "rb");
 			VALUE obj = rb_marshal_load(file);
@@ -213,16 +210,6 @@ namespace ARGSS
 					boost::iostreams::copy(in, dst);
 					std::string dstStr = dst.str();
 					VALUE section = rb_str_new( dstStr.c_str(), dstStr.size() );
-
-/*
-					std::cout
-						<< std::setw(4) << i
-							<< " : " << std::setw(8) << RSTRING_LEN(section)
-							<< " : " << RSTRING_PTR( rb_ary_entry(section_arr, 1) )
-						<< std::endl
-						// << RSTRING_PTR(section) << std::endl
-						;
- */
 
 					result = 
 						// rb_eval_string_protect( RSTRING_PTR(section), &error );
