@@ -29,6 +29,7 @@
 #include <cmath>
 #include <cstring>
 
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -149,41 +150,29 @@ void Plane::draw(long z)
 	float tilesy = ceil(recth / bmph) + ceil(r_oy / bmph);
 	while (r_ox > 0) r_ox -= (int)bmpw;
 	while (r_oy > 0) r_oy -= (int)bmph;
-	// glBegin(GL_QUADS);
-		GLfloat coords[4][2] = {
-			{ 0.0f, 0.0f, },
-			{ 1.0f, 0.0f, },
-			{ 1.0f, 1.0f, },
-			{ 0.0f, 1.0f, },
-		};
-		GLfloat vertexes[4][2];
-		glEnableClientState(GL_VERTEX_ARRAY);
-		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-		for (float j = r_oy / bmph; j < tilesy; j++) {
-		for (float i = r_ox / bmpw; i < tilesx; i++) {
-			vertexes[0][0] = i * bmpw; vertexes[0][1] = j * bmph;
-			vertexes[1][0] = (i + 1) * bmpw; vertexes[1][1] = j * bmph;
-			vertexes[2][0] = (i + 1) * bmpw; vertexes[2][1] = (j + 1) * bmph;
-			vertexes[3][0] = i * bmpw; vertexes[3][1] = (j + 1) * bmph;
+	GLfloat coords[4][2] = { {0.f, 0.f}, {1.f, 0.f}, {1.f, 1.f}, {0.f, 1.f}, };
+	GLfloat vertexes[4][2];
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	for (float j = r_oy / bmph; j < tilesy; j++) {
+	for (float i = r_ox / bmpw; i < tilesx; i++) {
+		vertexes[0][0] = i * bmpw; vertexes[0][1] = j * bmph;
+		vertexes[1][0] = (i + 1) * bmpw; vertexes[1][1] = j * bmph;
+		vertexes[2][0] = (i + 1) * bmpw; vertexes[2][1] = (j + 1) * bmph;
+		vertexes[3][0] = i * bmpw; vertexes[3][1] = (j + 1) * bmph;
 
-			glVertexPointer(2, GL_FLOAT, 0, vertexes);
-			glTexCoordPointer(2, GL_FLOAT, 0, coords);
-			glDrawArrays(GL_TRIANGLE_FAN, 0, 4); // GL_QUADS
-/*
-			glTexCoord2f(0.0f, 0.0f);  glVertex2f(i * bmpw, j * bmph);
-			glTexCoord2f(1.0f, 0.0f);  glVertex2f((i + 1) * bmpw, j * bmph);
-			glTexCoord2f(1.0f, 1.0f);  glVertex2f((i + 1) * bmpw, (j + 1) * bmph);
-			glTexCoord2f(0.0f, 1.0f);  glVertex2f(i * bmpw, (j + 1) * bmph);
-*/
-		}
-		}
-		glDisableClientState(GL_VERTEX_ARRAY);
-		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-	// glEnd();
+		glVertexPointer(2, GL_FLOAT, 0, vertexes);
+		glTexCoordPointer(2, GL_FLOAT, 0, coords);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+	}
+	}
+	// std::cout << "plane draw" << std::endl;
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	glDisable(GL_SCISSOR_TEST);
 }
-void Plane::draw(long z, Bitmap* dst_bitmap)
+void Plane::draw(long z, Bitmap const& dst_bitmap)
 {
 }
 

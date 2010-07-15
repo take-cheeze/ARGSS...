@@ -54,55 +54,54 @@ public:
 
 	void RefreshBitmaps();
 	void draw(long z);
-	void draw(long z, Bitmap* dst_bitmap);
+	void draw(long z, Bitmap const& dst_bitmap);
 
 	void Flash(int duration);
-	void Flash(Color color, int duration);
+	void Flash(Color const& color, int duration);
 	void Update();
-	VALUE getRect();
-	void setRect(VALUE nrect);
-	bool getVisible();
-	void setVisible(bool nvisible);
-	int getZ();
+	VALUE getRect() const { return rect_; }
+	void setRect(VALUE nrect) { rect_ = nrect; }
+	bool getVisible() const { return visible_; }
+	void setVisible(bool nvisible) { visible_ = nvisible; }
+	int getZ() const { return z_; }
 	void setZ(int nz);
-	int getOx();
-	void setOx(int nox);
-	int getOy();
-	void setOy(int noy);
-	VALUE getColor();
-	void setColor(VALUE ncolor);
-	VALUE getTone();
-	void setTone(VALUE ntone);
+	int getOx() const { return ox_; }
+	int getOy() const { return oy_; }
+	void setOx(int nox) { ox_ = nox; }
+	void setOy(int noy) { oy_ = noy; }
+	VALUE getColor() const { return color_; }
+	void setColor(VALUE ncolor) { color_ = ncolor; }
+	VALUE getTone() const { return tone_; }
+	void setTone(VALUE ntone) { tone_ = ntone; }
 
 	void RegisterZObj(long z, VALUE id);
 	void RegisterZObj(long z, VALUE id, bool multiz);
 	void RemoveZObj(VALUE id);
 	void UpdateZObj(VALUE id, long z);
 
-	Rect const& getViewportRect() { return dstRect; }
+	Rect const& getViewportRect() { return dstRect_; }
 private:
-	std::list< ZObj > zlist;
-	std::list< ZObj >::iterator it_zlist;
+	std::list< ZObj > zlist_;
 
-	VALUE id;
-	VALUE rect;
-	bool visible;
-	int z;
-	int ox;
-	int oy;
-	VALUE color;
-	VALUE tone;
+	VALUE id_;
+	VALUE rect_;
+	bool visible_;
+	int z_;
+	int ox_;
+	int oy_;
+	VALUE color_;
+	VALUE tone_;
 
-	Color flash_color;
-	int flash_duration;
-	int flash_frame;
-	Color color_viewport;
-	Tone tone_viewport;
-	bool disposing;
+	Color flash_color_;
+	int flash_duration_;
+	int flash_frame_;
+	Color color_viewport_;
+	Tone tone_viewport_;
+	bool disposing_;
 
-	Bitmap* viewport;
+	Bitmap* viewport_;
 
-	Rect dstRect;
+	Rect dstRect_;
 }; // class Viewport
 
 #endif

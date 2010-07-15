@@ -86,10 +86,10 @@ namespace ARGSS
 		VALUE rload_data(VALUE self, VALUE filename)
 		{
 			std::vector< uint8_t > const& data = FileFinder::FindFile( StringValueCStr(filename) );
+			return rb_marshal_load( rb_str_new( reinterpret_cast< char const* >( &(data[0]) ), data.size() ) );
 
 			// std::cout << StringValueCStr(filename) << " : " << data.size() << std::endl;
 			// std::cout << std::string( reinterpret_cast< char const* >( &(data[0]) ), data.size() ) << std::endl;
-			return rb_marshal_load( rb_str_new( reinterpret_cast< char const* >( &(data[0]) ), data.size() ) );
 /*
 			VALUE file = rb_file_open(StringValuePtr(filename), "rb");
 			VALUE obj = rb_marshal_load(file);

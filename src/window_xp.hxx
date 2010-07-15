@@ -49,69 +49,69 @@ public:
 
 	void RefreshBitmaps();
 	void draw(long z);
-	void draw(long z, Bitmap* dst_bitmap);
+	void draw(long z, Bitmap const& dst_bitmap);
 
 	void Update();
-	VALUE getViewport() const { return viewport; }
+	VALUE getViewport() const { return viewport_; }
 	void setViewport(VALUE nviewport);
-	VALUE getWindowskin() const { return windowskin; }
-	void setWindowskin(VALUE nwindowskin) { windowskin = nwindowskin; }
-	VALUE getContents() const { return contents; }
-	void setContents(VALUE ncontents) { contents = ncontents; }
-	bool getStretch() const { return stretch; }
-	void setStretch(bool nstretch) { stretch = nstretch; }
-	VALUE getCursorRect() const { return cursor_rect; }
-	void setCursorRect(VALUE ncursor_rect) { cursor_rect = ncursor_rect; }
-	bool getActive() const { return active; }
-	void setActive(bool nactive) { active = nactive; }
-	bool getVisible() const { return visible; }
-	void setVisible(bool nvisible) { visible = nvisible; }
-	bool getPause() const { return pause; }
-	void setPause(bool npause) { pause = npause; }
-	int getX() const { return x; }
-	void setX(int nx) { x = nx; }
-	int getY() const { return y; }
-	void setY(int ny) { y = ny; }
-	int getWidth() const { return width; }
-	void setWidth(int nwidth) { width = nwidth; }
-	int getHeight() const { return height; }
-	void setHeight(int nheight) { height = nheight; }
-	int getZ() const { return z; }
+	VALUE getWindowskin() const { return windowskin_; }
+	void setWindowskin(VALUE nwindowskin) { windowskin_ = nwindowskin; }
+	VALUE getContents() const { return contents_; }
+	void setContents(VALUE ncontents) { contents_ = ncontents; }
+	bool getStretch() const { return stretch_; }
+	void setStretch(bool nstretch) { stretch_ = nstretch; }
+	VALUE getCursorRect() const { return cursor_rect_; }
+	void setCursorRect(VALUE ncursor_rect) { cursor_rect_ = ncursor_rect; }
+	bool getActive() const { return active_; }
+	void setActive(bool nactive) { active_ = nactive; }
+	bool getVisible() const { return visible_; }
+	void setVisible(bool nvisible) { visible_ = nvisible; }
+	bool getPause() const { return pause_; }
+	void setPause(bool npause) { pause_ = npause; }
+	int getX() const { return x_; }
+	void setX(int nx) { x_ = nx; }
+	int getY() const { return y_; }
+	void setY(int ny) { y_ = ny; }
+	int getWidth() const { return width_; }
+	void setWidth(int nwidth) { width_ = nwidth; }
+	int getHeight() const { return height_; }
+	void setHeight(int nheight) { height_ = nheight; }
+	int getZ() const { return z_; }
 	void setZ(int nz);
-	int getOx() const { return ox; }
-	void setOx(int nox) { ox = nox; }
-	int getOy() const { return oy; }
-	void setOy(int noy) { oy = noy; }
-	int getOpacity() const { return opacity; }
-	void setOpacity(int nopacity) { opacity = nopacity; }
-	int getBackOpacity() const { return back_opacity; }
-	void setBackOpacity(int nback_opacity) { back_opacity = nback_opacity; }
-	int getContentsOpacity() const { return contents_opacity; }
-	void setContentsOpacity(int ncontents_opacity) { contents_opacity = ncontents_opacity; }
+	int getOx() const { return ox_; }
+	void setOx(int nox) { ox_ = nox; }
+	int getOy() const { return oy_; }
+	void setOy(int noy) { oy_ = noy; }
+	int getOpacity() const { return opacity_; }
+	void setOpacity(int nopacity) { opacity_ = nopacity; }
+	int getBackOpacity() const { return back_opacity_; }
+	void setBackOpacity(int nback_opacity) { back_opacity_ = nback_opacity; }
+	int getContentsOpacity() const { return contents_opacity_; }
+	void setContentsOpacity(int ncontents_opacity) { contents_opacity_ = ncontents_opacity; }
 private:
-	VALUE id;
-	VALUE viewport;
-	VALUE windowskin;
-	VALUE contents;
-	bool stretch;
-	VALUE cursor_rect;
-	bool active;
-	bool visible;
-	bool pause;
-	int x;
-	int y;
-	int width;
-	int height;
-	int z;
-	int ox;
-	int oy;
-	int opacity;
-	int back_opacity;
-	int contents_opacity;
+	VALUE id_;
+	VALUE viewport_;
+	VALUE windowskin_;
+	VALUE contents_;
+	bool stretch_;
+	VALUE cursor_rect_;
+	bool active_;
+	bool visible_;
+	bool pause_;
+	int x_;
+	int y_;
+	int width_;
+	int height_;
+	int z_;
+	int ox_;
+	int oy_;
+	int opacity_;
+	int back_opacity_;
+	int contents_opacity_;
 
-	int cursor_frame;
-	int pause_frame;
-	int pause_id;
+	int cursor_frame_;
+	int pause_frame_;
+	int pause_id_;
 }; // class Window
 
 #endif

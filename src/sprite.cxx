@@ -26,6 +26,8 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #include <cassert>
+#include <cstring>
+
 #include <string>
 
 #include <GL/gl.h>
@@ -125,10 +127,10 @@ void Sprite::draw(long z)
 
 	int width = srcRectSprite.width;
 	int height = srcRectSprite.height;
-	if (width <= 0 || height <= 0)
-	if (x < -width || x > Player::getWidth() || y < -height || y > Player::getHeight()) return;
-	if (zoom_x == 0 || zoom_y == 0 || opacity == 0) return;
-	if (flash_duration > 0 && flash_color.red == -1) return;
+	if(width <= 0 || height <= 0)
+	if(x < -width || x > Player::getWidth() || y < -height || y > Player::getHeight()) return;
+	if(zoom_x == 0 || zoom_y == 0 || opacity == 0) return;
+	if(flash_duration > 0 && flash_color.red == -1) return;
 
 	Refresh();
 
@@ -154,7 +156,7 @@ void Sprite::draw(long z)
 
 	glColor4f(1.0f, 1.0f, 1.0f, opacity / 255.0f);
 
-	float corners[4][2] = {{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
+	GLfloat corners[4][2] = {{0.0f, 0.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}, {0.0f, 1.0f}};
 	if (srcRectSprite != sprite_->getRect()) {
 		float rx = (float)srcRectSprite.x / (float)sprite_->getWidth();
 		float ry = (float)srcRectSprite.y / (float)sprite_->getHeight();
@@ -170,14 +172,12 @@ void Sprite::draw(long z)
 		corners[1][0] = 1.0f - corners[1][0]; corners[1][1] = 1.0f - corners[1][1];
 		corners[2][0] = 1.0f - corners[2][0]; corners[2][1] = 1.0f - corners[2][1];
 		corners[3][0] = 1.0f - corners[3][0]; corners[3][1] = 1.0f - corners[3][1];
-	}
-	else if (flipx) {
+	} else if (flipx) {
 		corners[0][0] = 1.0f - corners[0][0];
 		corners[1][0] = 1.0f - corners[1][0];
 		corners[2][0] = 1.0f - corners[2][0];
 		corners[3][0] = 1.0f - corners[3][0];
-	}
-	else if (flipy) {
+	} else if (flipy) {
 		corners[0][1] = 1.0f - corners[0][1];
 		corners[1][1] = 1.0f - corners[1][1];
 		corners[2][1] = 1.0f - corners[2][1];
@@ -187,58 +187,69 @@ void Sprite::draw(long z)
 	glEnable(GL_BLEND);
 	setBlendFunc(blendType_);
 
+	GLfloat texCoords[4][2]; GLfloat vertexes[4][2];
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	if (bush_depth == 0) {
-		glBegin(GL_TRIANGLE_FAN); // GL_QUADS);
-			glTexCoord2f(corners[0][0], corners[0][1]); glVertex2f(0.0f, 0.0f);
-			glTexCoord2f(corners[1][0], corners[1][1]); glVertex2f(width * zoom_x, 0.0f);
-			glTexCoord2f(corners[2][0], corners[2][1]); glVertex2f(width * zoom_x, height * zoom_y);
-			glTexCoord2f(corners[3][0], corners[3][1]); glVertex2f(0.0f, height * zoom_y);
-		glEnd();
+		vertexes[0][0] = 0.f; vertexes[0][1] = 0.f;
+		vertexes[1][0] = width * zoom_x; vertexes[1][1] = 0.f;
+		vertexes[2][0] = width * zoom_x; vertexes[2][1] = height * zoom_y;
+		vertexes[3][0] = 0.f; vertexes[3][1] = height * zoom_y;
+
+		glVertexPointer(2, GL_FLOAT, 0, vertexes);
+		glTexCoordPointer(2, GL_FLOAT, 0, corners);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 	} else {
-		if (flipy) {
-			glBegin(GL_TRIANGLE_FAN); // GL_QUADS);
-				glTexCoord2f(corners[0][0], corners[0][1] - bush_depth / (float)sprite_->getHeight()); 	glVertex2f(0.0f, bush_depth * zoom_y);
-				glTexCoord2f(corners[1][0], corners[1][1] - bush_depth / (float)sprite_->getHeight()); 	glVertex2f(width * zoom_x, bush_depth * zoom_y);
-				glTexCoord2f(corners[2][0], corners[2][1]); 											glVertex2f(width * zoom_x, height * zoom_y);
-				glTexCoord2f(corners[3][0], corners[3][1]); 											glVertex2f(0.0f, height * zoom_y);
-			glEnd();
+		int target;
 
-			glColor4f(1.0f, 1.0f, 1.0f, 0.5f * (opacity / 255.0f));
-			glBegin(GL_TRIANGLE_FAN); // GL_QUADS);
-				glTexCoord2f(corners[0][0], corners[0][1]); 											glVertex2f(0.0f, 0.0f);
-				glTexCoord2f(corners[1][0], corners[1][1]); 											glVertex2f(width * zoom_x, 0.0f);
-				glTexCoord2f(corners[2][0], corners[0][1] - bush_depth / (float)sprite_->getHeight()); 	glVertex2f(width * zoom_x, bush_depth * zoom_y);
-				glTexCoord2f(corners[3][0], corners[1][1] - bush_depth / (float)sprite_->getHeight()); 	glVertex2f(0.0f, bush_depth * zoom_y);
-			glEnd();
-		} else {
-			glBegin(GL_TRIANGLE_FAN); // GL_QUADS);
-				glTexCoord2f(corners[0][0], corners[0][1]); 											glVertex2f(0.0f, 0.0f);
-				glTexCoord2f(corners[1][0], corners[1][1]); 											glVertex2f(width * zoom_x, 0.0f);
-				glTexCoord2f(corners[2][0], corners[2][1] - bush_depth / (float)sprite_->getHeight()); 	glVertex2f(width * zoom_x, (height - bush_depth) * zoom_y);
-				glTexCoord2f(corners[3][0], corners[3][1] - bush_depth / (float)sprite_->getHeight()); 	glVertex2f(0.0f, (height - bush_depth) * zoom_y);
-			glEnd();
+		std::memcpy( vertexes, corners, sizeof(vertexes) );
+		vertexes[0][0] = 0.f; vertexes[0][1] = 0.f;
+		vertexes[1][0] = width * zoom_x; vertexes[1][1] = 0.f;
+		vertexes[2][0] = width * zoom_x; vertexes[2][1] = height * zoom_y;
+		vertexes[3][0] = 0.f; vertexes[3][1] = height * zoom_y;
 
-			glColor4f(1.0f, 1.0f, 1.0f, 0.5f * (opacity / 255.0f));
-			glBegin(GL_TRIANGLE_FAN); // GL_QUADS);
-				glTexCoord2f(corners[0][0], corners[2][1] - bush_depth / (float)sprite_->getHeight()); 	glVertex2f(0.0f, (height - bush_depth) * zoom_y);
-				glTexCoord2f(corners[1][0], corners[3][1] - bush_depth / (float)sprite_->getHeight()); 	glVertex2f(width * zoom_x, (height - bush_depth) * zoom_y);
-				glTexCoord2f(corners[2][0], corners[2][1]);												glVertex2f(width * zoom_x, height * zoom_y);
-				glTexCoord2f(corners[3][0], corners[3][1]); 											glVertex2f(0.0f, height * zoom_y);
-			glEnd();
-		}
+		target = flipy ? 0 : 2;
+		texCoords[target + 0][1] -= bush_depth / (float)sprite_->getHeight(); vertexes[target + 0][1] += bush_depth * zoom_y;
+		texCoords[target + 1][1] -= bush_depth / (float)sprite_->getHeight(); vertexes[target + 1][1] += bush_depth * zoom_y;
+
+		glVertexPointer(2, GL_FLOAT, 0, vertexes);
+		glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+
+		glColor4f(1.0f, 1.0f, 1.0f, 0.5f * (opacity / 255.0f));
+
+		std::memcpy( vertexes, corners, sizeof(vertexes) );
+		vertexes[0][0] = 0.f; vertexes[0][1] = 0.f;
+		vertexes[1][0] = width * zoom_x; vertexes[1][1] = 0.f;
+		vertexes[2][0] = width * zoom_x; vertexes[2][1] = height * zoom_y;
+		vertexes[3][0] = 0.f; vertexes[3][1] = height * zoom_y;
+
+		target = flipy ? 2 : 0;
+		texCoords[target + 0][1] -= bush_depth / (float)sprite_->getHeight(); vertexes[target + 0][1] += bush_depth * zoom_y;
+		texCoords[target + 1][1] -= bush_depth / (float)sprite_->getHeight(); vertexes[target + 1][1] += bush_depth * zoom_y;
+
+		glVertexPointer(2, GL_FLOAT, 0, vertexes);
+		glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 	}
 
 	if (flash_duration > 0) {
 		glBindTexture(GL_TEXTURE_2D, flash_texture);
 		GLfloat alpha = ((float)flash_color.alpha / 255.0f) * (1.0f - flash_frame / (float)flash_duration);
 		glColor4f((float)flash_color.red / 255.0f, (GLfloat)flash_color.green / 255.0f, (float)flash_color.blue / 255.0f, alpha);
-		glBegin(GL_TRIANGLE_FAN); // GL_QUADS);
-			glTexCoord2f(corners[0][0], corners[0][1]); glVertex2f(0.0f, 0.0f);
-			glTexCoord2f(corners[1][0], corners[1][1]); glVertex2f(width * zoom_x, 0.0f);
-			glTexCoord2f(corners[2][0], corners[2][1]); glVertex2f(width * zoom_x, height  * zoom_y);
-			glTexCoord2f(corners[3][0], corners[3][1]); glVertex2f(0.0f, height * zoom_y);
-		glEnd();
+
+		vertexes[0][0] = 0.f; vertexes[0][1] = 0.f;
+		vertexes[1][0] = width * zoom_x; vertexes[1][1] = 0.f;
+		vertexes[2][0] = width * zoom_x; vertexes[2][1] = height * zoom_y;
+		vertexes[3][0] = 0.f; vertexes[3][1] = height * zoom_y;
+
+		glVertexPointer(2, GL_FLOAT, 0, vertexes);
+		glTexCoordPointer(2, GL_FLOAT, 0, corners);
+		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 	}
+
+	glDisableClientState(GL_VERTEX_ARRAY);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	glDisable(GL_SCISSOR_TEST);
 	/*if ( !getVisible() ) return;
@@ -340,7 +351,7 @@ void Sprite::draw(long z)
 
 	glDisable(GL_SCISSOR_TEST);*/
 }
-void Sprite::draw(long z, Bitmap* dst_bitmap)
+void Sprite::draw(long z, Bitmap const& dst_bitmap)
 {
 	/*if ( !getVisible() ) return;
 	if (getWidth() <= 0 || getHeight() <= 0) return;

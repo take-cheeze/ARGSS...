@@ -244,14 +244,6 @@ namespace Graphics
 			glVertexPointer(2, GL_SHORT, 0, vertexes);
 			glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 			glDisableClientState(GL_VERTEX_ARRAY);
-/*
-			glBegin(GL_QUADS);
-				glVertex2i(0, 0);
-				glVertex2i(0, Player::getHeight());
-				glVertex2i(Player::getWidth(), Player::getHeight());
-				glVertex2i(Player::getWidth(), 0);
-			glEnd();
- */
 		}
 
 		Player::swapBuffers();

@@ -39,19 +39,19 @@
 /// Constructor
 ////////////////////////////////////////////////////////////
 Viewport::Viewport(VALUE iid)
-: id(iid)
-, rect(rb_iv_get(id, "@rect"))
-, visible(true)
-, z(0)
-, ox(0)
-, oy(0)
-, color(rb_iv_get(id, "@color"))
-, tone(rb_iv_get(id, "@tone"))
-, flash_duration(0)
-, disposing(false)
-, dstRect(Rect(rect))
+: id_(iid)
+, rect_(rb_iv_get(id_, "@rect"))
+, visible_(true)
+, z_(0)
+, ox_(0)
+, oy_(0)
+, color_(rb_iv_get(id_, "@color"))
+, tone_(rb_iv_get(id_, "@tone"))
+, flash_duration_(0)
+, disposing_(false)
+, dstRect_(rect_)
 {
-	Graphics::RegisterZObj(0, id);
+	Graphics::RegisterZObj(0, id_);
 }
 
 ////////////////////////////////////////////////////////////
@@ -88,42 +88,44 @@ Viewport& Viewport::get(VALUE id)
 ////////////////////////////////////////////////////////////
 /// Class Dispose Viewport
 ////////////////////////////////////////////////////////////
-void Viewport::Dispose(VALUE id) {
+void Viewport::Dispose(VALUE id)
+{
 	Graphics::eraseDrawable(id);
-
 	Graphics::RemoveZObj(id);
 }
 
 ////////////////////////////////////////////////////////////
 /// Refresh Bitmaps
 ////////////////////////////////////////////////////////////
-void Viewport::RefreshBitmaps() {
-
+void Viewport::RefreshBitmaps()
+{
 }
 
 ////////////////////////////////////////////////////////////
 /// Draw
 ////////////////////////////////////////////////////////////
-void Viewport::draw(long z) {
-	if (!visible) return;
+void Viewport::draw(long z)
+{
+	if (!visible_) return;
 
-	dstRect = Rect(rect);
+	dstRect_ = Rect(rect_);
 
-	if (dstRect.x < -dstRect.width || dstRect.x > Player::getWidth() || dstRect.y < -dstRect.height || dstRect.y > Player::getHeight()) return;
+	if (dstRect_.x < -dstRect_.width || dstRect_.x > Player::getWidth() || dstRect_.y < -dstRect_.height || dstRect_.y > Player::getHeight()) return;
 
-	for(it_zlist = zlist.begin(); it_zlist != zlist.end(); it_zlist++) {
-		Graphics::getDrawable( it_zlist->getId() ).draw(it_zlist->getZ());
+	for(std::list< ZObj >::const_iterator it = zlist_.begin(); it != zlist_.end(); it++) {
+		Graphics::getDrawable( it->getId() ).draw(it->getZ());
 	}
 }
 
 ////////////////////////////////////////////////////////////
 /// Update
 ////////////////////////////////////////////////////////////
-void Viewport::Update() {
-	if (flash_duration != 0) {
-		flash_frame += 1;
-		if (flash_duration == flash_frame) {
-			flash_duration = 0;
+void Viewport::Update()
+{
+	if (flash_duration_ != 0) {
+		flash_frame_ += 1;
+		if (flash_duration_ == flash_frame_) {
+			flash_duration_ = 0;
 		}
 	}
 }
@@ -131,65 +133,25 @@ void Viewport::Update() {
 ////////////////////////////////////////////////////////////
 /// Flash
 ////////////////////////////////////////////////////////////
-void Viewport::Flash(int duration){
-	flash_color = Color(0, 0, 0, 0);
-	flash_duration = duration;
-	flash_frame = 0;
+void Viewport::Flash(int duration)
+{
+	flash_color_ = Color(0, 0, 0, 0);
+	flash_duration_ = duration;
+	flash_frame_ = 0;
 }
-void Viewport::Flash(Color color, int duration){
-	flash_color = color;
-	flash_duration = duration;
-	flash_frame = 0;
+void Viewport::Flash(Color const& color, int duration)
+{
+	flash_color_ = color;
+	flash_duration_ = duration;
+	flash_frame_ = 0;
 }
 
 ////////////////////////////////////////////////////////////
 /// Properties
 ////////////////////////////////////////////////////////////
-VALUE Viewport::getRect() {
-	return rect;
-}
-void Viewport::setRect(VALUE nrect) {
-	rect = nrect;
-}
-bool Viewport::getVisible() {
-	return visible;
-}
-void Viewport::setVisible(bool nvisible) {
-	visible = nvisible;
-}
-int Viewport::getZ() {
-	return z;
-}
 void Viewport::setZ(int nz) {
-	if (z != nz) Graphics::UpdateZObj(id, nz);
-	z = nz;
-}
-int Viewport::getOx() {
-	return ox;
-}
-void Viewport::setOx(int nox) {
-	ox = nox;
-}
-int Viewport::getOy() {
-	return oy;
-}
-void Viewport::setOy(int noy) {
-	oy = noy;
-}
-VALUE Viewport::getColor() {
-	return color;
-}
-void Viewport::setColor(VALUE ncolor)
-{
-	color = ncolor;
-}
-VALUE Viewport::getTone()
-{
-	return tone;
-}
-void Viewport::setTone(VALUE ntone)
-{
-	tone = ntone;
+	if (z_ != nz) Graphics::UpdateZObj(id_, nz);
+	z_ = nz;
 }
 
 ////////////////////////////////////////////////////////////
@@ -198,21 +160,21 @@ void Viewport::setTone(VALUE ntone)
 void Viewport::RegisterZObj(long z, VALUE id)
 {
 	Graphics::incrementCreation();
-	ZObj zobj(z, Graphics::getCreation(), id);
-	zlist.push_back(zobj);
-	zlist.sort(Graphics::SortZObj);
+	ZObj zobj(z, Graphics::getCreation(), id_);
+	zlist_.push_back(zobj);
+	zlist_.sort(Graphics::SortZObj);
 }
 void Viewport::RegisterZObj(long z, VALUE id, bool multiz)
 {
-	ZObj zobj(z, 999999, id);
-	zlist.push_back(zobj);
-	zlist.sort(Graphics::SortZObj);
+	ZObj zobj(z, 999999, id_);
+	zlist_.push_back(zobj);
+	zlist_.sort(Graphics::SortZObj);
 }
 
 ////////////////////////////////////////////////////////////
 /// Remove ZObj
 ////////////////////////////////////////////////////////////
-struct remove_zobj_id : public std::binary_function<ZObj, ZObj, bool>
+struct remove_zobj_id : public std::binary_function< ZObj, ZObj, bool >
 {
 	remove_zobj_id(VALUE val) : id(val) {}
 	bool operator () (ZObj &obj) const {return obj.getId() == id;}
@@ -220,8 +182,8 @@ struct remove_zobj_id : public std::binary_function<ZObj, ZObj, bool>
 };
 void Viewport::RemoveZObj(VALUE id)
 {
-	if (disposing) return;
-	zlist.remove_if (remove_zobj_id(id));
+	if (disposing_) return;
+	zlist_.remove_if(remove_zobj_id(id));
 }
 
 ////////////////////////////////////////////////////////////
@@ -229,11 +191,11 @@ void Viewport::RemoveZObj(VALUE id)
 ////////////////////////////////////////////////////////////
 void Viewport::UpdateZObj(VALUE id, long z)
 {
-	for(it_zlist = zlist.begin(); it_zlist != zlist.end(); it_zlist++) {
-		if (it_zlist->getId() == id) {
-			it_zlist->setZ(z);
+	for(std::list< ZObj >::iterator it = zlist_.begin(); it != zlist_.end(); it++) {
+		if (it->getId() == id) {
+			it->setZ(z);
 			break;
 		}
 	}
-	zlist.sort(Graphics::SortZObj);
+	zlist_.sort(Graphics::SortZObj);
 }

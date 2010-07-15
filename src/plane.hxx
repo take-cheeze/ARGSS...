@@ -52,7 +52,7 @@ public:
 
 	void RefreshBitmaps();
 	void draw(long z);
-	void draw(long z, Bitmap* dst_bitmap);
+	void draw(long z, Bitmap const& dst_bitmap);
 
 	VALUE getViewport() { return viewport_; }
 	void setViewport(VALUE nviewport);
