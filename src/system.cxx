@@ -27,6 +27,8 @@
 ////////////////////////////////////////////////////////////
 #include <simpleini.h>
 
+#include <boost/array.hpp>
+
 #include "options.hxx"
 #include "output.hxx"
 #include "system.hxx"
@@ -41,7 +43,7 @@ namespace System
 		////////////////////////////////////////////////////////////
 		std::string Title;
 		std::string ScriptsPath;
-		std::string RTPS[3];
+		boost::array< std::string, 3 > RTPS;
 		int Width;
 		int Height;
 	} // namespace

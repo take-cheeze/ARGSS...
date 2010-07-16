@@ -17,6 +17,9 @@ namespace FileIO
 	// exchanges path separater
 	std::string toSlash(std::string const& str);
 	std::string toYen(std::string const& str);
+
+	// returns all filename in rgssad
+	std::vector< std::string > getRgssAdList();
 } // namespace FileIO
 
 #endif

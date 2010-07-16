@@ -28,6 +28,8 @@
 #include <boost/smart_ptr.hpp>
 #include <boost/array.hpp>
 
+#include <cstdlib>
+
 #include <iostream>
 #include <vector>
 #include <stdexcept>
@@ -46,38 +48,42 @@ namespace FileFinder
 		////////////////////////////////////////////////////////////
 		/// Global Variables
 		////////////////////////////////////////////////////////////
-		std::string rtp_paths[3];
+		boost::array< std::string, 4 > searchPath_;
 		std::string fonts_path;
 
+		#if (RPGMAKER == RPGXP)
+			char const* RTP_BASE_PATH = ".wine/drive_c/Program Files/Common Files/Enterbrain/RGSS";
+			char const* REGISTRY_NAME = "SOFTWARE\\Enterbrain\\RGSS\\RTP";
+		#elif (RPGMAKER == RPGVX)
+			char const* RTP_BASE_PATH = ".wine/drive_c/Program Files/Common Files/Enterbrain/RGSS2";
+			char const* REGISTRY_NAME = "SOFTWARE\\Enterbrain\\RGSS2\\RTP";
+		#endif
+
 		typedef boost::array< char const*, 5 > ImageSuffix;
-		typedef boost::array< char const*, 5 > MusicSuffix;
+		typedef boost::array< char const*, 10 > MusicSuffix;
 		typedef boost::array< char const*, 4 >  FontSuffix;
 		ImageSuffix imageSuffix_ = { { ".bmp", ".gif", ".jpg", ".jpeg", ".png", } };
-		MusicSuffix musicSuffix_ = { { ".wav", ".mid", ".midi", ".ogg", ".mp3", } };
+		MusicSuffix musicSuffix_ = { { ".wav", ".mid", ".midi", ".ogg", ".mp3", ".WAV", ".MID", ".MIDI", ".OGG", ".MP3", } };
 		 FontSuffix  fontSuffix_ = { { ".ttf", ".otf", ".tfb", ".fnt", } };
 	}
 
-	////////////////////////////////////////////////////////////
-	/// Find image
-	////////////////////////////////////////////////////////////
 	void Init()
 	{
 		FileIO::init();
 
-		for (int i = 0; i < 3; i++) {
+		searchPath_[0].clear(); // current directory
+
+		char const* homePath = std::getenv("HOME");
+		if( homePath ) for(int i = 0; i < 3; i++) {
+			std::string const& rtp = System::getRTP(i);
+			if( !rtp.empty() ) searchPath_[i + 1] = std::string(homePath) + "/" + RTP_BASE_PATH + "/" + rtp + "/";
+		} else for (int i = 0; i < 3; i++) {
 			std::string const& rtp = System::getRTP(i);
 			if (rtp.empty()) continue;
-			if (RPGMAKER == RPGXP) {
-				rtp_paths[i] = Registry::ReadStrValue(HKEY_CURRENT_USER, "SOFTWARE\\Enterbrain\\RGSS\\RTP", rtp);
-				if (rtp_paths[i].size() == 0) {
-					rtp_paths[i] = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, "SOFTWARE\\Enterbrain\\RGSS\\RTP", rtp);
-				}
-			}
-			else if (RPGMAKER == RPGVX) {
-				rtp_paths[i] = Registry::ReadStrValue(HKEY_CURRENT_USER, "SOFTWARE\\Enterbrain\\RGSS2\\RTP", rtp);
-				if (rtp_paths[i].size() == 0) {
-					rtp_paths[i] = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, "SOFTWARE\\Enterbrain\\RGSS2\\RTP", rtp);
-				}
+
+			searchPath_[i + 1] = Registry::ReadStrValue(HKEY_CURRENT_USER, REGISTRY_NAME, rtp);
+			if ( !searchPath_[i + 1].empty() ) {
+				searchPath_[i + 1] = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, REGISTRY_NAME, rtp);
 			}
 		}
 		fonts_path.clear();
@@ -101,26 +107,21 @@ namespace FileFinder
 	////////////////////////////////////////////////////////////
 	std::vector< uint8_t > const& FindImage(std::string const& name)
 	{
-		std::string target = FileIO::toSlash(name), path = target;
+		std::string target = FileIO::toSlash(name);
 
-		if (FileIO::exists(path)) return FileIO::get(path);
-		for(ImageSuffix::const_iterator it = imageSuffix_.begin(); it < imageSuffix_.end(); ++it) {
-			path = target + *it;
-			if (FileIO::exists(path)) return FileIO::get(path);
-		}
-		for (int i = 0; i < 3; i++) {
-			if ( !rtp_paths[i].empty() ) {
-				std::string rtp_path = FileIO::toSlash(rtp_paths[i]) + target;
-				path = rtp_path;
-				if (FileIO::exists(path)) return FileIO::get(path);
-				for(ImageSuffix::const_iterator it = imageSuffix_.begin(); it < imageSuffix_.end(); ++it) {
-					path = rtp_path + target + *it;
-					if (FileIO::exists(path)) return FileIO::get(path);
-				}
+		if(FileIO::exists(target)) return FileIO::get(target);
+		for(unsigned int i = 0; i < searchPath_.size(); i++) {
+			if( i && searchPath_[i].empty() ) continue;
+
+			std::string base = searchPath_[i] + target;
+			if( FileIO::exists(base) ) return FileIO::get(base);
+			for(ImageSuffix::const_iterator it = imageSuffix_.begin(); it < imageSuffix_.end(); ++it) {
+				std::string full = base + *it;
+				if (FileIO::exists(full)) return FileIO::get(full);
 			}
 		}
 
-		throw std::runtime_error("file not found");
+		throw std::runtime_error("file not found:" + name);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -128,27 +129,21 @@ namespace FileFinder
 	////////////////////////////////////////////////////////////
 	std::vector< uint8_t > const& FindMusic(std::string const& name)
 	{
-		std::string target = FileIO::toSlash(name), path = target;
+		std::string target = FileIO::toSlash(name);
 
-		if (FileIO::exists(path)) return FileIO::get(path);
-		for(MusicSuffix::const_iterator it = musicSuffix_.begin(); it < musicSuffix_.end(); ++it) {
-			path = target + *it;
-			if (FileIO::exists(path)) return FileIO::get(path);
-		}
-		for (int i = 0; i < 3; i++) {
-			if ( rtp_paths[i].empty() ) {
-				std::string rtp_path = FileIO::toSlash(rtp_paths[i]);
-				rtp_path += target;
-				path = rtp_path;
-				if (FileIO::exists(path)) return FileIO::get(path);
-				for(MusicSuffix::const_iterator it = musicSuffix_.begin(); it < musicSuffix_.end(); ++it) {
-					path = rtp_path + target + *it;
-					if (FileIO::exists(path)) return FileIO::get(path);
-				}
+		if(FileIO::exists(target)) return FileIO::get(target);
+		for(unsigned int i = 0; i < searchPath_.size(); i++) {
+			if( i && searchPath_[i].empty() ) continue;
+
+			std::string base = searchPath_[i] + target;
+			if( FileIO::exists(base) ) return FileIO::get(base);
+			for(MusicSuffix::const_iterator it = musicSuffix_.begin(); it < musicSuffix_.end(); ++it) {
+				std::string full = base + *it;
+				if (FileIO::exists(full)) return FileIO::get(full);
 			}
 		}
 
-		throw std::runtime_error("file not found");
+		throw std::runtime_error("file not found:" + name);
 	}
 
 	////////////////////////////////////////////////////////////
@@ -158,12 +153,12 @@ namespace FileFinder
 	{
 		std::string target = FileIO::toSlash(name), path = target;
 		if (FileIO::exists(path)) return FileIO::get(path);
-		path = target + ".ttf";
+		path = target + fontSuffix_[0];
 		if (FileIO::exists(path)) return FileIO::get(path);
 
 		path = fonts_path + target;
 		if (FileIO::exists(path)) return FileIO::get(path);
-		path = fonts_path + target + ".ttf";
+		path = fonts_path + target + fontSuffix_[0];
 		if (FileIO::exists(path)) return FileIO::get(path);
 		std::string real_target;
 		real_target = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts", target + " (TrueType)");
@@ -182,13 +177,13 @@ namespace FileFinder
 			if (FileIO::exists(path)) return FileIO::get(path);
 		}
 
-		throw std::runtime_error("file not found");
+		throw std::runtime_error("file not found:" + name);
 	}
 
 	std::vector< uint8_t > const& FindFile(std::string const& name)
 	{
 		if( FileIO::exists(name) ) return FileIO::get(name);
 
-		throw std::runtime_error("file not found");
+		throw std::runtime_error("file not found:" + name);
 	}
 } // namespace FileFinder

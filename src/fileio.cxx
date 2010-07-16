@@ -31,7 +31,7 @@ namespace FileIO
 	bool exists(std::string const& filename)
 	{
 		std::string yen = toYen(filename); // in a "rgssad" the separator is YEN sign
-		for(std::vector< boost::shared_ptr< RgssAdExtracter > >::iterator it = archives_.begin(); it < archives_.end(); ++it) {
+		for(std::vector< boost::shared_ptr< RgssAdExtracter > >::const_iterator it = archives_.begin(); it < archives_.end(); ++it) {
 			if( (*it)->exists(yen) ) return true;
 		}
 
@@ -73,5 +73,16 @@ namespace FileIO
 				boost::shared_ptr< RgssAdExtracter >( new RgssAdExtracter(DEFAULT_ARCHIVE) )
 			);
 		}
+	}
+
+	std::vector< std::string > getRgssAdList()
+	{
+		std::vector< std::string > ret;
+		for(std::vector< boost::shared_ptr< RgssAdExtracter > >::iterator it = archives_.begin(); it < archives_.end(); ++it) {
+			for(std::multimap< std::string, RgssAdExtracter::Entry >::const_iterator it2 = (*it)->entry().begin(); it2 != (*it)->entry().end(); ++it2) {
+				ret.push_back(it2->first);
+			}
+		}
+		return ret;
 	}
 } // namespace FileIO

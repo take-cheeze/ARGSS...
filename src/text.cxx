@@ -30,6 +30,7 @@
 #include "text.hxx"
 #include "output.hxx"
 #include "filefinder.hxx"
+#include "fileio.hxx"
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
@@ -43,8 +44,8 @@ namespace Text
 		////////////////////////////////////////////////////////////
 		/// Global variables
 		////////////////////////////////////////////////////////////
-		FT_Library library;
-		std::map< std::string, FT_Face > fonts;
+		FT_Library library_;
+		std::map< std::string, FT_Face > fonts_;
 	}
 
 	////////////////////////////////////////////////////////////
@@ -52,7 +53,7 @@ namespace Text
 	////////////////////////////////////////////////////////////
 	void Init()
 	{
-		FT_Error err = FT_Init_FreeType(&library);
+		FT_Error err = FT_Init_FreeType(&library_);
 		if (err) {
 			Output::Error("ARGSS couldn't initialize freetype library.\n%d\n", err);
 		} 
@@ -63,15 +64,18 @@ namespace Text
 	////////////////////////////////////////////////////////////
 	FT_Face getFont(std::string const& name)
 	{
-		std::string path = "ipag.ttf"; // FileFinder::FindFont(name);
+		std::vector< uint8_t > const& data = FileIO::get("ipag.ttf"); // FileFinder::FindFont(name);
 
-		if ( fonts.find(name) == fonts.end() ) {
-			FT_Error err = FT_New_Face(library, path.c_str(), 0, &fonts[name]);
+		if ( fonts_.find(name) == fonts_.end() ) {
+			FT_Error err = FT_New_Memory_Face(
+				library_, reinterpret_cast< const FT_Byte* >( &(data[0]) ),
+				data.size(), 0, &fonts_[name]
+			);
 			if (err) {
 				rb_raise(ARGSS::AError::getID(), "couldn't load font %s.\n%d\n", name.c_str(), err);
 			}
 		}
-		return fonts.find(name)->second;
+		return fonts_.find(name)->second;
 	}
 
 	////////////////////////////////////////////////////////////

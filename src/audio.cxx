@@ -51,7 +51,7 @@ namespace Audio
 		Mix_Chunk* bgs_; int bgs_channel;
 		Mix_Music*  me_; bool me_playing;
 
-		std::map< int, Mix_Chunk* > sounds;
+		std::map< int, Mix_Chunk* > sounds_;
 	} // namespace
 
 	////////////////////////////////////////////////////////////
@@ -71,6 +71,8 @@ namespace Audio
 		me_ = NULL;
 		bgm_playing = false;
 		me_playing = false;
+
+		sounds_.clear();
 	}
 
 	////////////////////////////////////////////////////////////
@@ -256,13 +258,23 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	void SE_Play(std::string const& file, int volume, int pitch)
 	{
-		for(std::map< int, Mix_Chunk* >::iterator it = sounds.begin(); it != sounds.end(); ++it) {
+		for(std::map< int, Mix_Chunk* >::iterator it = sounds_.begin(); it != sounds_.end(); ++it) {
 			if (!Mix_Playing(it->first)) {
-				Mix_FreeChunk(it->second);
-				sounds.erase(it);
+				std::map< int, Mix_Chunk* >::iterator next = it; ++next;
+
+				if( next != sounds_.end() ) {
+					std::map< int, Mix_Chunk* >::value_type nextVal = *next;
+					Mix_FreeChunk(it->second);
+					sounds_.erase(it);
+					it = sounds_.find(nextVal.first);
+				} else {
+					Mix_FreeChunk(it->second);
+					sounds_.erase(it);
+					break;
+				}
 			}
 		}
-		if (sounds.size() >= 7) return;
+		if (sounds_.size() >= 7) return;
 
 		std::vector< uint8_t > const& bin = FileFinder::FindMusic(file);
 		if ( bin.empty() ) {
@@ -281,7 +293,7 @@ namespace Audio
 		if (channel == -1) {
 			rb_raise(ARGSS::AError::getID(), "couldn't play %s SE.\n%s\n", file.c_str(), Mix_GetError());
 		}
-		sounds.insert( std::map< int, Mix_Chunk* >::value_type(channel, sound) );
+		sounds_.insert( std::map< int, Mix_Chunk* >::value_type(channel, sound) );
 	}
 
 	////////////////////////////////////////////////////////////
@@ -289,10 +301,10 @@ namespace Audio
 	////////////////////////////////////////////////////////////
 	void SE_Stop()
 	{
-		for (std::map< int, Mix_Chunk* >::iterator it = sounds.begin(); it != sounds.end(); ++it) {
+		for (std::map< int, Mix_Chunk* >::iterator it = sounds_.begin(); it != sounds_.end(); ++it) {
 			if (Mix_Playing(it->first)) Mix_HaltChannel(it->first);
 			Mix_FreeChunk(it->second);
 		}
-		sounds.clear();
+		sounds_.clear();
 	}
 } // namespace Audio

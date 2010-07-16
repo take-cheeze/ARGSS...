@@ -99,7 +99,7 @@ private:
 	Tone tone_viewport_;
 	bool disposing_;
 
-	Bitmap* viewport_;
+	// Bitmap* viewport_;
 
 	Rect dstRect_;
 }; // class Viewport
