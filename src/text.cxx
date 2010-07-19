@@ -25,6 +25,11 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <cassert>
+#include <iostream>
+#include <stdint.h>
+#include <iconv.h>
+
 #include <argss/error.hxx>
 
 #include "text.hxx"
@@ -46,6 +51,36 @@ namespace Text
 		////////////////////////////////////////////////////////////
 		FT_Library library_;
 		std::map< std::string, FT_Face > fonts_;
+
+		class Converter
+		{
+		private:
+			::iconv_t cd_;
+			static size_t const BUF_SIZE = 1024;
+		public:
+			Converter(std::string const& to, std::string const& from)
+			: cd_(NULL)
+			{
+				cd_ = ::iconv_open( to.c_str(), from.c_str() );
+				assert( cd_ != (::iconv_t) -1 );
+
+				(void)(*this)("Convert test"); // skipping BOM
+			}
+			~Converter() { if(cd_) assert( ::iconv_close(cd_) != -1 ); }
+
+			std::string operator()(std::string const& src) const
+			{
+				char buf[BUF_SIZE];
+				size_t inSize = src.size(), outSize = BUF_SIZE;
+				char* inBuf = const_cast< char* >( src.data() );
+				char* outBuf = buf;
+
+				assert( ::iconv(cd_, &inBuf, &inSize, &outBuf, &outSize) != (size_t)-1 );
+
+				return std::string(buf, BUF_SIZE - outSize);
+			}
+		} conv_("UTF-32", "UTF-8");
+		typedef uint32_t InternChar;
 	}
 
 	////////////////////////////////////////////////////////////
@@ -83,6 +118,11 @@ namespace Text
 	////////////////////////////////////////////////////////////
 	std::auto_ptr< Bitmap > draw(std::string const& text, std::string const& font, Color const& color, int size, bool bold, bool italic, bool shadow)
 	{
+		std::string converted = conv_(text);
+		assert( ( converted.size() % sizeof(InternChar) ) == 0 );
+		InternChar const* convText = reinterpret_cast< InternChar const* >( converted.data() );
+		std::size_t charNum = converted.size() / sizeof(InternChar);
+
 		FT_Face face = getFont(font);
 
 		FT_Error err;
@@ -107,25 +147,25 @@ namespace Text
 		pen.x = 0;
 		pen.y = 0;
 
-		std::vector< FT_BitmapGlyph > glyphs;
+		std::vector< FT_BitmapGlyph > glyphs(charNum);
 
-		for (unsigned int i = 0; i < text.length(); i++) {
+		for (unsigned int i = 0; i < charNum; i++) {
 			FT_Set_Transform(face, &matrix, &pen);
 
-			err = FT_Load_Char(face, text[i], FT_LOAD_TARGET_NORMAL);
+			err = FT_Load_Char(face, convText[i] & 0x7fffffff, FT_LOAD_TARGET_NORMAL);
 			if (err) {
-				rb_raise(ARGSS::AError::getID(), "couldn't load font(%s) char '%c'.\n%d\n", font.c_str(), text[i], err);
+				rb_raise(ARGSS::AError::getID(), "couldn't load font(%s) char '%c'.\n%d\n", font.c_str(), convText[i], err);
 			}
 
 			FT_Glyph glyph;
 			err = FT_Get_Glyph(face->glyph, &glyph);
 			if (err) {
-				rb_raise(ARGSS::AError::getID(), "couldn't get font(%s) char '%c'.\n%d\n", font.c_str(), text[i], err);
+				rb_raise(ARGSS::AError::getID(), "couldn't get font(%s) char '%c'.\n%d\n", font.c_str(), convText[i], err);
 			}
 
 			FT_Glyph_To_Bitmap(&glyph, FT_RENDER_MODE_NORMAL, 0, 1);
 
-			glyphs.push_back((FT_BitmapGlyph)glyph);
+			glyphs[i] = (FT_BitmapGlyph)glyph; // glyphs.push_back((FT_BitmapGlyph)glyph);
 
 			pen.x += face->glyph->advance.x;
 		}
@@ -133,21 +173,20 @@ namespace Text
 		int width = 0;
 		int height = 0;
 
-		for (unsigned int i = 0; i < glyphs.size(); i++) {
-			if (width < glyphs[i]->bitmap.width + glyphs[i]->left) width = glyphs[i]->bitmap.width + glyphs[i]->left;
-			if (height < glyphs[i]->bitmap.rows + glyphs[i]->top) height = glyphs[i]->bitmap.rows + glyphs[i]->top;
+		for(unsigned int i = 0; i < glyphs.size(); i++) {
+			if(width < glyphs[i]->bitmap.width + glyphs[i]->left) width = glyphs[i]->bitmap.width + glyphs[i]->left;
+			if(height < glyphs[i]->bitmap.rows + glyphs[i]->top) height = glyphs[i]->bitmap.rows + glyphs[i]->top;
 		}
 
 		int min_y = height;
-		for (unsigned int i = 0; i < glyphs.size(); i++) {
-			if (min_y > height - glyphs[i]->top) min_y = height - glyphs[i]->top;
+		for(unsigned int i = 0; i < glyphs.size(); i++) {
+			if(min_y > height - glyphs[i]->top) min_y = height - glyphs[i]->top;
 		}
 		min_y = (int)(((float)min_y + 0.5f) / 2.0f);
 
 		std::auto_ptr< Bitmap > text_bmp( new Bitmap(width, height) );
 		Uint8* dst_pixels = (Uint8*)text_bmp->getPixels();
 		for (unsigned int i = 0; i < glyphs.size(); i++) {
-
 			long glyph_pixel = 0;
 
 			int left = glyphs[i]->left;
@@ -155,9 +194,9 @@ namespace Text
 
 			for (int y = 0; y < glyphs[i]->bitmap.rows; y++) {
 				for (int x = 0; x < glyphs[i]->bitmap.width; x++) {
-					if (top + y - min_y < 0 || left + x < 0) continue;
-					if (top + y - min_y > height || left + x > width) continue;
-					if ((((left + x) + (top + y - min_y) * width) * 4) >= width * height * 4) continue;
+					if(top + y - min_y < 0 || left + x < 0) continue;
+					if(top + y - min_y > height || left + x > width) continue;
+					if((((left + x) + (top + y - min_y) * width) * 4) >= width * height * 4) continue;
 
 					long pixel = ((left + x) + (top + y - min_y) * width) * 4;
 					dst_pixels[pixel + 0] = (Uint8)color.red;
@@ -181,6 +220,11 @@ namespace Text
 	////////////////////////////////////////////////////////////
 	Rect RectSize(std::string const& text, std::string const& font, int size)
 	{
+		std::string converted = conv_(text);
+		assert( ( converted.size() % sizeof(InternChar) ) == 0 );
+		InternChar const* convText = reinterpret_cast< InternChar const* >( converted.data() );
+		std::size_t charNum = converted.size() / sizeof(InternChar);
+
 		FT_Face face = getFont(font);
 
 		FT_Error err;
@@ -198,16 +242,16 @@ namespace Text
 		int width = 0;
 		int height = 0;
 
-		for (unsigned int i = 0; i < text.length(); i++) {
-			err = FT_Load_Char(face, text[i], FT_LOAD_TARGET_NORMAL);
+		for (unsigned int i = 0; i < charNum; i++) {
+			err = FT_Load_Char(face, convText[i], FT_LOAD_TARGET_NORMAL);
 			if (err) {
-				rb_raise(ARGSS::AError::getID(), "couldn't load font(%s) char '%c'.\n%d\n", font.c_str(), text[i], err);
+				rb_raise(ARGSS::AError::getID(), "couldn't load font(%s) char '%c'.\n%d\n", font.c_str(), convText[i], err);
 			}
 
 			FT_Glyph glyph;
 			err = FT_Get_Glyph(face->glyph, &glyph);
 			if (err) {
-				rb_raise(ARGSS::AError::getID(), "couldn't get font(%s) char '%c'.\n%d\n", font.c_str(), text[i], err);
+				rb_raise(ARGSS::AError::getID(), "couldn't get font(%s) char '%c'.\n%d\n", font.c_str(), convText[i], err);
 			}
 
 			FT_BBox bbox;

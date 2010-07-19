@@ -32,6 +32,7 @@ extern "C"
 {
 	#include <ruby.h>
 }
+#include <cassert>
 
 ////////////////////////////////////////////////////////////
 /// ARGSS::ARuby namespace

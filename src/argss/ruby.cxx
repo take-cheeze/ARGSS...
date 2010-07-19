@@ -25,14 +25,23 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <boost/format.hpp>
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/zlib.hpp>
+#include <boost/spirit/include/qi.hpp>
+#include <boost/spirit/include/phoenix_core.hpp>
+#include <boost/spirit/include/phoenix_operator.hpp>
+#include <boost/spirit/include/phoenix_stl.hpp>
+
+namespace qi = boost::spirit::qi;
+namespace phx = boost::phoenix;
 
 #include <cassert>
 #include <cstdio>
 
 #include <iostream>
+#include <map>
 #include <sstream>
 #include <string>
 
@@ -48,6 +57,8 @@
 #ifndef RUBY_VERSION_1_8
 	#define ruby_errinfo rb_errinfo()
 #endif
+
+static int const BACK_TRACE_LINE_NUM = 10;
 
 
 namespace ARGSS
@@ -75,10 +86,16 @@ namespace ARGSS
 
 	namespace ARuby
 	{
-		////////////////////////////////////////////////////////////
-		/// Global variables
-		////////////////////////////////////////////////////////////
-		VALUE protected_objects;
+		namespace
+		{
+			////////////////////////////////////////////////////////////
+			/// Global variables
+			////////////////////////////////////////////////////////////
+			VALUE protected_objects;
+
+			std::map< std::string, std::string > scripts_;
+			qi::symbols< char, std::string > scriptNames_;
+		} // namespace
 
 		////////////////////////////////////////////////////////////
 		/// ARGSS Ruby functions
@@ -128,6 +145,8 @@ namespace ARGSS
 		{
 			void checkError(int error)
 			{
+				using qi::_1;
+
 				if (error) {
 					VALUE lasterr = rb_gv_get("$!");
 					VALUE klass = rb_class_path(CLASS_OF(lasterr));
@@ -138,8 +157,31 @@ namespace ARGSS
 						if (!NIL_P(ruby_errinfo)) {
 							VALUE ary = rb_funcall(ruby_errinfo, rb_intern("backtrace"), 0);
 							for (int i = 0; i < RARRAY_LEN(ary); i++) {
-								report += "\n  from ";
-								report += RSTRING_PTR(RARRAY_PTR(ary)[i]);
+								std::string errMsg( RSTRING_PTR(RARRAY_PTR(ary)[i]), RSTRING_LEN(RARRAY_PTR(ary)[i]) );
+
+								report += "\n  from " + errMsg + ":";
+								if( i == ( RARRAY_LEN(ary) - 1 ) ) continue;
+
+								unsigned int lineNo = 0; std::string scriptName;
+								std::string::iterator begIt = errMsg.begin();
+								assert( qi::parse( begIt, errMsg.end(), (
+									scriptNames_[phx::ref(scriptName) = _1] >> qi::string(":")
+									>> qi::uint_[phx::ref(lineNo) = _1] >> qi::string(":in ") >> *qi::char_
+								) ) && begIt == errMsg.end() );
+
+								assert( scripts_.find(scriptName) != scripts_.end() );
+								std::string& script = scripts_.find(scriptName)->second;
+								begIt = script.begin();
+								int j = 0, j_len = 0;
+								for(j_len = lineNo - BACK_TRACE_LINE_NUM; j < j_len; j++) {
+									assert( qi::parse( begIt, script.end(), *(qi::char_ - qi::eol) >> qi::eol ) );
+								}
+								for(j_len = lineNo + BACK_TRACE_LINE_NUM; j < j_len; j++) {
+									std::string line;
+									assert( qi::parse( begIt, script.end(), *(qi::char_[phx::push_back(phx::ref(line), _1)] - qi::eol) >> qi::eol ) );
+									report += ( ( (j + 1) == lineNo ) ? "\n>" : "\n" ) + ( boost::format("%4d:") % (j + 1) ).str() + line;
+									if( begIt == script.end() ) break;
+								}
 							}
 						}
 						Output::ErrorStr(report);
@@ -210,6 +252,10 @@ namespace ARGSS
 					boost::iostreams::copy(in, dst);
 					std::string dstStr = dst.str();
 					VALUE section = rb_str_new( dstStr.c_str(), dstStr.size() );
+
+					std::string scriptName = RSTRING_PTR( rb_ary_entry(section_arr, 1) );
+					scriptNames_.add(scriptName, scriptName);
+					assert( scripts_.insert( std::map< std::string, std::string >::value_type( scriptName, dstStr ) ).second );
 
 					result = 
 						// rb_eval_string_protect( RSTRING_PTR(section), &error );

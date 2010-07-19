@@ -403,16 +403,12 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void RegisterZObj(long z, VALUE id)
 	{
-		creation += 1;
-		ZObj zobj(z, creation, id);
-
-		zlist_.push_back(zobj);
+		zlist_.push_back( ZObj(z, ++creation, id) );
 		zlist_.sort(SortZObj);
 	}
 	void RegisterZObj(long z, VALUE id, bool multiz)
 	{
-		ZObj zobj(z, 999999, id);
-		zlist_.push_back(zobj);
+		zlist_.push_back( ZObj(z, 999999, id) );
 		zlist_.sort(SortZObj);
 	}
 
