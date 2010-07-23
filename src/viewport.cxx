@@ -113,6 +113,7 @@ void Viewport::draw(long z)
 	if (dstRect_.x < -dstRect_.width || dstRect_.x > Player::getWidth() || dstRect_.y < -dstRect_.height || dstRect_.y > Player::getHeight()) return;
 
 	for(std::list< ZObj >::const_iterator it = zlist_.begin(); it != zlist_.end(); it++) {
+		if( id_ == it->getId() ) continue;
 		Graphics::getDrawable( it->getId() ).draw(it->getZ());
 	}
 }

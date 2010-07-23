@@ -25,6 +25,8 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <boost/optional.hpp>
+
 #include <cassert>
 #include <iostream>
 #include <stdint.h>
@@ -52,6 +54,7 @@ namespace Text
 		FT_Library library_;
 		std::map< std::string, FT_Face > fonts_;
 
+		typedef boost::optional< std::string > InternText;
 		class Converter
 		{
 		private:
@@ -62,25 +65,43 @@ namespace Text
 			: cd_(NULL)
 			{
 				cd_ = ::iconv_open( to.c_str(), from.c_str() );
-				assert( cd_ != (::iconv_t) -1 );
+				assert( cd_ != ::iconv_t(-1) );
 
 				(void)(*this)("Convert test"); // skipping BOM
 			}
 			~Converter() { if(cd_) assert( ::iconv_close(cd_) != -1 ); }
 
-			std::string operator()(std::string const& src) const
+			InternText operator()(std::string const& src) const
 			{
 				char buf[BUF_SIZE];
 				size_t inSize = src.size(), outSize = BUF_SIZE;
 				char* inBuf = const_cast< char* >( src.data() );
 				char* outBuf = buf;
 
-				assert( ::iconv(cd_, &inBuf, &inSize, &outBuf, &outSize) != (size_t)-1 );
-
-				return std::string(buf, BUF_SIZE - outSize);
+				return ( ::iconv(cd_, &inBuf, &inSize, &outBuf, &outSize) != size_t(-1) )
+					? std::string(buf, BUF_SIZE - outSize)
+					: InternText()
+					;
 			}
-		} conv_("UTF-32", "UTF-8");
+		} conv_[] = {
+			Converter("UTF-32", "UTF-8"),
+			/*
+			Converter("UTF-32", "Windows-31J"),
+			Converter("UTF-32", "ISO-2022-JP"),
+			Converter("UTF-32", "EUC-JP"),
+			 */
+		};
 		typedef uint32_t InternChar;
+
+		InternText convertText(std::string const& text)
+		{
+			if( text.empty() ) return InternText( std::string() );
+			for(unsigned int i = 0; i < ( sizeof(conv_) / sizeof(Converter) ); i++) {
+				InternText ret = conv_[i](text);
+				if(ret) return ret;
+			}
+			return InternText( std::string() ); // return InternText();
+		}
 	}
 
 	////////////////////////////////////////////////////////////
@@ -118,10 +139,11 @@ namespace Text
 	////////////////////////////////////////////////////////////
 	std::auto_ptr< Bitmap > draw(std::string const& text, std::string const& font, Color const& color, int size, bool bold, bool italic, bool shadow)
 	{
-		std::string converted = conv_(text);
-		assert( ( converted.size() % sizeof(InternChar) ) == 0 );
-		InternChar const* convText = reinterpret_cast< InternChar const* >( converted.data() );
-		std::size_t charNum = converted.size() / sizeof(InternChar);
+		InternText converted = convertText(text);
+		assert(converted);
+		assert( ( converted->size() % sizeof(InternChar) ) == 0 );
+		InternChar const* convText = reinterpret_cast< InternChar const* >( converted->data() );
+		std::size_t charNum = converted->size() / sizeof(InternChar);
 
 		FT_Face face = getFont(font);
 
@@ -220,10 +242,11 @@ namespace Text
 	////////////////////////////////////////////////////////////
 	Rect RectSize(std::string const& text, std::string const& font, int size)
 	{
-		std::string converted = conv_(text);
-		assert( ( converted.size() % sizeof(InternChar) ) == 0 );
-		InternChar const* convText = reinterpret_cast< InternChar const* >( converted.data() );
-		std::size_t charNum = converted.size() / sizeof(InternChar);
+		InternText converted = convertText(text);
+		assert(converted);
+		assert( ( converted->size() % sizeof(InternChar) ) == 0 );
+		InternChar const* convText = reinterpret_cast< InternChar const* >( converted->data() );
+		std::size_t charNum = converted->size() / sizeof(InternChar);
 
 		FT_Face face = getFont(font);
 

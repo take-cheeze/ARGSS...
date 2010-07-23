@@ -108,8 +108,6 @@ protected:
 	long height_;
 
 	std::vector< Uint32 > pixels_;
-private:
-	static std::map< VALUE, boost::shared_ptr< Bitmap > > bitmaps_;
 }; // class Bitmap
 
 #endif

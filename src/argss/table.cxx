@@ -26,11 +26,14 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #include <boost/smart_ptr.hpp>
+#include <boost/unordered_map.hpp>
 
 #include <cassert>
+#include <climits>
 #include <stdint.h>
+#include <cstring>
 
-#include <map>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -47,88 +50,237 @@ namespace ARGSS
 			template< typename IntegerType >
 			class TableTemplate
 			{
-			private:
-				std::vector< unsigned int > size_;
-				std::vector< std::vector< std::vector< IntegerType > > > data_;
 			public:
-				void resize(std::vector< unsigned int > const& arg)
+				typedef std::vector< unsigned int >  SizeType;
+				typedef std::vector< unsigned int > IndexType;
+			private:
+				SizeType size_;
+				std::vector< IntegerType > data_;
+			protected:
+				bool outOfRange(IndexType const& arg, SizeType const& size) const
 				{
-					unsigned int xsizeDst = 1, ysizeDst = 1, zsizeDst = 1;
-					unsigned int xsizeSrc = data_.size(), ysizeSrc = data_[0].size(), zsizeSrc = 1;
-					switch( arg.size() ) {
-						case 3: zsizeDst = arg[2];
-						case 2: ysizeDst = arg[1];
-						case 1: xsizeDst = arg[0];
-							break;
-						default: assert(false);
+					for(unsigned int i = 0; i < arg.size(); i++) {
+						assert( size[i] );
+						if( arg[i] >= size[i] ) return true;
 					}
-					data_.resize( zsizeDst, std::vector< std::vector< IntegerType > >( ysizeDst, std::vector< IntegerType >(xsizeDst) ) );
-
-					if( zsizeDst < zsizeSrc ) zsizeSrc = zsizeDst;
-					if( ysizeDst < ysizeSrc ) ysizeSrc = ysizeDst;
-					if( xsizeDst < xsizeSrc ) xsizeSrc = xsizeDst;
-					for(unsigned int z = 0; z < zsizeSrc; z++) {
-						data_[z].resize(ysizeDst);
-						for(unsigned int y = 0; y < ysizeSrc; y++) data_.resize(xsizeDst);
-					}
-
-					size_ = arg;
-				}
-
-				TableTemplate(std::vector< unsigned int > const& sizes)
-				{
-					resize(sizes);
-				}
-				unsigned int xsize() const { assert(size_.size() >= 1); return size_[0]; }
-				unsigned int ysize() const { assert(size_.size() >= 2); return size_[1]; }
-				unsigned int zsize() const { assert(size_.size() >= 3); return size_[2]; }
-				unsigned int size(unsigned int dim) { assert( size_.size() < (dim+1) ); return size_[dim]; }
-
-				bool outOfRange(std::vector< unsigned int > const& arg) const
-				{
-					if( size_.size() != arg.size() ) return true;
-					for(unsigned int i = 0; i < arg.size(); i++) if( arg[i] >= size_[i] ) return true;
 					return false;
 				}
+				bool outOfRange(IndexType const& arg) const { return outOfRange(arg, size_); }
 
-				IntegerType& element(std::vector< unsigned int > const& arg)
+				unsigned int getIndex(IndexType const& arg, SizeType const& size) const
 				{
-					assert( ( arg.size() == size_.size() ) && !outOfRange(arg) );
-
-					unsigned int x = 0, y = 0, z = 0;
-					switch( arg.size() ) {
-						case 3: z = arg[2];
-						case 2: y = arg[1];
-						case 1: x = arg[0];
-							break;
-						default: assert(false);
-					}
-					return data_[z][y][x];
+					unsigned int ret = arg.back();
+					for(int i = arg.size() - 2; i >= 0; i--) { ret *= size[i]; ret += arg[i]; }
+					return ret;
 				}
-				IntegerType const& element(std::vector< unsigned int > const& arg) const
+				unsigned int getIndex(IndexType const& arg) const { return getIndex(arg, size_); }
+				unsigned int fullSize(SizeType const& size) const
 				{
-					assert( ( arg.size() == size_.size() ) && !outOfRange(arg) );
-
-					unsigned int x = 0, y = 0, z = 0;
-					switch( arg.size() ) {
-						case 3: z = arg[2];
-						case 2: y = arg[1];
-						case 1: x = arg[0];
-							break;
-						default: assert(false);
-					}
-					return data_[z][y][x];
+					int ret = 1;
+					for(unsigned int i = 0; i < size.size(); i++) ret *= size[i];
+					return ret;
 				}
+			public:
+				unsigned int fullSize() const { return fullSize(size_); }
+
+				void resize(SizeType const& arg)
+				{
+					std::vector< IntegerType > const& src = data_;
+					std::vector< IntegerType > dst( fullSize() );
+					SizeType const& srcSize = size_;
+					SizeType const& dstSize = arg;
+
+					unsigned int cpySize = sizeof(IntegerType);
+					cpySize *= dstSize.front() > srcSize.front() ? srcSize.front() : dstSize.front();
+
+					int j_len = dstSize.size() < srcSize.size() ? srcSize.size() : dstSize.size();
+					for(int i = 0, i_len = fullSize(srcSize) / srcSize.front(); i < i_len; i++) {
+						IndexType dstIndex( j_len );
+						unsigned int buf = i;
+						for(int j = 1; j < j_len; j++) {
+							dstIndex[j] = buf % srcSize[j];
+							buf /= srcSize[j];
+						}
+						IndexType srcIndex = dstIndex;
+						srcIndex.resize( srcSize.size() );
+						dstIndex.resize( dstSize.size() );
+						if( outOfRange(dstIndex, dstSize) ) continue;
+						std::memcpy( &(dst[ getIndex(dstIndex, dstSize) ]), &(src[ getIndex(srcIndex, srcSize) ]), cpySize );
+					}
+
+					size_ = dstSize;
+					data_ = dst;
+				}
+
+				TableTemplate(SizeType const& sizes) : size_(sizes), data_( fullSize(sizes) )
+				{
+				}
+				unsigned int size(unsigned int dim) const { return ( dim < size_.size() )? size_[dim] : 0; }
+				unsigned int xsize() const { return size(0); }
+				unsigned int ysize() const { return size(1); }
+				unsigned int zsize() const { return size(2); }
+
+				IntegerType& element(IndexType const& arg)
+				{
+					assert( arg.size() == size_.size() );
+					// assert( !outOfRange(arg) );
+					return data_[ getIndex(arg) ];
+				}
+				IntegerType const& element(IndexType const& arg) const
+				{
+					assert( arg.size() == size_.size() );
+					assert( !outOfRange(arg) );
+					return data_[ getIndex(arg) ];
+				}
+
+				IntegerType& operator [](unsigned int index) { return data_[index]; }
+				IntegerType const& operator [](unsigned int index) const { return data_[index]; }
+				unsigned int const dimension() const { return size_.size(); }
 			};
 			typedef TableTemplate< int16_t > Table;
 			////////////////////////////////////////////////////////////
 			/// Global Variables
 			////////////////////////////////////////////////////////////
 			VALUE id;
-			std::map< VALUE, boost::shared_ptr< Table > > tables_;
+			boost::unordered_map< VALUE, boost::shared_ptr< Table > > tables_;
+
+			std::vector< unsigned int > val2arg(int argc, VALUE* argv)
+			{
+				Table::IndexType ret(argc);
+				for(int i = 0; i < argc; i++) ret[i] = NUM2INT(argv[i]);
+				return ret;
+			}
+
+			Table& getTable(VALUE self)
+			{
+				assert( tables_.find(self) != tables_.end() );
+				return *( tables_.find(self)->second );
+			}
 		}
 		VALUE& getID() { return id; }
 
+		////////////////////////////////////////////////////////////
+		/// ARGSS Table ruby functions
+		////////////////////////////////////////////////////////////
+		VALUE rinitialize(int argc, VALUE *argv, VALUE self)
+		{
+			if (argc < 1) raise_argn(argc, 1);
+			else if (argc > 3) raise_argn(argc, 3);
+
+			assert( tables_.insert(
+				boost::unordered_map< VALUE, boost::shared_ptr< Table > >::value_type(
+					self, boost::shared_ptr< Table >( new Table( val2arg(argc, argv) ) )
+				)
+			).second );
+
+			return self;
+		}
+		VALUE rdispose(VALUE self)
+		{
+			boost::unordered_map< VALUE, boost::shared_ptr< Table > >::iterator it = tables_.find(self);
+			if( it != tables_.end() ) {
+				tables_.erase(it);
+				ARGSS::ARuby::RemoveObject(self);
+				rb_gc_start();
+			}
+			return self;
+		}
+		VALUE rdisposedQ(VALUE self)
+		{
+			return INT2BOOL( tables_.find(self) == tables_.end() );
+		}
+		VALUE rresize(int argc, VALUE *argv, VALUE self)
+		{
+			getTable(self).resize( val2arg(argc, argv) );
+			return self;
+		}
+		VALUE rxsize(VALUE self) { return INT2NUM( getTable(self).xsize() ); }
+		VALUE rysize(VALUE self) { return INT2NUM( getTable(self).ysize() ); }
+		VALUE rzsize(VALUE self) { return INT2NUM( getTable(self).zsize() ); }
+		VALUE raref(int argc, VALUE *argv, VALUE self)
+		{
+			return INT2NUM( getTable(self).element( val2arg(argc, argv) ) );
+		}
+		VALUE raset(int argc, VALUE *argv, VALUE self)
+		{
+			Table& table = getTable(self);
+			unsigned int const dim = table.dimension();
+			assert( (dim + 1) == argc );
+
+			table.element( val2arg(dim, argv) ) = NUM2INT( argv[dim] );
+
+			return argv[dim];
+		}
+		// struct Table
+		// {
+		// 	uint32_t dim;
+		// 	uint32_t xsize, ysize, zsize;
+		// 	uint32_t data_size
+		// 	int16_t data[data_size];
+		// };
+		template< typename T >
+		void setLE(uint8_t* &dst, T const& val)
+		{
+			for(unsigned int i = 0; i < sizeof(T); i++) {
+				*(dst++) = ( val >> (CHAR_BIT * i) ) & 0xFF;
+			}
+		}
+		template< typename T >
+		T getLE(uint8_t const* &src)
+		{
+			T ret = 0;
+			for(unsigned int i = 0; i < sizeof(T); i++) {
+				ret |= *(src++) << (CHAR_BIT * i);
+			}
+			return ret;
+		}
+		VALUE rdump(int argc, VALUE* argv, VALUE self)
+		{
+			assert(argc == 1);
+			Table const& table = getTable(self);
+			std::vector< uint8_t > ret( sizeof(uint32_t) * 5 + sizeof(int16_t) * table.fullSize() );
+			uint8_t* p = &(ret[0]);
+			setLE( p, uint32_t( table.dimension() ) );
+			for(int i = 0; i < 3; i++) setLE( p, uint32_t( table.size(i) ) );
+			setLE( p, uint32_t( table.fullSize() ) );
+			for(unsigned int i = 0; i < table.fullSize(); i++) setLE( p, int16_t( table[i] ) );
+			return rb_str_new( reinterpret_cast< char const* >( &(ret[0]) ), table.fullSize() );
+/*
+			if (argc > 1) raise_argn(argc, 1);
+			VALUE str = rb_str_new2("");
+			VALUE xsize = rb_iv_get(self, "@xsize");
+			VALUE ysize = rb_iv_get(self, "@ysize");
+			VALUE zsize = rb_iv_get(self, "@zsize");
+			VALUE items = NUM2INT(xsize) * NUM2INT(ysize) *NUM2INT(zsize);
+			VALUE arr = rb_ary_new3(5, rb_iv_get(self, "@dim"), xsize, ysize, zsize, INT2NUM(items));
+			rb_str_concat(str, rb_funcall(arr, rb_intern("pack"), 1, rb_str_new2("V5")));
+			rb_str_concat(str, rb_funcall(rb_iv_get(self, "@data"), rb_intern("pack"), 1, rb_str_times(rb_str_new2("v"), INT2NUM(items))));
+			return str;
+ */
+		}
+		VALUE rload(VALUE self, VALUE str)
+		{
+			uint8_t const* p = reinterpret_cast< uint8_t const* >( RSTRING_PTR(str) );
+			unsigned int dim = getLE< uint32_t >(p);
+			VALUE argv[3];
+			for(int i = 0; i < 3; i++) argv[i] = INT2NUM( getLE< uint32_t >(p) );
+			VALUE table = rb_class_new_instance(dim, argv, id);
+			Table& tableRef = getTable(table);
+			unsigned int data_size = getLE< uint32_t >(p);
+			for(unsigned int i = 0; i < data_size; i++) tableRef[i] = getLE< int16_t >(p);
+			return table;
+/*
+			VALUE arr = rb_funcall(str, rb_intern("unpack"), 1, rb_str_new2("V5"));
+			int dim = NUM2INT(rb_ary_entry(arr, 0));
+			VALUE items = NUM2INT(rb_ary_entry(arr, 4));
+			VALUE args[3] = {rb_ary_entry(arr, 1), rb_ary_entry(arr, 2), rb_ary_entry(arr, 3)};
+			VALUE table = rb_class_new_instance(dim, args, id);
+			VALUE data = rb_funcall(rb_str_substr(str, 20, items * 2), rb_intern("unpack"), 1, rb_str_times(rb_str_new2("v"), INT2NUM(items)));
+			rb_iv_set(table, "@data", data);
+			return table;
+ */
+		}
+/*
 		////////////////////////////////////////////////////////////
 		/// ARGSS Table ruby functions
 		////////////////////////////////////////////////////////////
@@ -173,8 +325,7 @@ namespace ARGSS
 				if (nsize > osize) {
 					VALUE arr = rb_ary_new3(nsize - osize, INT2NUM(0));
 					rb_ary_concat(rb_iv_get(self, "@data"), arr);
-				}
-				else {
+				} else {
 					VALUE slice_argv[2];
 					slice_argv[0] = INT2NUM(nsize);
 					slice_argv[1] = INT2NUM(osize);
@@ -235,6 +386,13 @@ namespace ARGSS
 			}
 			return argv[argc - 1];
 		}
+		// struct Table
+		// {
+		// 	uint32_t dim;
+		// 	uint32_t xsize, ysize, zsize;
+		// 	uint32_t data_size
+		// 	int16_t data[data_size];
+		// };
 		VALUE rdump(int argc, VALUE* argv, VALUE self)
 		{
 			if (argc > 1) raise_argn(argc, 1);
@@ -244,22 +402,22 @@ namespace ARGSS
 			VALUE zsize = rb_iv_get(self, "@zsize");
 			VALUE items = NUM2INT(xsize) * NUM2INT(ysize) *NUM2INT(zsize);
 			VALUE arr = rb_ary_new3(5, rb_iv_get(self, "@dim"), xsize, ysize, zsize, INT2NUM(items));
-			rb_str_concat(str, rb_funcall(arr, rb_intern("pack"), 1, rb_str_new2("L5")));
-			rb_str_concat(str, rb_funcall(rb_iv_get(self, "@data"), rb_intern("pack"), 1, rb_str_times(rb_str_new2("S"), INT2NUM(items))));
+			rb_str_concat(str, rb_funcall(arr, rb_intern("pack"), 1, rb_str_new2("V5")));
+			rb_str_concat(str, rb_funcall(rb_iv_get(self, "@data"), rb_intern("pack"), 1, rb_str_times(rb_str_new2("v"), INT2NUM(items))));
 			return str;
 		}
 		VALUE rload(VALUE self, VALUE str)
 		{
-			VALUE arr = rb_funcall(str, rb_intern("unpack"), 1, rb_str_new2("L5"));
+			VALUE arr = rb_funcall(str, rb_intern("unpack"), 1, rb_str_new2("V5"));
 			int dim = NUM2INT(rb_ary_entry(arr, 0));
 			VALUE items = NUM2INT(rb_ary_entry(arr, 4));
 			VALUE args[3] = {rb_ary_entry(arr, 1), rb_ary_entry(arr, 2), rb_ary_entry(arr, 3)};
 			VALUE table = rb_class_new_instance(dim, args, id);
-			VALUE data = rb_funcall(rb_str_substr(str, 20, items * 2), rb_intern("unpack"), 1, rb_str_times(rb_str_new2("S"), INT2NUM(items)));
+			VALUE data = rb_funcall(rb_str_substr(str, 20, items * 2), rb_intern("unpack"), 1, rb_str_times(rb_str_new2("v"), INT2NUM(items)));
 			rb_iv_set(table, "@data", data);
 			return table;
 		}
-
+ */
 		////////////////////////////////////////////////////////////
 		/// ARGSS Console initialize
 		////////////////////////////////////////////////////////////
@@ -269,6 +427,7 @@ namespace ARGSS
 			static FuncTable funcTable =
 			{
 				{ ARGSS_FUNC(initialize), -1 },
+				{ ARGSS_FUNC(dispose), 0 }, { ARGSS_Q(disposed), 0 },
 				{ ARGSS_FUNC(resize), -1 },
 				{ ARGSS_FUNC(xsize), 0 }, { ARGSS_FUNC(ysize), 0 }, { ARGSS_FUNC(zsize), 0 },
 				{ "[]", RubyFunc(raref), -1 }, { "[]=", RubyFunc(raset), -1 },

@@ -12,7 +12,7 @@ SRC_CXX += $(wildcard $(SRC_DIR)/argss/*.cxx)
 SRC_CXX += $(wildcard $(SRC_DIR)/$(PLATFORM)/*.cxx)
 OBJS_DIR = ./objs
 OBJS_CXX = $(subst $(SRC_DIR), $(OBJS_DIR), $(SRC_CXX:.cxx=.o))
-OBJS = $(OBJS_CXX) $(wildcard src/SOIL/projects/makefile/obj/*.o) $(OBJS_DIR)/malloc_wrapper.o
+OBJS = $(OBJS_CXX) $(wildcard src/SOIL/projects/makefile/obj/*.o) $(OBJS_DIR)/malloc_wrapper.o $(OBJS_DIR)/rubybind.o
 
 LINUX_SRC_DIR = src
 LINUX_SRC_C = $(wildcard $(LINUX_SRC_DIR)/*.c)
@@ -25,6 +25,7 @@ CFLAGS = \
 	$(shell pkg-config gl --cflags) \
 	$(shell freetype-config --cflags) \
 	-I../../dependencies \
+	-I../../dependencies/rubybind \
 	-Isrc/SOIL/src \
 	-Isrc \
 	-I$(SRC_DIR) \
@@ -108,6 +109,9 @@ $(OBJS_DIR)/rgssad.o : src/rgssad.cxx
 
 # nedmalloc wrapper
 $(OBJS_DIR)/malloc_wrapper.o : ../../dependencies/malloc/wrapper.cxx
+	$(CXX) $(CXXFLAGS) -c $< -o $@
+
+$(OBJS_DIR)/rubybind.o : ../../dependencies/rubybind/src/rubybind.cxx
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
 $(OBJS_DIR)/%.o : $(SRC_DIR)/%.cxx

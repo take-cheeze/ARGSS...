@@ -54,7 +54,8 @@ namespace ARGSS
 		////////////////////////////////////////////////////////////
 		/// ARGSS Bitmap ruby functions
 		////////////////////////////////////////////////////////////
-		VALUE rinitialize(int argc, VALUE *argv, VALUE self) {
+		VALUE rinitialize(int argc, VALUE *argv, VALUE self)
+		{
 			switch(argc) {
 				case 0: raise_argn(argc, 1);
 					break;
@@ -195,13 +196,13 @@ namespace ARGSS
 			else if (argc < 4) {
 				if (argc == 3) align = NUM2INT(argv[2]);
 
-				Bitmap::get(self).TextDraw(Rect(argv[0]), StringValuePtr(argv[1]), align);
+				Bitmap::get(self).TextDraw(Rect(argv[0]), StringValueCStr(argv[1]), align);
 			}
 			else if (argc == 4) raise_argn(argc, 3);
 			else if (argc < 7) {
 				if (argc == 6) align = NUM2INT(argv[5]);
 
-				Bitmap::get(self).TextDraw(Rect(NUM2INT(argv[0]), NUM2INT(argv[1]), NUM2INT(argv[2]), NUM2INT(argv[3])), StringValuePtr(argv[4]), align);
+				Bitmap::get(self).TextDraw(Rect(NUM2INT(argv[0]), NUM2INT(argv[1]), NUM2INT(argv[2]), NUM2INT(argv[3])), StringValueCStr(argv[4]), align);
 			}
 			else raise_argn(argc, 6);
 			return self;
@@ -209,7 +210,7 @@ namespace ARGSS
 		VALUE rtext_size(VALUE self, VALUE str)
 		{
 			CheckDisposed(self);
-			return Bitmap::get(self).getTextSize(StringValuePtr(str)).getARGSS();
+			return Bitmap::get(self).getTextSize(StringValueCStr(str)).getARGSS();
 		}
 		VALUE rgradient_fill_rect(int argc, VALUE *argv, VALUE self)
 		{

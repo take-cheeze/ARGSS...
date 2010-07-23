@@ -1,0 +1,32 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test.vcproj", "{2FBC86E4-2B35-4834-AE56-51C5A092A9BD}"
+	ProjectSection(ProjectDependencies) = postProject
+		{1D7B77E8-B806-42A7-9905-3A7A32D4DD53} = {1D7B77E8-B806-42A7-9905-3A7A32D4DD53}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "rubybind", "..\..\src\vc7.1\rubybind.vcproj", "{1D7B77E8-B806-42A7-9905-3A7A32D4DD53}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{2FBC86E4-2B35-4834-AE56-51C5A092A9BD}.Debug.ActiveCfg = Debug|Win32
+		{2FBC86E4-2B35-4834-AE56-51C5A092A9BD}.Debug.Build.0 = Debug|Win32
+		{2FBC86E4-2B35-4834-AE56-51C5A092A9BD}.Release.ActiveCfg = Release|Win32
+		{2FBC86E4-2B35-4834-AE56-51C5A092A9BD}.Release.Build.0 = Release|Win32
+		{1D7B77E8-B806-42A7-9905-3A7A32D4DD53}.Debug.ActiveCfg = Debug|Win32
+		{1D7B77E8-B806-42A7-9905-3A7A32D4DD53}.Debug.Build.0 = Debug|Win32
+		{1D7B77E8-B806-42A7-9905-3A7A32D4DD53}.Release.ActiveCfg = Release|Win32
+		{1D7B77E8-B806-42A7-9905-3A7A32D4DD53}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

@@ -26,6 +26,7 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #include <boost/format.hpp>
+#include <boost/unordered_map.hpp>
 
 #include <cstdlib>
 #include <ctime>
@@ -62,7 +63,7 @@ namespace Graphics
 		Color backcolor; // (255.0f, 255.0f, 255.0f, 255.0f);
 		int brightness;
 		double frameInterval_;
-		std::map< VALUE, boost::shared_ptr< Drawable > > drawableMap_;
+		boost::unordered_map< VALUE, boost::shared_ptr< Drawable > > drawableMap_;
 		std::list< ZObj > zlist_;
 		long creation;
 		long lastTics_;
@@ -79,7 +80,7 @@ namespace Graphics
 	bool insertDrawable(VALUE id, boost::shared_ptr< Drawable > const& ptr)
 	{
 		return drawableMap_.insert(
-			std::map< VALUE, boost::shared_ptr< Drawable > >::value_type(id, ptr)
+			boost::unordered_map< VALUE, boost::shared_ptr< Drawable > >::value_type(id, ptr)
 		).second;
 	}
 	void eraseDrawable(VALUE id)
@@ -155,7 +156,8 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void RefreshAll()
 	{
-		for (std::map< VALUE, boost::shared_ptr< Drawable > >::iterator it = drawableMap_.begin(); it != drawableMap_.end(); ++it) {
+		boost::unordered_map< VALUE, boost::shared_ptr< Drawable > >::iterator it;
+		for (it = drawableMap_.begin(); it != drawableMap_.end(); ++it) {
 			it->second->RefreshBitmaps();
 		}
 		Bitmap::RefreshBitmaps();

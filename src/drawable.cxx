@@ -5,7 +5,7 @@
 void Drawable::setBlendFunc(Blend::Type type)
 {
 	switch(type) {
-		default: // Blend::NORMAL
+		default: // case Blend::NORMAL:
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 			break;
 		case Blend::ADD:

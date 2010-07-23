@@ -72,7 +72,7 @@ namespace ARGSS
 			}
 			if (argc > 1) {
 				Check_Type(argv[1], T_STRING);
-				filename = StringValuePtr(argv[1]);
+				filename = StringValueCStr(argv[1]);
 			}
 			if (argc > 2) {
 				Check_Kind(argv[2], rb_cNumeric);

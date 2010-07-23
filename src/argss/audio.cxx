@@ -63,7 +63,7 @@ namespace ARGSS
 					pitch = NUM2INT(argv[2]);
 				}
 			}
-			Audio::BGM_Play(StringValuePtr(argv[0]), volume, pitch);
+			Audio::BGM_Play(StringValueCStr(argv[0]), volume, pitch);
 			return Qnil;
 		}
 		VALUE rbgm_stop(VALUE self)
@@ -92,7 +92,7 @@ namespace ARGSS
 					pitch = NUM2INT(argv[2]);
 				}
 			}
-			Audio::BGS_Play(StringValuePtr(argv[0]), volume, pitch);
+			Audio::BGS_Play(StringValueCStr(argv[0]), volume, pitch);
 			return Qnil;
 		}
 		VALUE rbgs_stop(VALUE self)
@@ -121,7 +121,7 @@ namespace ARGSS
 					pitch = NUM2INT(argv[2]);
 				}
 			}
-			Audio::ME_Play(StringValuePtr(argv[0]), volume, pitch);
+			Audio::ME_Play(StringValueCStr(argv[0]), volume, pitch);
 			return Qnil;
 		}
 		VALUE rme_stop(VALUE self) {
@@ -148,7 +148,7 @@ namespace ARGSS
 					pitch = NUM2INT(argv[2]);
 				}
 			}
-			Audio::SE_Play(StringValuePtr(argv[0]), volume, pitch);
+			Audio::SE_Play(StringValueCStr(argv[0]), volume, pitch);
 			return Qnil;
 		}
 		VALUE rse_stop(VALUE self)

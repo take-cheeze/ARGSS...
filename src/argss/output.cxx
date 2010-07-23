@@ -61,7 +61,7 @@ namespace ARGSS
 		}
 		VALUE rfile(VALUE self, VALUE file)
 		{
-			Output::File(StringValuePtr(file));
+			Output::File(StringValueCStr(file));
 			return Qnil;
 		}
 		VALUE rnone(VALUE self)
@@ -77,14 +77,14 @@ namespace ARGSS
 		{
 			if (TYPE(str) != T_STRING) str = rb_obj_as_string(str);
 			if (RSTRING_LEN(str) == 0) return INT2FIX(0);
-			Output::PostStr(StringValuePtr(str));
+			Output::PostStr(StringValueCStr(str));
 			return INT2FIX(RSTRING_LEN(str));
 		}
 		VALUE rstderr_write(VALUE self, VALUE str)
 		{
 			if (TYPE(str) != T_STRING) str = rb_obj_as_string(str);
 			if (RSTRING_LEN(str) == 0) return INT2FIX(0);
-			//Output::ErrorStr(StringValuePtr(str));
+			//Output::ErrorStr(StringValueCStr(str));
 			return INT2FIX(RSTRING_LEN(str));
 		}
 		VALUE stdin_gets(int argc, VALUE *argv, VALUE self)

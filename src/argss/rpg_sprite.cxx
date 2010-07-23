@@ -328,8 +328,7 @@ namespace ARGSS
 					int val_damage_duration = NUM2INT(rb_iv_get(self, "@_damage_duration"));
 					rb_iv_set(self, "@_damage_duration", INT2NUM(val_damage_duration - 1));
 					VALUE damage_sprite = rb_iv_get(self, "@_damage_sprite");
-					switch(val_damage_duration)
-					{
+					switch(val_damage_duration) {
 						case 38: case 39:
 							rb_funcall(damage_sprite, rb_intern("y="), 1, INT2NUM(NUM2INT(rb_iv_get(damage_sprite, "@y")) - 4));
 							break;
@@ -485,8 +484,7 @@ namespace ARGSS
 					VALUE flash_color = rb_iv_get(timing, "@flash_color");
 					int val_flash_duration = NUM2INT(rb_iv_get(timing, "@flash_duration"));
 					VALUE viewport = rb_iv_get(self, "@viewport");
-					switch (NUM2INT(rb_iv_get(timing, "@flash_scope")))
-					{
+					switch(NUM2INT(rb_iv_get(timing, "@flash_scope"))) {
 						case 1:
 							rb_funcall(self, rb_intern("flash"), 2, flash_color, INT2NUM(val_flash_duration * 2));
 							break;

@@ -25,6 +25,8 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <boost/unordered_map.hpp>
+
 #include <algorithm>
 #include <cstring>
 
@@ -40,10 +42,13 @@
 #include "system.hxx"
 #include "filefinder.hxx"
 
-////////////////////////////////////////////////////////////
-/// Static Variables
-////////////////////////////////////////////////////////////
-std::map< VALUE, boost::shared_ptr< Bitmap > > Bitmap::bitmaps_;
+namespace
+{
+	////////////////////////////////////////////////////////////
+	/// Static Variables
+	////////////////////////////////////////////////////////////
+	boost::unordered_map< VALUE, boost::shared_ptr< Bitmap > > bitmaps_;
+} // namespace
 
 ////////////////////////////////////////////////////////////
 /// Constructors
@@ -160,7 +165,7 @@ void Bitmap::Dispose(VALUE id)
 ////////////////////////////////////////////////////////////
 void Bitmap::RefreshBitmaps()
 {
-	std::map< VALUE, boost::shared_ptr< Bitmap > >::iterator it;
+	boost::unordered_map< VALUE, boost::shared_ptr< Bitmap > >::iterator it;
 	for (it = bitmaps_.begin(); it != bitmaps_.end(); it++) it->second->Changed();
 }
 
@@ -478,7 +483,7 @@ void Bitmap::TextDraw(Rect const& rect, std::string const& text, int align)
 	bool bold = ARGSS::NUM2BOOL(rb_iv_get(font_id, "@bold"));
 	bool italic = ARGSS::NUM2BOOL(rb_iv_get(font_id, "@italic"));
 
-	std::auto_ptr< Bitmap > text_bmp = Text::draw(text, StringValuePtr(name_id), color, size, bold, italic, false);
+	std::auto_ptr< Bitmap > text_bmp = Text::draw(text, StringValueCStr(name_id), color, size, bold, italic, false);
 
 	if (text_bmp->getWidth() > rect.width) {
 		int stretch = (int)(text_bmp->getWidth() * 0.4);
@@ -507,7 +512,7 @@ Rect Bitmap::getTextSize(std::string const& text)
 	VALUE font_id = rb_iv_get(id, "@font");
 	VALUE name_id = rb_iv_get(font_id, "@name");
 	int size = NUM2INT(rb_iv_get(font_id, "@size"));
-	return Text::RectSize(text, StringValuePtr(name_id), size);
+	return Text::RectSize(text, StringValueCStr(name_id), size);
 }
 
 ////////////////////////////////////////////////////////////

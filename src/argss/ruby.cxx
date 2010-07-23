@@ -29,13 +29,8 @@
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/zlib.hpp>
-#include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/phoenix_core.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
-#include <boost/spirit/include/phoenix_stl.hpp>
-
-namespace qi = boost::spirit::qi;
-namespace phx = boost::phoenix;
+#include <boost/lexical_cast.hpp>
+#include <boost/xpressive/xpressive.hpp>
 
 #include <cassert>
 #include <cstdio>
@@ -94,7 +89,6 @@ namespace ARGSS
 			VALUE protected_objects;
 
 			std::map< std::string, std::string > scripts_;
-			qi::symbols< char, std::string > scriptNames_;
 		} // namespace
 
 		////////////////////////////////////////////////////////////
@@ -104,19 +98,10 @@ namespace ARGSS
 		{
 			std::vector< uint8_t > const& data = FileFinder::FindFile( StringValueCStr(filename) );
 			return rb_marshal_load( rb_str_new( reinterpret_cast< char const* >( &(data[0]) ), data.size() ) );
-
-			// std::cout << StringValueCStr(filename) << " : " << data.size() << std::endl;
-			// std::cout << std::string( reinterpret_cast< char const* >( &(data[0]) ), data.size() ) << std::endl;
-/*
-			VALUE file = rb_file_open(StringValuePtr(filename), "rb");
-			VALUE obj = rb_marshal_load(file);
-			rb_io_close(file);
-			return obj;
- */
 		}
 		VALUE rsave_data(VALUE self, VALUE obj, VALUE filename)
 		{
-			VALUE file = rb_file_open(StringValuePtr(filename), "wb");
+			VALUE file = rb_file_open(StringValueCStr(filename), "wb");
 			rb_marshal_dump(obj, file);
 			rb_io_close(file);
 			return Qnil;
@@ -145,8 +130,6 @@ namespace ARGSS
 		{
 			void checkError(int error)
 			{
-				using qi::_1;
-
 				if (error) {
 					VALUE lasterr = rb_gv_get("$!");
 					VALUE klass = rb_class_path(CLASS_OF(lasterr));
@@ -159,28 +142,27 @@ namespace ARGSS
 							for (int i = 0; i < RARRAY_LEN(ary); i++) {
 								std::string errMsg( RSTRING_PTR(RARRAY_PTR(ary)[i]), RSTRING_LEN(RARRAY_PTR(ary)[i]) );
 
-								report += "\n  from " + errMsg + ":";
+								report += "\n\tfrom " + errMsg + ":";
 								if( i == ( RARRAY_LEN(ary) - 1 ) ) continue;
 
-								unsigned int lineNo = 0; std::string scriptName;
-								std::string::iterator begIt = errMsg.begin();
-								assert( qi::parse( begIt, errMsg.end(), (
-									scriptNames_[phx::ref(scriptName) = _1] >> qi::string(":")
-									>> qi::uint_[phx::ref(lineNo) = _1] >> qi::string(":in ") >> *qi::char_
-								) ) && begIt == errMsg.end() );
+								boost::xpressive::sregex rex = boost::xpressive::sregex::compile("([^:]+):(\\d+):in `(.+)'");
+								boost::xpressive::smatch what;
+								assert( boost::xpressive::regex_match( errMsg, what, rex ) );
+								std::string scriptName = what[1];
+								unsigned int lineNo = boost::lexical_cast< unsigned int >( what[2] );
 
 								assert( scripts_.find(scriptName) != scripts_.end() );
-								std::string& script = scripts_.find(scriptName)->second;
-								begIt = script.begin();
-								int j = 0, j_len = 0;
-								for(j_len = lineNo - BACK_TRACE_LINE_NUM; j < j_len; j++) {
-									assert( qi::parse( begIt, script.end(), *(qi::char_ - qi::eol) >> qi::eol ) );
-								}
-								for(j_len = lineNo + BACK_TRACE_LINE_NUM; j < j_len; j++) {
-									std::string line;
-									assert( qi::parse( begIt, script.end(), *(qi::char_[phx::push_back(phx::ref(line), _1)] - qi::eol) >> qi::eol ) );
-									report += ( ( (j + 1) == lineNo ) ? "\n>" : "\n" ) + ( boost::format("%4d:") % (j + 1) ).str() + line;
-									if( begIt == script.end() ) break;
+								std::istringstream iss( scripts_.find(scriptName)->second );
+								// iss.exceptions( std::ios_base::failbit | std::ios_base::badbit );
+								int j = 0; std::string line;
+
+								// skip lines
+								for(int j_len = lineNo - BACK_TRACE_LINE_NUM; j < j_len; j++) std::getline(iss, line);
+
+								for(int j_len = lineNo + BACK_TRACE_LINE_NUM; j < j_len; j++) {
+									std::getline(iss, line);
+									report += ( ( (j + 1) == lineNo ) ? "\n>" : "\n" ) + ( boost::format("%5d:") % (j + 1) ).str() + line;
+									if( iss.eof() ) break;
 								}
 							}
 						}
@@ -225,16 +207,10 @@ namespace ARGSS
 				suffix = scriptName.substr( scriptName.find_last_of('.') + 1 );
 
 			if( suffix == "rxdata" ) {
-/*
-				VALUE result = rb_require("zlib");
-				VALUE cZlib = rb_const_get(rb_cObject, rb_intern("Zlib"));
-				VALUE cInflate = rb_const_get(cZlib, rb_intern("Inflate"));
- */
 				VALUE scripts = rload_data( Qnil, rb_str_new( scriptName.data(), scriptName.size() ) );
 				RArray* arr = RARRAY(scripts);
 				for (int i = 0; i < RARRAY_LEN(arr); i++) {
 					VALUE section_arr = rb_ary_entry(scripts, i);
-					// VALUE section = rb_funcall( cInflate, rb_intern("inflate"), 1, rb_ary_entry(section_arr, 2) );
 
 					/*
 					 * using boost.iostreams
@@ -254,7 +230,6 @@ namespace ARGSS
 					VALUE section = rb_str_new( dstStr.c_str(), dstStr.size() );
 
 					std::string scriptName = RSTRING_PTR( rb_ary_entry(section_arr, 1) );
-					scriptNames_.add(scriptName, scriptName);
 					assert( scripts_.insert( std::map< std::string, std::string >::value_type( scriptName, dstStr ) ).second );
 
 					result = 
@@ -385,5 +360,5 @@ void Check_Class(VALUE x, VALUE c)
 void Check_Classes_N(VALUE x, VALUE c)
 {
 	if ( NIL_P(x) ) return;
-	Check_Class(x, c);
+	else Check_Class(x, c);
 }

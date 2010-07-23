@@ -25,6 +25,7 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
+#include <iostream>
 #include <string>
 
 #include <argss/bitmap.hxx>
@@ -52,7 +53,8 @@ namespace ARGSS
 		////////////////////////////////////////////////////////////
 		/// ARGSS Tilemap ruby functions
 		////////////////////////////////////////////////////////////
-		VALUE rinitialize(int argc, VALUE *argv, VALUE self) {
+		VALUE rinitialize(int argc, VALUE *argv, VALUE self)
+		{
 			if (argc == 1) {
 				Check_Classes_N(argv[0], ARGSS::AViewport::getID());
 				rb_iv_set(self, "@viewport", argv[0]);
@@ -73,7 +75,8 @@ namespace ARGSS
 			ARGSS::ARuby::AddObject(self);
 			return self;
 		}
-		VALUE rdispose(VALUE self) {
+		VALUE rdispose(VALUE self)
+		{
 			if (!Tilemap::IsDisposed(self)) {
 				CheckDisposed(self);
 				Tilemap::Dispose(self);
@@ -82,19 +85,23 @@ namespace ARGSS
 			}
 			return self;
 		}
-		VALUE rdisposedQ(VALUE self) {
+		VALUE rdisposedQ(VALUE self)
+		{
 			return INT2BOOL(Tilemap::IsDisposed(self));
 		}
-		VALUE rupdate(VALUE self) {
+		VALUE rupdate(VALUE self)
+		{
 			CheckDisposed(self);
 			Tilemap::get(self).Update();
 			return Qnil;
 		}
-		VALUE rviewport(VALUE self) {
+		VALUE rviewport(VALUE self)
+		{
 			CheckDisposed(self);
 			return rb_iv_get(self, "@viewport");
 		}
-		VALUE rviewportE(VALUE self, VALUE viewport) {
+		VALUE rviewportE(VALUE self, VALUE viewport)
+		{
 			CheckDisposed(self);
 			Check_Classes_N(viewport, ARGSS::AViewport::getID());
 			Tilemap::get(self).setViewport(viewport);
