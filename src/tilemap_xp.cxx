@@ -26,8 +26,11 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #include <cmath>
-#include <string>
+
+#include <iostream>
 #include <map>
+#include <string>
+
 #include "tilemap_xp.hxx"
 #include <argss/ruby.hxx>
 #include <argss/tilemap.hxx>
@@ -374,7 +377,7 @@ void Tilemap::setMapData(VALUE nmap_data)
 
 		if ( ! NIL_P(nmap_data) ) {
 			rb_iv_set(nmap_data, "@modified", Qtrue);
-			int height = NIL_P(rb_iv_get(nmap_data, "@ysize")) ? TILE_SIZE : // sometimes the ysize is NIL
+			int height = // NIL_P(rb_iv_get(nmap_data, "@ysize"))? TILE_SIZE : // sometimes the ysize is NIL
 				NUM2INT(rb_iv_get(nmap_data, "@ysize"));
 			if ( ! NIL_P(viewport) ) {
 				for (int i = 0; i < height + 8; i++) {

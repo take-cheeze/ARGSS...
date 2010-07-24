@@ -115,18 +115,23 @@ namespace ARGSS
 				TableTemplate(SizeType const& sizes) : size_(sizes), data_( fullSize(sizes) )
 				{
 				}
-				unsigned int size(unsigned int dim) const { return ( dim < size_.size() )? size_[dim] : 0; }
+				unsigned int size(unsigned int dim) const
+				{
+					if( dim < size_.size() ) return size_[dim];
+					assert(false);
+					return 0;
+				}
 				unsigned int xsize() const { return size(0); }
 				unsigned int ysize() const { return size(1); }
 				unsigned int zsize() const { return size(2); }
 
-				IntegerType& element(IndexType const& arg)
+				IntegerType& operator [](IndexType const& arg)
 				{
 					assert( arg.size() == size_.size() );
 					// assert( !outOfRange(arg) );
 					return data_[ getIndex(arg) ];
 				}
-				IntegerType const& element(IndexType const& arg) const
+				IntegerType const& operator [](IndexType const& arg) const
 				{
 					assert( arg.size() == size_.size() );
 					assert( !outOfRange(arg) );
@@ -138,6 +143,8 @@ namespace ARGSS
 				unsigned int const dimension() const { return size_.size(); }
 			};
 			typedef TableTemplate< int16_t > Table;
+			int TABLE_MAX = 32767, TABLE_MIN = -32768;
+
 			////////////////////////////////////////////////////////////
 			/// Global Variables
 			////////////////////////////////////////////////////////////
@@ -199,7 +206,7 @@ namespace ARGSS
 		VALUE rzsize(VALUE self) { return INT2NUM( getTable(self).zsize() ); }
 		VALUE raref(int argc, VALUE *argv, VALUE self)
 		{
-			return INT2NUM( getTable(self).element( val2arg(argc, argv) ) );
+			return INT2NUM( int( getTable(self)[ val2arg(argc, argv) ] ) );
 		}
 		VALUE raset(int argc, VALUE *argv, VALUE self)
 		{
@@ -207,7 +214,10 @@ namespace ARGSS
 			unsigned int const dim = table.dimension();
 			assert( (dim + 1) == argc );
 
-			table.element( val2arg(dim, argv) ) = NUM2INT( argv[dim] );
+			int clamped = NUM2INT( argv[dim] );
+			if(clamped > TABLE_MAX) clamped = TABLE_MAX;
+			if(clamped < TABLE_MIN) clamped = TABLE_MIN;
+			table[ val2arg(dim, argv) ] = clamped;
 
 			return argv[dim];
 		}
@@ -221,17 +231,13 @@ namespace ARGSS
 		template< typename T >
 		void setLE(uint8_t* &dst, T const& val)
 		{
-			for(unsigned int i = 0; i < sizeof(T); i++) {
-				*(dst++) = ( val >> (CHAR_BIT * i) ) & 0xFF;
-			}
+			for(unsigned int i = 0; i < sizeof(T); i++) *(dst++) = ( val >> (CHAR_BIT * i) ) & 0xFF;
 		}
 		template< typename T >
 		T getLE(uint8_t const* &src)
 		{
 			T ret = 0;
-			for(unsigned int i = 0; i < sizeof(T); i++) {
-				ret |= *(src++) << (CHAR_BIT * i);
-			}
+			for(unsigned int i = 0; i < sizeof(T); i++) ret |= ( *(src++) << (CHAR_BIT * i) ) & 0xFF;
 			return ret;
 		}
 		VALUE rdump(int argc, VALUE* argv, VALUE self)
@@ -245,23 +251,12 @@ namespace ARGSS
 			setLE( p, uint32_t( table.fullSize() ) );
 			for(unsigned int i = 0; i < table.fullSize(); i++) setLE( p, int16_t( table[i] ) );
 			return rb_str_new( reinterpret_cast< char const* >( &(ret[0]) ), table.fullSize() );
-/*
-			if (argc > 1) raise_argn(argc, 1);
-			VALUE str = rb_str_new2("");
-			VALUE xsize = rb_iv_get(self, "@xsize");
-			VALUE ysize = rb_iv_get(self, "@ysize");
-			VALUE zsize = rb_iv_get(self, "@zsize");
-			VALUE items = NUM2INT(xsize) * NUM2INT(ysize) *NUM2INT(zsize);
-			VALUE arr = rb_ary_new3(5, rb_iv_get(self, "@dim"), xsize, ysize, zsize, INT2NUM(items));
-			rb_str_concat(str, rb_funcall(arr, rb_intern("pack"), 1, rb_str_new2("V5")));
-			rb_str_concat(str, rb_funcall(rb_iv_get(self, "@data"), rb_intern("pack"), 1, rb_str_times(rb_str_new2("v"), INT2NUM(items))));
-			return str;
- */
 		}
 		VALUE rload(VALUE self, VALUE str)
 		{
 			uint8_t const* p = reinterpret_cast< uint8_t const* >( RSTRING_PTR(str) );
 			unsigned int dim = getLE< uint32_t >(p);
+			assert( 0 < dim && dim <= 3 );
 			VALUE argv[3];
 			for(int i = 0; i < 3; i++) argv[i] = INT2NUM( getLE< uint32_t >(p) );
 			VALUE table = rb_class_new_instance(dim, argv, id);
@@ -269,16 +264,6 @@ namespace ARGSS
 			unsigned int data_size = getLE< uint32_t >(p);
 			for(unsigned int i = 0; i < data_size; i++) tableRef[i] = getLE< int16_t >(p);
 			return table;
-/*
-			VALUE arr = rb_funcall(str, rb_intern("unpack"), 1, rb_str_new2("V5"));
-			int dim = NUM2INT(rb_ary_entry(arr, 0));
-			VALUE items = NUM2INT(rb_ary_entry(arr, 4));
-			VALUE args[3] = {rb_ary_entry(arr, 1), rb_ary_entry(arr, 2), rb_ary_entry(arr, 3)};
-			VALUE table = rb_class_new_instance(dim, args, id);
-			VALUE data = rb_funcall(rb_str_substr(str, 20, items * 2), rb_intern("unpack"), 1, rb_str_times(rb_str_new2("v"), INT2NUM(items)));
-			rb_iv_set(table, "@data", data);
-			return table;
- */
 		}
 /*
 		////////////////////////////////////////////////////////////

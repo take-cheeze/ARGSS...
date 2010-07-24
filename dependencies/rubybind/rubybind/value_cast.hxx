@@ -25,7 +25,7 @@
 
 #include <boost/function.hpp>
 
-#include "rubybind_inc.hxx"
+#include "ruby_include.hxx"
 
 namespace rubybind
 {

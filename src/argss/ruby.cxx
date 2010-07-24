@@ -88,7 +88,18 @@ namespace ARGSS
 			////////////////////////////////////////////////////////////
 			VALUE protected_objects;
 
-			std::map< std::string, std::string > scripts_;
+			std::multimap< std::string, std::string > scripts_;
+			std::string getScript(std::string const& name)
+			{
+				if( System::getScriptsPath().substr( System::getScriptsPath().find_last_of('.') + 1 ) == "rb" ) {
+					assert( FileIO::exists(name) );
+					std::vector< uint8_t > const& file = FileIO::get(name);
+					return std::string( reinterpret_cast< char const* >( &(file[0]) ), file.size() );
+				} else {
+					assert( scripts_.find(name) != scripts_.end() );
+					return scripts_.find(name)->second;
+				}
+			}
 		} // namespace
 
 		////////////////////////////////////////////////////////////
@@ -151,8 +162,7 @@ namespace ARGSS
 								std::string scriptName = what[1];
 								unsigned int lineNo = boost::lexical_cast< unsigned int >( what[2] );
 
-								assert( scripts_.find(scriptName) != scripts_.end() );
-								std::istringstream iss( scripts_.find(scriptName)->second );
+								std::istringstream iss( getScript(scriptName) );
 								// iss.exceptions( std::ios_base::failbit | std::ios_base::badbit );
 								int j = 0; std::string line;
 
@@ -206,7 +216,7 @@ namespace ARGSS
 				scriptName = System::getScriptsPath(),
 				suffix = scriptName.substr( scriptName.find_last_of('.') + 1 );
 
-			if( suffix == "rxdata" ) {
+			if( (suffix == "rxdata") || (suffix == "rvdata") ) {
 				VALUE scripts = rload_data( Qnil, rb_str_new( scriptName.data(), scriptName.size() ) );
 				RArray* arr = RARRAY(scripts);
 				for (int i = 0; i < RARRAY_LEN(arr); i++) {
@@ -230,7 +240,7 @@ namespace ARGSS
 					VALUE section = rb_str_new( dstStr.c_str(), dstStr.size() );
 
 					std::string scriptName = RSTRING_PTR( rb_ary_entry(section_arr, 1) );
-					assert( scripts_.insert( std::map< std::string, std::string >::value_type( scriptName, dstStr ) ).second );
+					scripts_.insert( std::multimap< std::string, std::string >::value_type( scriptName, dstStr ) );
 
 					result = 
 						// rb_eval_string_protect( RSTRING_PTR(section), &error );

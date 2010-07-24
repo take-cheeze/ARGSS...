@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "rubybind_inc.hxx"
+#include "ruby_include.hxx"
 
 namespace rubybind
 {
