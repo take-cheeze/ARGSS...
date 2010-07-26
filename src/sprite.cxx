@@ -52,7 +52,8 @@ Sprite::Sprite(VALUE iid)
 , x(0), y(0), z(0), ox(0), oy(0)
 , zoom_x(1.0), zoom_y(1.0)
 , angle(0), flipx(false), flipy(false)
-, bush_depth(0), opacity(255), blendType_(Blend::NORMAL)
+, bush_depth(0), bush_opacity(128), opacity(255)
+, blendType_(Blend::NORMAL)
 , color( rb_iv_get(id, "@color") )
 , tone( rb_iv_get(id, "@tone") )
 , flash_duration(0), sprite_()
@@ -216,7 +217,7 @@ void Sprite::draw(long z)
 		glTexCoordPointer(2, GL_FLOAT, 0, texCoords);
 		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 
-		glColor4f(1.0f, 1.0f, 1.0f, 0.5f * (opacity / 255.0f));
+		glColor4f(1.0f, 1.0f, 1.0f, (bush_opacity / 255.0f) * (opacity / 255.0f));
 
 		std::memcpy( vertexes, corners, sizeof(vertexes) );
 		vertexes[0][0] = 0.f; vertexes[0][1] = 0.f;

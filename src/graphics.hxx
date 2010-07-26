@@ -56,19 +56,19 @@ namespace Graphics
 	void Freeze();
 	void Transition(int duration, std::string const& filename, int vague);
 	void FrameReset();
-	void Wait(int duration);
-	void ResizeScreen(int width, int height);
-	VALUE SnapToBitmap();
-	void FadeOut(int duration);
-	void FadeIn(int duration);
+	void Wait(int duration); // RGSS2
+	void ResizeScreen(int width, int height); // RGSS2
+	VALUE SnapToBitmap(); // RGSS2
+	void FadeOut(int duration); // RGSS2
+	void FadeIn (int duration); // RGSS2
 	int getFrameRate();
 	void setFrameRate(int nframerate);
 	int getFrameCount();
 	void setFrameCount(int nframecount);
 	VALUE getBackColor();
 	void setBackColor(VALUE nbackcolor);
-	int getBrightness();
-	void setBrightness(int nbrightness);
+	int getBrightness(); // RGSS2
+	void setBrightness(int nbrightness); // RGSS2
 
 	bool SortZObj(ZObj &first, ZObj &second);
 	void RegisterZObj(long z, VALUE id);
@@ -84,6 +84,9 @@ namespace Graphics
 	int getFPS();
 	void incrementCreation();
 	long getCreation();
+
+	int getWidth ();
+	int getHeight();
 } // namespace Graphics
 
 #endif

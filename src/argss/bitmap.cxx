@@ -111,7 +111,8 @@ namespace ARGSS
 			}
 			return self;
 		}
-		VALUE rstretch_blt(int argc, VALUE *argv, VALUE self) {
+		VALUE rstretch_blt(int argc, VALUE *argv, VALUE self)
+		{
 			CheckDisposed(self);
 			if (argc < 3) raise_argn(argc, 3);
 			else if (argc > 4) raise_argn(argc, 4);
@@ -212,29 +213,30 @@ namespace ARGSS
 			CheckDisposed(self);
 			return Bitmap::get(self).getTextSize(StringValueCStr(str)).getARGSS();
 		}
-		VALUE rgradient_fill_rect(int argc, VALUE *argv, VALUE self)
+		VALUE rgradient_fill_rect(int argc, VALUE *argv, VALUE self) // RGSS2
 		{
 			CheckDisposed(self);
-			if (argc < 3) raise_argn(argc, 3);
-			else if (argc < 5) {
-				bool vertical = false;
-				if (argc == 4) {
-					vertical = NUM2BOOL(argv[3]);
-				}
-			Bitmap::get(self).GradientFillRect(Rect(argv[0]), Color(argv[1]), Color(argv[2]), vertical);
+			Rect dstRect;
+			Color color[2];
+			bool vertical = false;
+			switch(argc) {
+				default: raise_argn(argc, 0); // TODO: correct 2nd arg
+					break;
+				case 4: vertical = NUM2BOOL(argv[argc-1]); /* FallThrough */
+				case 3:
+					dstRect = Rect(argv[0]);
+					color[0] = Color(argv[1]); color[1] = Color(argv[2]);
+					break;
+				case 7: vertical = NUM2BOOL(argv[argc-1]); /* FallThrough */
+				case 6:
+					dstRect = Rect(NUM2INT(argv[0]), NUM2INT(argv[1]), NUM2INT(argv[2]), NUM2INT(argv[3]));
+					color[0] = Color(argv[4]); color[1] = Color(argv[5]);
+					break;
 			}
-			else if (argc < 6) raise_argn(argc, 6);
-			else if (argc < 8) {
-				bool vertical = false;
-				if (argc == 4) {
-					vertical = NUM2BOOL(argv[6]);
-				}
-				Bitmap::get(self).GradientFillRect(Rect(NUM2INT(argv[0]), NUM2INT(argv[1]), NUM2INT(argv[2]), NUM2INT(argv[3])), Color(argv[4]), Color(argv[5]), vertical);
-			}
-			else raise_argn(argc, 7);
+			Bitmap::get(self).GradientFillRect(dstRect, color[0], color[1], vertical);
 			return self;
 		}
-		VALUE rclear_rect(int argc, VALUE *argv, VALUE self)
+		VALUE rclear_rect(int argc, VALUE *argv, VALUE self) // RGSS2
 		{
 			CheckDisposed(self);
 			if (argc < 1) raise_argn(argc, 1);
@@ -247,13 +249,13 @@ namespace ARGSS
 			else raise_argn(argc, 4);
 			return self;
 		}
-		VALUE rblur(VALUE self)
+		VALUE rblur(VALUE self) // RGSS2
 		{
 			CheckDisposed(self);
 			Bitmap::get(self).Blur();
 			return self;
 		}
-		VALUE rradial_blur(VALUE self, VALUE angle, VALUE division)
+		VALUE rradial_blur(VALUE self, VALUE angle, VALUE division) // RGSS2
 		{
 			CheckDisposed(self);
 			Bitmap::get(self).RadialBlur(NUM2INT(angle), NUM2INT(division));

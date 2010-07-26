@@ -29,16 +29,19 @@
 #include <boost/unordered_map.hpp>
 
 #include <cstdlib>
+#include <cstring>
 #include <ctime>
 
 #include <iostream>
 #include <map>
 #include <string>
+#include <vector>
 
 #include <GL/gl.h>
 
-#include <argss/ruby.hxx>
 #include <argss/error.hxx>
+#include <argss/bitmap.hxx>
+#include <argss/ruby.hxx>
 
 #include "time.hxx"
 #include "graphics.hxx"
@@ -69,7 +72,13 @@ namespace Graphics
 		long lastTics_;
 		long lastTicsWait_;
 		long nextTicsFps_;
+		VALUE freezing_; // "NIL_P(freezing_) == false" if freezing the screen
+
+		int const SCREEN_WIDTH_MAX = 640, SCREEN_HEIGHT_MAX = 480;
 	}
+
+	int getWidth () { return Player::getMainWindow().getWidth (); }
+	int getHeight() { return Player::getMainWindow().getHeight(); }
 
 	int getFPS() { return fps; }
 	Drawable& getDrawable(VALUE id)
@@ -226,8 +235,26 @@ namespace Graphics
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		for (std::list< ZObj >::iterator it = zlist_.begin(); it != zlist_.end(); ++it) {
-			drawableMap_[it->getId()]->draw(it->getZ());
+		if( NIL_P(freezing_) ) {
+			for (std::list< ZObj >::iterator it = zlist_.begin(); it != zlist_.end(); ++it) {
+				getDrawable( it->getId() ).draw(it->getZ());
+			}
+		} else {
+			GLshort vertexes[4][2];
+			vertexes[0][0] = 0; vertexes[0][1] = 0;
+			vertexes[1][0] = 0; vertexes[1][1] = Player::getHeight();
+			vertexes[2][0] = Player::getWidth(); vertexes[2][1] = Player::getHeight();
+			vertexes[3][0] = Player::getWidth(); vertexes[3][1] = 0;
+			GLfloat coords[4][2] = { {0.f, 0.f}, {1.f, 0.f}, {1.f, 1.f}, {0.f, 1.f}, };
+			glEnableClientState(GL_VERTEX_ARRAY);
+			glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+				glEnable(GL_TEXTURE_2D);
+				Bitmap::get(freezing_).BindBitmap();
+				glVertexPointer(2, GL_FLOAT, 0, vertexes);
+				glTexCoordPointer(2, GL_FLOAT, 0, coords);
+				glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+			glDisableClientState(GL_VERTEX_ARRAY);
+			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 		}
 
 		if (brightness < 255) {
@@ -256,7 +283,8 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void Freeze()
 	{
-		// TODO
+		if( !NIL_P(freezing_) ) ARGSS::ABitmap::rdispose(freezing_);
+		freezing_ = SnapToBitmap();
 	}
 
 	////////////////////////////////////////////////////////////
@@ -264,6 +292,11 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void Transition(int duration, std::string const& filename, int vague)
 	{
+		if( !NIL_P(freezing_) ) {
+			ARGSS::ABitmap::rdispose(freezing_);
+			freezing_ = Qnil;
+		}
+
 		// TODO
 	}
 
@@ -291,6 +324,10 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void ResizeScreen(int width, int height)
 	{
+		// clamp
+		if(width  > SCREEN_WIDTH_MAX ) width  = SCREEN_WIDTH_MAX ;
+		if(height > SCREEN_HEIGHT_MAX) height = SCREEN_HEIGHT_MAX;
+
 		Player::ResizeWindow(width, height);
 
 		glViewport(0, 0, width, height);
@@ -311,15 +348,30 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	/// Snap scree to bitmap
 	////////////////////////////////////////////////////////////
-	VALUE SnapToBitmap()
+	VALUE SnapToBitmap() // RGSS2
 	{
-		return Qnil;
+		VALUE argv[2];
+		argv[0] = getWidth ();
+		argv[1] = getHeight();
+		VALUE ret = rb_class_new_instance(2, argv, ARGSS::ABitmap::getID() );
+
+		Uint32* dst = Bitmap::get(ret).getPixels();
+		std::vector< Uint32 > src( getWidth() * getHeight() );
+		std::size_t cpySize = sizeof(Uint32) * getHeight();
+
+		/* glReadPixels() isn't available in GL ES */
+		glReadPixels( 0, 0, getWidth(), getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, &(src[0]) );
+		for(int y = 0; y < getHeight(); y++) {
+			std::memcpy( &(dst[getWidth() * y]), &(src[getWidth() * (getHeight() - y - 1)]), cpySize );
+		}
+
+		return ret;
 	}
 
 	////////////////////////////////////////////////////////////
 	/// Fade out
 	////////////////////////////////////////////////////////////
-	void FadeOut(int duration)
+	void FadeOut(int duration) // RGSS2
 	{
 		int n = brightness / duration;
 		for (;duration > 0; duration--) {
@@ -336,7 +388,7 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	/// Fade in
 	////////////////////////////////////////////////////////////
-	void FadeIn(int duration)
+	void FadeIn(int duration) // RGSS2
 	{
 		int n = 255 / duration;
 		for (;duration > 0; duration--) {
@@ -381,11 +433,11 @@ namespace Graphics
 					 (GLclampf)(backcolor.blue / 255.0f),
 					 (GLclampf)(backcolor.alpha / 255.0f));
 	}
-	int getBrightness()
+	int getBrightness() // RGSS2
 	{
 		return brightness;
 	}
-	void setBrightness(int nbrightness)
+	void setBrightness(int nbrightness) // RGSS2
 	{
 		brightness = nbrightness;
 	}

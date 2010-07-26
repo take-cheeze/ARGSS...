@@ -53,7 +53,7 @@
 	#define ruby_errinfo rb_errinfo()
 #endif
 
-static int const BACK_TRACE_LINE_NUM = 10;
+static int const BACK_TRACE_LINE_NUM = 5;
 
 
 namespace ARGSS

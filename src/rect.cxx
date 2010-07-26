@@ -110,7 +110,6 @@ void Rect::Adjust(int awidth, int aheight)
 	if (x < awidth && y < aheight) {
 		if (awidth < x + width) width = awidth - x;
 		if (aheight < y + height) height = aheight - y;
-		
 	}
 }
 

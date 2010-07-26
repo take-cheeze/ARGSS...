@@ -82,7 +82,7 @@ public:
 	void HSLChange(double h, double s, double l, Rect rect);
 	void TextDraw(Rect const& rect, std::string const& text, int align);
 	Rect getTextSize(std::string const& text);
-	void GradientFillRect(Rect const& rect, Color const& color1, Color const& color2, bool vertical);
+	void GradientFillRect(Rect rect, Color const& color1, Color const& color2, bool vertical);
 	void ClearRect(Rect rect);
 	void Blur();
 	void RadialBlur(int angle, int division);

@@ -66,17 +66,22 @@ namespace ARGSS
 			int duration = 8;
 			std::string filename;
 			int vague = 40;
-			if (argc > 0) {
-				Check_Kind(argv[0], rb_cNumeric);
-				duration = NUM2INT(argv[0]);
-			}
-			if (argc > 1) {
-				Check_Type(argv[1], T_STRING);
-				filename = StringValueCStr(argv[1]);
-			}
-			if (argc > 2) {
-				Check_Kind(argv[2], rb_cNumeric);
-				vague = NUM2INT(argv[2]);
+			switch(argc) {
+				case 3:
+					Check_Kind(argv[2], rb_cNumeric);
+					vague = NUM2INT(argv[2]);
+					/* FallThrough */
+				case 2:
+					Check_Type(argv[1], T_STRING);
+					filename = StringValueCStr(argv[1]);
+					/* FallThrough */
+				case 1:
+					Check_Kind(argv[0], rb_cNumeric);
+					duration = NUM2INT(argv[0]);
+					break;
+				case 0: // RGSS2
+					duration = 10;
+					break;
 			}
 			Graphics::Transition(duration, filename, vague);
 			return Qnil;
@@ -120,48 +125,48 @@ namespace ARGSS
 			Graphics::setBackColor(backcolor);
 			return backcolor;
 		}
-		VALUE rwait(VALUE self, VALUE duration)
+		VALUE rwait(VALUE self, VALUE duration) // RGSS2
 		{
 			Check_Kind(duration, rb_cNumeric);
 			Graphics::Wait(NUM2INT(duration));
 			return Qnil;
 		}
-		VALUE rwidth(VALUE self)
+		VALUE rwidth(VALUE self) // RGSS2
 		{
-			return INT2NUM( Player::getMainWindow().getWidth() ); // System::Width);
+			return INT2NUM( Graphics::getWidth() );
 		}
-		VALUE rheight(VALUE self)
+		VALUE rheight(VALUE self) // RGSS2
 		{
-			return INT2NUM( Player::getMainWindow().getHeight() ); // System::Height);
+			return INT2NUM( Graphics::getHeight() );
 		}
-		VALUE rresize_screen(VALUE self, VALUE width, VALUE height)
+		VALUE rresize_screen(VALUE self, VALUE width, VALUE height) // RGSS2
 		{
 			Check_Kind(width, rb_cNumeric);
 			Check_Kind(height, rb_cNumeric);
 			Graphics::ResizeScreen(NUM2INT(width), NUM2INT(height));
 			return Qnil;
 		}
-		VALUE rsnap_to_bitmap(VALUE self)
+		VALUE rsnap_to_bitmap(VALUE self) // RGSS2
 		{
 			return Graphics::SnapToBitmap();
 		}
-		VALUE rfadeout(VALUE self, VALUE duration)
+		VALUE rfadeout(VALUE self, VALUE duration) // RGSS2
 		{
 			Check_Kind(duration, rb_cNumeric);
 			Graphics::FadeOut(NUM2INT(duration));
 			return Qnil;
 		}
-		VALUE rfadein(VALUE self, VALUE duration)
+		VALUE rfadein(VALUE self, VALUE duration) // RGSS2
 		{
 			Check_Kind(duration, rb_cNumeric);
 			Graphics::FadeIn(NUM2INT(duration));
 			return Qnil;
 		}
-		VALUE rbrightness(VALUE self)
+		VALUE rbrightness(VALUE self) // RGSS2
 		{
 			return INT2FIX(Graphics::getBrightness());
 		}
-		VALUE rbrightnessE(VALUE self, VALUE brightness)
+		VALUE rbrightnessE(VALUE self, VALUE brightness) // RGSS2
 		{
 			Check_Kind(brightness, rb_cNumeric);
 			Graphics::setBrightness(NUM2INT(brightness));

@@ -360,16 +360,14 @@ void Bitmap::Clear(Color const& color)
 }
 void Bitmap::ClearRect(Rect rect)
 {
-	if( rect == getRect() ) {
-		std::memset( &pixels_[0], 0x0, width_ * height_ * sizeof(Uint32) );
-	} else {
-		rect.Adjust(width_, height_);
+	if( rect == getRect() ) Clear();
+	else {
+		rect.Adjust( getWidth(), getHeight() );
 		for(int i = 0; i < rect.height; i++) {
-			std::memset( &pixels_[rect.x + width_ * i], 0x0, rect.width * sizeof(Uint32) );
+			std::memset( &pixels_[rect.x + width_ * i], 0x0, sizeof(Uint32) * rect.width );
 		}
+		Changed();
 	}
-
-	Changed();
 }
 
 ////////////////////////////////////////////////////////////
@@ -425,7 +423,7 @@ void Bitmap::SatChange(double saturation)
 }
 
 ////////////////////////////////////////////////////////////
-/// Lustd::minance change
+/// Luminance change
 ////////////////////////////////////////////////////////////
 void Bitmap::LumChange(double luminance)
 {
@@ -518,9 +516,25 @@ Rect Bitmap::getTextSize(std::string const& text)
 ////////////////////////////////////////////////////////////
 /// Gradient fill rect
 ////////////////////////////////////////////////////////////
-void Bitmap::GradientFillRect(Rect const& rect, Color const& color1, Color const& color2, bool vertical)
+void Bitmap::GradientFillRect(Rect rect, Color const& color1, Color const& color2, bool vertical)
 {
-	// TODO
+	rect.Adjust( getWidth(), getHeight() );
+	std::vector< Uint32 > srcPix(rect.width);
+	Color range = ( color1 - color2 );
+
+	if(vertical) {
+		for(int y = 0; y < rect.height; y++) {
+			std::fill( srcPix.begin(), srcPix.end(), ( color1 + range * y / rect.width ).getUint32() );
+			std::memcpy( &(pixels_[(rect.y + y) * rect.x]), &(srcPix[0]), sizeof(Uint32) * srcPix.size() );
+		}
+	} else { // horizontal
+		for(int x = 0; x < rect.width ; x++) {
+			srcPix[x] = ( color1 + range * x / rect.width ).getUint32();
+		}
+		for(int y = 0; y < rect.height; y++) {
+			std::memcpy( &(pixels_[(rect.y + y) * rect.x]), &(srcPix[0]), sizeof(Uint32) * srcPix.size() );
+		}
+	}
 }
 
 ////////////////////////////////////////////////////////////

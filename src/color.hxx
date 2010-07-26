@@ -40,7 +40,7 @@ class Color
 public:
 	Color();
 	Color(VALUE color);
-	Color(int ired, int igreen, int iblue, int ialpha);
+	Color(int ired, int igreen, int iblue, int ialpha = 255);
 	Color(Color const& src);
 	~Color();
 
@@ -55,5 +55,33 @@ public:
 
 	static Color NewUint32(Uint32 color);
 }; // class Color
+
+#define PP_operator(op) \
+	inline Color operator op(Color const& lhs, Color const& rhs) \
+	{ \
+		return Color( \
+			lhs.red   op rhs.red  , \
+			lhs.green op rhs.green, \
+			lhs.blue  op rhs.blue , \
+			lhs.alpha op rhs.alpha  \
+		); \
+	} \
+	template< typename T > \
+	inline Color operator op(Color const& lhs, T const& rhs) \
+	{ \
+		return Color( \
+			lhs.red   op rhs, \
+			lhs.green op rhs, \
+			lhs.blue  op rhs, \
+			lhs.alpha op rhs  \
+		); \
+	} \
+
+PP_operator(-)
+PP_operator(+)
+PP_operator(*)
+PP_operator(/)
+
+#undef PP_operator
 
 #endif

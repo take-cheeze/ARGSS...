@@ -87,6 +87,8 @@ public:
 	bool getFlipY() const { return flipy; }
 	int getBushDepth() const { return bush_depth; }
 	void setBushDepth(int nbush_depth) { bush_depth = nbush_depth; }
+	int getBushOpacity() const { return bush_opacity; }
+	void setBushOpacity(int nbush_opacity) { bush_opacity = nbush_opacity; }
 	int getOpacity() const { return opacity; }
 	void setOpacity(int nopacity) { opacity = nopacity; }
 	Blend::Type getBlendType() const { return blendType_; }
@@ -102,9 +104,11 @@ public:
 	bool getVisible() const { return NUM2BOOL( rb_iv_get(id, "@visible") ); }
 	void setVisible(bool nvisible) { rb_iv_set( id, "@visible", BOOL2NUM(nvisible) ); }
  */
+	int getWidth();
+	int getHeight();
 private:
 	VALUE id;
-	VALUE viewport_;
+	VALUE viewport_; // RGSS2
 	VALUE bitmap_;
 	VALUE srcRect_;
 	bool visible;
@@ -119,10 +123,13 @@ private:
 	bool flipx;
 	bool flipy;
 	int bush_depth;
+	int bush_opacity; // RGSS2
 	int opacity;
 	Blend::Type blendType_;
 	VALUE color;
 	VALUE tone;
+
+	int waveAmp_, waveLength_, waveSpeed_, wavePhase_; // RGSS2
 
 	GLuint flash_texture;
 	Color flash_color;
@@ -136,8 +143,6 @@ private:
 
 	void Refresh();
 	void RefreshFlash();
-	int getWidth();
-	int getHeight();
 }; // class Sprite
 
 #endif

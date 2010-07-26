@@ -60,10 +60,10 @@ namespace ARGSS
 		VALUE rhsl_change(int argc, VALUE* argv, VALUE self);
 		VALUE rdraw_text(int argc, VALUE* argv, VALUE self);
 		VALUE rtext_size(VALUE self, VALUE text);
-		VALUE rgradient_fill_rect(int argc, VALUE* argv, VALUE self);
-		VALUE rclear_rect(int argc, VALUE* argv, VALUE self);
-		VALUE rblur(VALUE self);
-		VALUE rradial_blur(VALUE self, VALUE angle, VALUE division);
+		VALUE rgradient_fill_rect(int argc, VALUE* argv, VALUE self); // RGSS2
+		VALUE rclear_rect(int argc, VALUE* argv, VALUE self); // RGSS2
+		VALUE rblur(VALUE self); // RGSS2
+		VALUE rradial_blur(VALUE self, VALUE angle, VALUE division); // RGSS2
 		VALUE rfont(VALUE self);
 		VALUE rfontE(VALUE self, VALUE font);
 		VALUE rdup(VALUE self);

@@ -53,14 +53,14 @@ namespace ARGSS
 		VALUE rbackcolor(VALUE self);
 		VALUE rbackcolorE(VALUE self, VALUE backcolor);
 		VALUE rwait(VALUE self, VALUE duration);
-		VALUE rwidth(VALUE self);
-		VALUE rheight(VALUE self);
-		VALUE rresize_screen(VALUE self, VALUE width, VALUE height);
-		VALUE rsnap_to_bitmap(VALUE self);
-		VALUE rfadeout(VALUE self, VALUE duration);
-		VALUE rfadein(VALUE self, VALUE duration);
-		VALUE rbrightness(VALUE self);
-		VALUE rbrightnessE(VALUE self, VALUE brightness);
+		VALUE rwidth (VALUE self); // RGSS2
+		VALUE rheight(VALUE self); // RGSS2
+		VALUE rresize_screen(VALUE self, VALUE width, VALUE height); // RGSS2
+		VALUE rsnap_to_bitmap(VALUE self); // RGSS2
+		VALUE rfadeout(VALUE self, VALUE duration); // RGSS2
+		VALUE rfadein (VALUE self, VALUE duration); // RGSS2
+		VALUE rbrightness(VALUE self); // RGSS2
+		VALUE rbrightnessE(VALUE self, VALUE brightness); // RGSS2
 	} // namespace AGraphics
 } // namespace ARGSS
 

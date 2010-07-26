@@ -146,8 +146,8 @@ void Plane::draw(long z)
 	float bmph = bmp.getHeight() * zoom_y;
 	int r_ox = -ox % (int)bmpw;
 	int r_oy = -oy % (int)bmph;
-	float tilesx = ceil(rectw / bmpw) + ceil(r_ox / bmpw);
-	float tilesy = ceil(recth / bmph) + ceil(r_oy / bmph);
+	float tilesx = std::ceil(rectw / bmpw) + std::ceil(r_ox / bmpw);
+	float tilesy = std::ceil(recth / bmph) + std::ceil(r_oy / bmph);
 	while (r_ox > 0) r_ox -= (int)bmpw;
 	while (r_oy > 0) r_oy -= (int)bmph;
 	GLfloat coords[4][2] = { {0.f, 0.f}, {1.f, 0.f}, {1.f, 1.f}, {0.f, 1.f}, };
@@ -166,7 +166,6 @@ void Plane::draw(long z)
 		glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 	}
 	}
-	// std::cout << "plane draw" << std::endl;
 	glDisableClientState(GL_VERTEX_ARRAY);
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 

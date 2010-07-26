@@ -76,6 +76,7 @@ namespace ARGSS
 			rb_iv_set(self, "@flipx", Qfalse);
 			rb_iv_set(self, "@flipy", Qfalse);
 			rb_iv_set(self, "@bush_depth", INT2NUM(0));
+			rb_iv_set(self, "@bush_opacity", INT2NUM(128)); // RGSS2
 			rb_iv_set(self, "@opacity", INT2NUM(255));
 			rb_iv_set(self, "@blend_type", INT2NUM(0));
 			rb_iv_set(self, "@color", ARGSS::AColor::New());
@@ -112,22 +113,22 @@ namespace ARGSS
 			Sprite::get(self).Update();
 			return Qnil;
 		}
-		VALUE rwidth(VALUE self)
+		VALUE rwidth(VALUE self) // RGSS2
 		{
 			Check(self);
-			return rb_iv_get(rb_iv_get(self, "@src_rect"), "@width");
+			return INT2NUM( Sprite::get(self).getWidth() );
 		}
-		VALUE rheight(VALUE self)
+		VALUE rheight(VALUE self) // RGSS2
 		{
 			Check(self);
-			return rb_iv_get(rb_iv_get(self, "@src_rect"), "@height");
+			return INT2NUM( Sprite::get(self).getHeight() );
 		}
-		VALUE rviewport(VALUE self)
+		VALUE rviewport(VALUE self) // RGSS2
 		{
 			Check(self);
 			return rb_iv_get(self, "@viewport");
 		}
-		VALUE rviewportE(VALUE self, VALUE viewport)
+		VALUE rviewportE(VALUE self, VALUE viewport) // RGSS2
 		{
 			Check(self);
 			Check_Classes_N(viewport, ARGSS::AViewport::getID());
@@ -151,8 +152,7 @@ namespace ARGSS
 				if (!Bitmap::IsDisposed(bitmap)) {
 					rb_iv_set(srcRect, "@width", INT2NUM(Bitmap::get(bitmap).getWidth()));
 					rb_iv_set(srcRect, "@height", INT2NUM(Bitmap::get(bitmap).getHeight()));
-				}
-				else {
+				} else {
 					rb_iv_set(srcRect, "@width", INT2NUM(0));
 					rb_iv_set(srcRect, "@height", INT2NUM(0));
 				}
@@ -325,6 +325,17 @@ namespace ARGSS
 			Sprite::get(self).setBushDepth(NUM2INT(bush_depth));
 			return rb_iv_set(self, "@bush_depth", bush_depth);
 		}
+		VALUE rbush_opacity(VALUE self) // RGSS2
+		{
+			Check(self);
+			return rb_iv_get(self, "@bush_opacity");
+		}
+		VALUE rbush_opacityE(VALUE self, VALUE bush_opacity) // RGSS2
+		{
+			Check(self);
+			Sprite::get(self).setBushOpacity(NUM2INT(bush_opacity));
+			return rb_iv_set(self, "@bush_opacity", bush_opacity);
+		}
 		VALUE ropacity(VALUE self)
 		{
 			Check(self);
@@ -386,9 +397,9 @@ namespace ARGSS
 				{ ARGSS_FUNC(dispose), 0 }, { ARGSS_Q(disposed), 0 },
 				{ ARGSS_FUNC(flash), 2 },
 				{ ARGSS_FUNC(update), 0 },
-				{ ARGSS_FUNC(width), 0 },
-				{ ARGSS_FUNC(height), 0 },
-				ARGSS_GETTER_SETTER(viewport),
+				{ ARGSS_FUNC(width), 0 }, // RGSS2
+				{ ARGSS_FUNC(height), 0 }, // RGSS2
+				ARGSS_GETTER_SETTER(viewport), // RGSS2
 				ARGSS_GETTER_SETTER(bitmap),
 				ARGSS_GETTER_SETTER(src_rect),
 				{ "visible?", RubyFunc(rvisible), 0 },
@@ -405,6 +416,7 @@ namespace ARGSS
 				ARGSS_GETTER_SETTER(flipx),
 				ARGSS_GETTER_SETTER(flipy),
 				ARGSS_GETTER_SETTER(bush_depth),
+				ARGSS_GETTER_SETTER(bush_opacity), // RGSS2
 				ARGSS_GETTER_SETTER(opacity),
 				ARGSS_GETTER_SETTER(blend_type),
 				ARGSS_GETTER_SETTER(color),
