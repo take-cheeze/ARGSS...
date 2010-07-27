@@ -53,7 +53,7 @@
 	#define ruby_errinfo rb_errinfo()
 #endif
 
-static int const BACK_TRACE_LINE_NUM = 5;
+static int const BACK_TRACE_LINE_NUM = 20;
 
 
 namespace ARGSS
@@ -141,6 +141,8 @@ namespace ARGSS
 		{
 			void checkError(int error)
 			{
+				boost::xpressive::sregex const rex = boost::xpressive::sregex::compile("([^:]+):(\\d+):in `(.+)'");
+
 				if (error) {
 					VALUE lasterr = rb_gv_get("$!");
 					VALUE klass = rb_class_path(CLASS_OF(lasterr));
@@ -154,11 +156,9 @@ namespace ARGSS
 								std::string errMsg( RSTRING_PTR(RARRAY_PTR(ary)[i]), RSTRING_LEN(RARRAY_PTR(ary)[i]) );
 
 								report += "\n\tfrom " + errMsg + ":";
-								if( i == ( RARRAY_LEN(ary) - 1 ) ) continue;
 
-								boost::xpressive::sregex rex = boost::xpressive::sregex::compile("([^:]+):(\\d+):in `(.+)'");
 								boost::xpressive::smatch what;
-								assert( boost::xpressive::regex_match( errMsg, what, rex ) );
+								if( !boost::xpressive::regex_match( errMsg, what, rex ) ) continue;
 								std::string scriptName = what[1];
 								unsigned int lineNo = boost::lexical_cast< unsigned int >( what[2] );
 

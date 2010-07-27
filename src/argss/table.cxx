@@ -30,15 +30,14 @@
 
 #include <cassert>
 #include <climits>
-#include <stdint.h>
 #include <cstring>
 
 #include <iostream>
 #include <string>
 #include <vector>
 
-#include <argss/table.hxx>
-#include <output.hxx>
+#include "table.hxx"
+#include "../output.hxx"
 
 
 namespace ARGSS
@@ -47,102 +46,6 @@ namespace ARGSS
 	{
 		namespace
 		{
-			template< typename IntegerType >
-			class TableTemplate
-			{
-			public:
-				typedef std::vector< unsigned int >  SizeType;
-				typedef std::vector< unsigned int > IndexType;
-			private:
-				SizeType size_;
-				std::vector< IntegerType > data_;
-			protected:
-				bool outOfRange(IndexType const& arg, SizeType const& size) const
-				{
-					for(unsigned int i = 0; i < arg.size(); i++) {
-						assert( size[i] );
-						if( arg[i] >= size[i] ) return true;
-					}
-					return false;
-				}
-				bool outOfRange(IndexType const& arg) const { return outOfRange(arg, size_); }
-
-				unsigned int getIndex(IndexType const& arg, SizeType const& size) const
-				{
-					unsigned int ret = arg.back();
-					for(int i = arg.size() - 2; i >= 0; i--) { ret *= size[i]; ret += arg[i]; }
-					return ret;
-				}
-				unsigned int getIndex(IndexType const& arg) const { return getIndex(arg, size_); }
-				unsigned int fullSize(SizeType const& size) const
-				{
-					int ret = 1;
-					for(unsigned int i = 0; i < size.size(); i++) ret *= size[i];
-					return ret;
-				}
-			public:
-				unsigned int fullSize() const { return fullSize(size_); }
-
-				void resize(SizeType const& arg)
-				{
-					std::vector< IntegerType > const& src = data_;
-					std::vector< IntegerType > dst( fullSize() );
-					SizeType const& srcSize = size_;
-					SizeType const& dstSize = arg;
-
-					unsigned int cpySize = sizeof(IntegerType);
-					cpySize *= dstSize.front() > srcSize.front() ? srcSize.front() : dstSize.front();
-
-					int j_len = dstSize.size() < srcSize.size() ? srcSize.size() : dstSize.size();
-					for(int i = 0, i_len = fullSize(srcSize) / srcSize.front(); i < i_len; i++) {
-						IndexType dstIndex( j_len );
-						unsigned int buf = i;
-						for(int j = 1; j < j_len; j++) {
-							dstIndex[j] = buf % srcSize[j];
-							buf /= srcSize[j];
-						}
-						IndexType srcIndex = dstIndex;
-						srcIndex.resize( srcSize.size() );
-						dstIndex.resize( dstSize.size() );
-						if( outOfRange(dstIndex, dstSize) ) continue;
-						std::memcpy( &(dst[ getIndex(dstIndex, dstSize) ]), &(src[ getIndex(srcIndex, srcSize) ]), cpySize );
-					}
-
-					size_ = dstSize;
-					data_ = dst;
-				}
-
-				TableTemplate(SizeType const& sizes) : size_(sizes), data_( fullSize(sizes) )
-				{
-				}
-				unsigned int size(unsigned int dim) const
-				{
-					if( dim < size_.size() ) return size_[dim];
-					assert(false);
-					return 0;
-				}
-				unsigned int xsize() const { return size(0); }
-				unsigned int ysize() const { return size(1); }
-				unsigned int zsize() const { return size(2); }
-
-				IntegerType& operator [](IndexType const& arg)
-				{
-					assert( arg.size() == size_.size() );
-					// assert( !outOfRange(arg) );
-					return data_[ getIndex(arg) ];
-				}
-				IntegerType const& operator [](IndexType const& arg) const
-				{
-					assert( arg.size() == size_.size() );
-					assert( !outOfRange(arg) );
-					return data_[ getIndex(arg) ];
-				}
-
-				IntegerType& operator [](unsigned int index) { return data_[index]; }
-				IntegerType const& operator [](unsigned int index) const { return data_[index]; }
-				unsigned int const dimension() const { return size_.size(); }
-			};
-			typedef TableTemplate< int16_t > Table;
 			int TABLE_MAX = 32767, TABLE_MIN = -32768;
 
 			////////////////////////////////////////////////////////////
@@ -157,14 +60,13 @@ namespace ARGSS
 				for(int i = 0; i < argc; i++) ret[i] = NUM2INT(argv[i]);
 				return ret;
 			}
-
-			Table& getTable(VALUE self)
-			{
-				assert( tables_.find(self) != tables_.end() );
-				return *( tables_.find(self)->second );
-			}
 		}
 		VALUE& getID() { return id; }
+		Table& getTable(VALUE self)
+		{
+			assert( tables_.find(self) != tables_.end() );
+			return *( tables_.find(self)->second );
+		}
 
 		////////////////////////////////////////////////////////////
 		/// ARGSS Table ruby functions
@@ -231,13 +133,13 @@ namespace ARGSS
 		template< typename T >
 		void setLE(uint8_t* &dst, T const& val)
 		{
-			for(unsigned int i = 0; i < sizeof(T); i++) *(dst++) = ( val >> (CHAR_BIT * i) ) & 0xFF;
+			for(unsigned int i = 0; i < sizeof(T); i++) *(dst++) = ( val >> (CHAR_BIT * i) );
 		}
 		template< typename T >
 		T getLE(uint8_t const* &src)
 		{
 			T ret = 0;
-			for(unsigned int i = 0; i < sizeof(T); i++) ret |= ( *(src++) << (CHAR_BIT * i) ) & 0xFF;
+			for(unsigned int i = 0; i < sizeof(T); i++) ret |= ( *(src++) << (CHAR_BIT * i) );
 			return ret;
 		}
 		VALUE rdump(int argc, VALUE* argv, VALUE self)
@@ -246,11 +148,15 @@ namespace ARGSS
 			Table const& table = getTable(self);
 			std::vector< uint8_t > ret( sizeof(uint32_t) * 5 + sizeof(int16_t) * table.fullSize() );
 			uint8_t* p = &(ret[0]);
+
+			assert( 0 < table.dimension() && table.dimension() <= 3 );
 			setLE( p, uint32_t( table.dimension() ) );
-			for(int i = 0; i < 3; i++) setLE( p, uint32_t( table.size(i) ) );
+			for(int i = 0; i < 3; i++) {
+				setLE( p, uint32_t( table.size(i) ) );
+			}
 			setLE( p, uint32_t( table.fullSize() ) );
 			for(unsigned int i = 0; i < table.fullSize(); i++) setLE( p, int16_t( table[i] ) );
-			return rb_str_new( reinterpret_cast< char const* >( &(ret[0]) ), table.fullSize() );
+			return rb_str_new( reinterpret_cast< char const* >( &(ret[0]) ), ret.size() );
 		}
 		VALUE rload(VALUE self, VALUE str)
 		{
@@ -258,8 +164,10 @@ namespace ARGSS
 			unsigned int dim = getLE< uint32_t >(p);
 			assert( 0 < dim && dim <= 3 );
 			VALUE argv[3];
-			for(int i = 0; i < 3; i++) argv[i] = INT2NUM( getLE< uint32_t >(p) );
-			VALUE table = rb_class_new_instance(dim, argv, id);
+			for(int i = 0; i < 3; i++) {
+				argv[i] = INT2NUM( getLE< uint32_t >(p) );
+			}
+			VALUE table = rb_class_new_instance(dim, argv, getID());
 			Table& tableRef = getTable(table);
 			unsigned int data_size = getLE< uint32_t >(p);
 			for(unsigned int i = 0; i < data_size; i++) tableRef[i] = getLE< int16_t >(p);
@@ -418,7 +326,7 @@ namespace ARGSS
 				{ "[]", RubyFunc(raref), -1 }, { "[]=", RubyFunc(raset), -1 },
 				{ "_dump", RubyFunc(rdump), -1 },
 			};
-			defineMethods(id, funcTable);
+			defineMethods(getID(), funcTable);
 			rb_define_singleton_method(id, "_load", RubyFunc(rload), 1);
 		}
 

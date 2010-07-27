@@ -29,6 +29,7 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #include <argss/ruby.hxx>
+#include <table.hxx>
 
 ////////////////////////////////////////////////////////////
 /// ARGSS Table namespace
@@ -38,6 +39,7 @@ namespace ARGSS
 	namespace ATable
 	{
 		VALUE& getID();
+		Table& getTable(VALUE self);
 
 		void Init();
 		VALUE New(int xsize);

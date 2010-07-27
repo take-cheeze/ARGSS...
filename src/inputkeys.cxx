@@ -31,7 +31,8 @@
 ////////////////////////////////////////////////////////////
 /// VALUE to key
 ////////////////////////////////////////////////////////////
-Input::Keys::InputKey Input::NUM2KEY(VALUE num) {
+Input::Keys::InputKey Input::NUM2KEY(VALUE num)
+{
 	switch (NUM2INT(num))
 	{
 		case 1001 : return Keys::BACKSPACE;

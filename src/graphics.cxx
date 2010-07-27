@@ -74,6 +74,8 @@ namespace Graphics
 		long nextTicsFps_;
 		VALUE freezing_ = Qnil; // "NIL_P(freezing_) == false" if freezing the screen
 
+		bool isFreezing() { return !NIL_P(freezing_); }
+
 		int const SCREEN_WIDTH_MAX = 640, SCREEN_HEIGHT_MAX = 480;
 	}
 
@@ -235,11 +237,7 @@ namespace Graphics
 	{
 		glClear(GL_COLOR_BUFFER_BIT);
 
-		if( NIL_P(freezing_) ) {
-			for (std::list< ZObj >::iterator it = zlist_.begin(); it != zlist_.end(); ++it) {
-				getDrawable( it->getId() ).draw(it->getZ());
-			}
-		} else {
+		if( isFreezing() ) {
 			GLshort vertexes[4][2];
 			vertexes[0][0] = 0; vertexes[0][1] = 0;
 			vertexes[1][0] = 0; vertexes[1][1] = Player::getHeight();
@@ -255,6 +253,10 @@ namespace Graphics
 				glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
 			glDisableClientState(GL_VERTEX_ARRAY);
 			glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+		} else {
+			for (std::list< ZObj >::iterator it = zlist_.begin(); it != zlist_.end(); ++it) {
+				getDrawable( it->getId() ).draw(it->getZ());
+			}
 		}
 
 		if (brightness < 255) {
@@ -283,7 +285,7 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void Freeze()
 	{
-		if( !NIL_P(freezing_) ) ARGSS::ABitmap::rdispose(freezing_);
+		if( isFreezing() ) ARGSS::ABitmap::rdispose(freezing_);
 		freezing_ = SnapToBitmap();
 	}
 
@@ -292,7 +294,7 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void Transition(int duration, std::string const& filename, int vague)
 	{
-		if( !NIL_P(freezing_) ) {
+		if( isFreezing() ) {
 			ARGSS::ABitmap::rdispose(freezing_);
 			freezing_ = Qnil;
 		}
@@ -351,18 +353,22 @@ namespace Graphics
 	VALUE SnapToBitmap() // RGSS2
 	{
 		VALUE argv[2];
-		argv[0] = getWidth ();
-		argv[1] = getHeight();
+		argv[0] = INT2NUM( getWidth () );
+		argv[1] = INT2NUM( getHeight() );
 		VALUE ret = rb_class_new_instance(2, argv, ARGSS::ABitmap::getID() );
 
 		Uint32* dst = Bitmap::get(ret).getPixels();
 		std::vector< Uint32 > src( getWidth() * getHeight() );
 		std::size_t cpySize = sizeof(Uint32) * getHeight();
 
-		/* glReadPixels() isn't available in GL ES */
-		glReadPixels( 0, 0, getWidth(), getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, &(src[0]) );
-		for(int y = 0; y < getHeight(); y++) {
-			std::memcpy( &(dst[getWidth() * y]), &(src[getWidth() * (getHeight() - y - 1)]), cpySize );
+		if( isFreezing() ) {
+			// TODO
+		} else {
+			// glReadPixels() isn't available in GL ES
+			glReadPixels( 0, 0, getWidth(), getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, &(src[0]) );
+			for(int y = 0; y < getHeight(); y++) {
+				std::memcpy( &(dst[getWidth() * y]), &(src[getWidth() * (getHeight() - y - 1)]), cpySize );
+			}
 		}
 
 		return ret;

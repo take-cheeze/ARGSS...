@@ -100,7 +100,7 @@ namespace Text
 				InternText ret = conv_[i](text);
 				if(ret) return ret;
 			}
-			return InternText( std::string() ); // return InternText();
+			return InternText(); // return InternText( std::string() );
 		}
 	}
 

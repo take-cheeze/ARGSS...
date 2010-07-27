@@ -79,8 +79,8 @@ namespace ARGSS
 					Check_Kind(argv[0], rb_cNumeric);
 					duration = NUM2INT(argv[0]);
 					break;
-				case 0: // RGSS2
-					duration = 10;
+				case 0:
+					duration = 10; // RGSS2
 					break;
 			}
 			Graphics::Transition(duration, filename, vague);

@@ -7,9 +7,9 @@ Output.console
 NUM_MAX =  32767
 NUM_MIN = -32768
 
-XSIZE =  9
+XSIZE = 258
 YSIZE = 19
-ZSIZE =  5
+ZSIZE = 8
 
 test_table = Table.new(XSIZE, YSIZE, ZSIZE);
 print( sprintf("xsize = %d;", test_table.xsize) )
