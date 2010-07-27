@@ -72,7 +72,7 @@ namespace Graphics
 		long lastTics_;
 		long lastTicsWait_;
 		long nextTicsFps_;
-		VALUE freezing_; // "NIL_P(freezing_) == false" if freezing the screen
+		VALUE freezing_ = Qnil; // "NIL_P(freezing_) == false" if freezing the screen
 
 		int const SCREEN_WIDTH_MAX = 640, SCREEN_HEIGHT_MAX = 480;
 	}
