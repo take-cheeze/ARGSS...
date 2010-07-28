@@ -29,8 +29,8 @@
 #include "viewport.hxx"
 #include "sprite.hxx"
 #include "plane.hxx"
-#include "tilemap_xp.hxx"
-#include "window_xp.hxx"
+#include "tilemap.hxx"
+#include "window.hxx"
 #include <argss/ruby.hxx>
 #include "graphics.hxx"
 #include "player.hxx"

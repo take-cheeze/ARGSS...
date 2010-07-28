@@ -22,18 +22,28 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _TILEMAP_HXX_
-#define _TILEMAP_HXX_
+#ifndef _ARGSS_TILEMAPAUTOTILES_XP_HXX_
+#define _ARGSS_TILEMAPAUTOTILES_XP_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#include "options.hxx"
+#include <argss/ruby.hxx>
 
-#if RPGMAKER == RPGXP
-	#include "XP/tilemap.hxx"
-#elif RPGMAKER == RPGVX
-	#include "VX/tilemap.hxx"
-#endif
+////////////////////////////////////////////////////////////
+/// ARGSS TilemapAutotiles namespace
+////////////////////////////////////////////////////////////
+namespace ARGSS
+{
+	namespace ATilemapAutotiles
+	{
+		void Init();
+		VALUE New();
+
+		VALUE rinitialize(VALUE self);
+		VALUE raref(VALUE self, VALUE index);
+		VALUE raset(VALUE self, VALUE index, VALUE bitmap);
+	} // namespace ATilemapAutotiles
+} // namespace ARGSS
 
 #endif

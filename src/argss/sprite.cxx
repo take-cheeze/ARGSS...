@@ -26,6 +26,7 @@
 /// Headers
 ////////////////////////////////////////////////////////////
 #include <string>
+
 #include <argss/sprite.hxx>
 #include <argss/viewport.hxx>
 #include <argss/bitmap.hxx>
@@ -33,8 +34,9 @@
 #include <argss/tone.hxx>
 #include <argss/rect.hxx>
 #include <argss/error.hxx>
-#include <sprite.hxx>
-#include <color.hxx>
+
+#include "../sprite.hxx"
+#include "../color.hxx"
 
 
 namespace ARGSS

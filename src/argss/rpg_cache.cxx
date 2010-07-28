@@ -57,8 +57,6 @@ namespace ARGSS
 				if (argc > 3) raise_argn(argc, 3);
 				else if (argc < 2) raise_argn(argc, 2);
 
-				// std::cout << RSTRING_PTR( argv[0] ) << " : " << RSTRING_PTR( argv[1] ) << std::endl;
-
 				VALUE hue = (argc == 2) ? INT2NUM(0) : argv[2];
 				VALUE path = rb_str_concat( rb_str_dup(argv[0]), argv[1] );
 				VALUE cache = rb_iv_get(id, "@cache");

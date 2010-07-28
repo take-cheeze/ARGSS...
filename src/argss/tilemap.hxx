@@ -31,10 +31,10 @@
 #include <options.hxx>
 
 #if RPGMAKER == RPGXP
-	#include <argss/tilemap_xp.hxx>
+	#include <argss/XP/tilemap.hxx>
 #endif
 #if RPGMAKER == RPGVX
-	#include <argss/tilemap_vx.hxx>
+	#include <argss/VX/tilemap.hxx>
 #endif
 
 #endif

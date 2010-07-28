@@ -27,7 +27,7 @@
 ////////////////////////////////////////////////////////////
 #include <string>
 #include <cmath>
-#include "window_xp.hxx"
+#include "window.hxx"
 #include <argss/ruby.hxx>
 #include <argss/window.hxx>
 #include "graphics.hxx"

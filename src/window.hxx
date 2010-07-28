@@ -31,10 +31,9 @@
 #include "options.hxx"
 
 #if RPGMAKER == RPGXP
-	#include "window_xp.hxx"
-#endif
-#if RPGMAKER == RPGVX
-	#include "window_vx.hxx"
+	#include "XP/window.hxx"
+#elif RPGMAKER == RPGVX
+	#include "VX/window.hxx"
 #endif
 
 #endif

@@ -37,7 +37,7 @@
 
 #include "graphics.hxx"
 #include "player.hxx"
-#include "tilemap_xp.hxx"
+#include "tilemap.hxx"
 #include "viewport.hxx"
 
 ////////////////////////////////////////////////////////////
@@ -382,6 +382,7 @@ void Tilemap::setMapData(VALUE nmap_data)
 			// int height = // NIL_P(rb_iv_get(nmap_data, "@ysize"))? 0 : // sometimes the ysize is NIL
 				// NUM2INT(rb_iv_get(nmap_data, "@ysize"));
 			int height = ARGSS::ATable::getTable(nmap_data).ysize();
+			// std::cout << height << std::endl;
 			if ( ! NIL_P(viewport) ) {
 				for (int i = 0; i < height + 8; i++) {
 					Viewport::get(viewport).RegisterZObj(i * TILE_SIZE, id, true);

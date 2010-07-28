@@ -32,9 +32,9 @@
 #include <argss/error.hxx>
 #include <argss/rect.hxx>
 #include <argss/viewport.hxx>
-#include <argss/window_xp.hxx>
+#include <argss/window.hxx>
 
-#include <window_xp.hxx>
+#include <window.hxx>
 
 ////////////////////////////////////////////////////////////
 /// Cap opacity value between 0 and 255

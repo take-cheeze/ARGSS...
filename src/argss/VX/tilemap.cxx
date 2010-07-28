@@ -31,11 +31,11 @@
 #include <argss/bitmap.hxx>
 #include <argss/error.hxx>
 #include <argss/table.hxx>
-#include <argss/tilemap_xp.hxx>
-#include <argss/tilemapautotiles_xp.hxx>
+#include <argss/tilemap.hxx>
+#include <argss/tilemapautotiles.hxx>
 #include <argss/viewport.hxx>
 
-#include <tilemap_xp.hxx>
+#include <tilemap.hxx>
 
 
 namespace ARGSS

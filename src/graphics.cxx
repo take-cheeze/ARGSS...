@@ -64,7 +64,7 @@ namespace Graphics
 		int frameRate_;
 		int frameCount_;
 		Color backcolor; // (255.0f, 255.0f, 255.0f, 255.0f);
-		int brightness;
+		int brightness_;
 		double frameInterval_;
 		boost::unordered_map< VALUE, boost::shared_ptr< Drawable > > drawableMap_;
 		std::list< ZObj > zlist_;
@@ -115,7 +115,7 @@ namespace Graphics
 		setFrameRate(40);
 		frameCount_ = 0;
 		backcolor = Color(0, 0, 0, 0);
-		brightness = 255;
+		brightness_ = 255;
 		creation = 0;
 		lastTics_ = Time::getTime() + long(frameInterval_);
 		nextTicsFps_ = Time::getTime() + 1000;
@@ -259,11 +259,12 @@ namespace Graphics
 			}
 		}
 
-		if (brightness < 255) {
+		if (brightness_ < 255) {
+			std::cout << brightness_ << std::endl;
 			glDisable(GL_TEXTURE_2D);
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
-			glColor4f(0.0f, 0.0f, 0.0f, (float)(1.0f - brightness / 255.0f));
+			glColor4f(0.0f, 0.0f, 0.0f, (float)(1.0f - brightness_ / 255.0f));
 
 			GLshort vertexes[4][2];
 			vertexes[0][0] = 0; vertexes[0][1] = 0;
@@ -379,13 +380,13 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void FadeOut(int duration) // RGSS2
 	{
-		int n = brightness / duration;
+		int n = brightness_ / duration;
 		for (;duration > 0; duration--) {
-			brightness -= n;
+			brightness_ -= n;
 			Update();
 		}
-		if (brightness > 0) {
-			brightness = 0;
+		if (brightness_ > 0) {
+			brightness_ = 0;
 			Update();
 		}
 	}
@@ -398,11 +399,11 @@ namespace Graphics
 	{
 		int n = 255 / duration;
 		for (;duration > 0; duration--) {
-			brightness += n;
+			brightness_ += n;
 			Update();
 		}
-		if (brightness < 255) {
-			brightness = 255;
+		if (brightness_ < 255) {
+			brightness_ = 255;
 			Update();
 		}
 	}
@@ -441,11 +442,11 @@ namespace Graphics
 	}
 	int getBrightness() // RGSS2
 	{
-		return brightness;
+		return brightness_;
 	}
 	void setBrightness(int nbrightness) // RGSS2
 	{
-		brightness = nbrightness;
+		brightness_ = nbrightness;
 	}
 
 	////////////////////////////////////////////////////////////

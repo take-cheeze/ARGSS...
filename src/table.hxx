@@ -87,7 +87,7 @@ public:
 	IntegerType& operator [](IndexType const& arg)
 	{
 		assert( arg.size() == size_.size() );
-		assert( !outOfRange(arg) );
+		// assert( !outOfRange(arg) );
 		return data_[ getIndex(arg) ];
 	}
 	IntegerType const& operator [](IndexType const& arg) const
