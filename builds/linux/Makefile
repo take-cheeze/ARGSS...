@@ -6,10 +6,15 @@ PLATFORM = SDL
 # PLATFORM = Qt
 # PLATFORM = WIN32
 
+# RGSS_TYPE = XP
+RGSS_TYPE = VX
+
 SRC_DIR = ../../src
 SRC_CXX = $(wildcard $(SRC_DIR)/*.cxx)
 SRC_CXX += $(wildcard $(SRC_DIR)/argss/*.cxx)
+SRC_CXX += $(wildcard $(SRC_DIR)/argss/$(RGSS_TYPE)/*.cxx)
 SRC_CXX += $(wildcard $(SRC_DIR)/$(PLATFORM)/*.cxx)
+SRC_CXX += $(wildcard $(SRC_DIR)/$(RGSS_TYPE)/*.cxx)
 OBJS_DIR = ./objs
 OBJS_CXX = $(subst $(SRC_DIR), $(OBJS_DIR), $(SRC_CXX:.cxx=.o))
 OBJS = $(OBJS_CXX) $(wildcard src/SOIL/projects/makefile/obj/*.o) $(OBJS_DIR)/malloc_wrapper.o $(OBJS_DIR)/rubybind.o
@@ -127,6 +132,8 @@ build_soil :
 	make -C src/SOIL/projects/makefile/
 
 make_objs_dir :
-	mkdir -p objs
-	mkdir -p objs/argss
-	mkdir -p objs/$(PLATFORM)
+	mkdir -p $(OBJS_DIR)
+	mkdir -p $(OBJS_DIR)/$(RGSS_TYPE)
+	mkdir -p $(OBJS_DIR)/argss
+	mkdir -p $(OBJS_DIR)/argss/$(RGSS_TYPE)
+	mkdir -p $(OBJS_DIR)/$(PLATFORM)
