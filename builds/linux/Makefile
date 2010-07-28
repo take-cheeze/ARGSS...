@@ -9,6 +9,8 @@ RGSS_TYPE := XP
 
 TARGET = ARGSS_$(RGSS_TYPE)
 
+SOIL_OJBS = $(addprefix src/SOIL/projects/makefile/obj/, SOIL.o image_DXT.o image_helper.o stb_image_aug.o)
+
 SRC_DIR = ../../src
 SRC_CXX = $(wildcard $(SRC_DIR)/*.cxx)
 SRC_CXX += $(wildcard $(SRC_DIR)/argss/*.cxx)
@@ -17,7 +19,9 @@ SRC_CXX += $(wildcard $(SRC_DIR)/$(PLATFORM)/*.cxx)
 SRC_CXX += $(wildcard $(SRC_DIR)/$(RGSS_TYPE)/*.cxx)
 OBJS_DIR = ./objs
 OBJS_CXX = $(subst $(SRC_DIR), $(OBJS_DIR), $(SRC_CXX:.cxx=.o))
-OBJS = $(OBJS_CXX) $(wildcard src/SOIL/projects/makefile/obj/*.o) $(OBJS_DIR)/malloc_wrapper.o $(OBJS_DIR)/rubybind.o
+OBJS = $(OBJS_CXX) $(SOIL_OJBS) $(OBJS_DIR)/malloc_wrapper.o $(OBJS_DIR)/rubybind.o
+
+OBJS_DIR_ALL = $(OBJS_DIR) $(OBJS_DIR)/$(RGSS_TYPE) $(OBJS_DIR)/argss $(OBJS_DIR)/argss/$(RGSS_TYPE) $(OBJS_DIR)/$(PLATFORM)
 
 LINUX_SRC_DIR = src
 LINUX_SRC_C = $(wildcard $(LINUX_SRC_DIR)/*.c)
@@ -100,7 +104,7 @@ CFLAGS += -include /usr/include/time.h
 all : $(TARGET)
 
 clean :
-	$(RM) -f $(TARGET) $(TARGET).* $(OBJS) $(BIN_DIR)/$(TARGET)
+	$(RM) -f $(TARGET) $(OBJS) $(BIN_DIR)/$(TARGET)
 	make -C src/SOIL/projects/makefile/ clean
 
 rebuild : clean all
@@ -130,16 +134,12 @@ $(OBJS_DIR)/%.o : $(SRC_DIR)/%.cxx
 $(OBJS_DIR)/%.o : src/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(TARGET) : make_objs_dir build_soil $(OBJS)
+$(TARGET) : $(OBJS_DIR_ALL) $(OBJS)
 	$(LD) $(LDFLAGS) $(OBJS) -o $(TARGET) $(LIBS)
 	cp $(TARGET) $(BIN_DIR)/$(TARGET)
 
-build_soil :
+$(SOIL_OJBS) :
 	make -C src/SOIL/projects/makefile/
 
-make_objs_dir :
-	mkdir -p $(OBJS_DIR)
-	mkdir -p $(OBJS_DIR)/$(RGSS_TYPE)
-	mkdir -p $(OBJS_DIR)/argss
-	mkdir -p $(OBJS_DIR)/argss/$(RGSS_TYPE)
-	mkdir -p $(OBJS_DIR)/$(PLATFORM)
+$(OBJS_DIR_ALL) :
+	mkdir -p $(OBJS_DIR_ALL)
