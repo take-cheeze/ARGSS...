@@ -88,18 +88,19 @@ namespace FileFinder
 		for (int i = 0; i < 3; i++) {
 			std::string const& rtp = System::getRTP(i);
 			if (rtp.empty()) continue;
-			if (RPGMAKER == RPGXP) {
+			#if (RPGMAKER == RPGXP)
 				rtp_paths[i] = Registry::ReadStrValue(HKEY_CURRENT_USER, "SOFTWARE\\Enterbrain\\RGSS\\RTP", rtp);
 				if (rtp_paths[i].size() == 0) {
 					rtp_paths[i] = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, "SOFTWARE\\Enterbrain\\RGSS\\RTP", rtp);
 				}
-			}
-			else if (RPGMAKER == RPGVX) {
+			#elif (RPGMAKER == RPGVX)
 				rtp_paths[i] = Registry::ReadStrValue(HKEY_CURRENT_USER, "SOFTWARE\\Enterbrain\\RGSS2\\RTP", rtp);
 				if (rtp_paths[i].size() == 0) {
 					rtp_paths[i] = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, "SOFTWARE\\Enterbrain\\RGSS2\\RTP", rtp);
 				}
-			}
+			#else
+				#error unknown RGSS version
+			#endif
 		}
 		fonts_path.clear();
 

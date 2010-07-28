@@ -32,9 +32,10 @@
 
 #if RPGMAKER == RPGXP
 	#include <argss/XP/tilemap.hxx>
-#endif
-#if RPGMAKER == RPGVX
+#elif RPGMAKER == RPGVX
 	#include <argss/VX/tilemap.hxx>
+#else
+	#error unknown RGSS version
 #endif
 
 #endif

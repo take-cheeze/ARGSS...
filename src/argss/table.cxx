@@ -81,6 +81,7 @@ namespace ARGSS
 					self, boost::shared_ptr< Table >( new Table( val2arg(argc, argv) ) )
 				)
 			).second );
+			ARGSS::ARuby::AddObject(self);
 
 			return self;
 		}

@@ -34,14 +34,14 @@
 #include <argss/viewport.hxx>
 #include <argss/window.hxx>
 
-#include <window.hxx>
+#include "../../VX/window.hxx"
 
 ////////////////////////////////////////////////////////////
 /// Cap opacity value between 0 and 255
 ////////////////////////////////////////////////////////////
-int CapOpacityValue(int v)
+int CapValue(int v, int min = 0, int max = 255)
 {
-	return (v > 255) ? 255 : (v < 0) ? 0 : v;
+	return (v > max) ? max : (v < min) ? min : v;
 }
 
 namespace ARGSS
@@ -300,7 +300,7 @@ namespace ARGSS
 		VALUE ropacityE(VALUE self, VALUE opacity)
 		{
 			CheckDisposed(self);
-			opacity = CapOpacityValue(NUM2INT(opacity));
+			opacity = CapValue(NUM2INT(opacity));
 			Window::get(self).setOpacity(opacity);
 			return rb_iv_set(self, "@opacity", INT2NUM(opacity));
 		}
@@ -312,7 +312,7 @@ namespace ARGSS
 		VALUE rback_opacityE(VALUE self, VALUE back_opacity)
 		{
 			CheckDisposed(self);
-			back_opacity = CapOpacityValue(NUM2INT(back_opacity));
+			back_opacity = CapValue(NUM2INT(back_opacity));
 			Window::get(self).setBackOpacity(back_opacity);
 			return rb_iv_set(self, "@back_opacity", INT2NUM(back_opacity));
 		}
@@ -324,9 +324,21 @@ namespace ARGSS
 		VALUE rcontents_opacityE(VALUE self, VALUE contents_opacity)
 		{
 			CheckDisposed(self);
-			contents_opacity = CapOpacityValue(NUM2INT(contents_opacity));
+			contents_opacity = CapValue(NUM2INT(contents_opacity));
 			Window::get(self).setContentsOpacity(contents_opacity);
 			return rb_iv_set(self, "@contents_opacity", INT2NUM(contents_opacity));
+		}
+		VALUE ropenness(VALUE self)
+		{
+			CheckDisposed(self);
+			return rb_iv_get(self, "@openness");
+		}
+		VALUE ropennessE(VALUE self, VALUE openness)
+		{
+			CheckDisposed(self);
+			openness = CapValue(NUM2INT(openness));
+			Window::get(self).setOpenness(openness);
+			return rb_iv_set(self, "@openness", INT2NUM(openness));
 		}
 
 		////////////////////////////////////////////////////////////
@@ -359,6 +371,7 @@ namespace ARGSS
 				ARGSS_GETTER_SETTER(opacity),
 				ARGSS_GETTER_SETTER(back_opacity),
 				ARGSS_GETTER_SETTER(contents_opacity),
+				ARGSS_GETTER_SETTER(openness),
 			};
 			defineMethods(id, funcTable);
 		}

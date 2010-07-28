@@ -28,12 +28,14 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#include "options.hxx"
+#include <options.hxx>
 
 #if RPGMAKER == RPGXP
-	#include "XP/tilemap.hxx"
+	#include <XP/tilemap.hxx>
 #elif RPGMAKER == RPGVX
-	#include "VX/tilemap.hxx"
+	#include <VX/tilemap.hxx>
+#else
+	#error unknown RGSS version
 #endif
 
 #endif

@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _TILEMAP_XP_HXX_
-#define _TILEMAP_XP_HXX_
+#ifndef _TILEMAP_VX_HXX_
+#define _TILEMAP_VX_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -60,33 +60,42 @@ public:
 	void Update();
 	VALUE getViewport() const { return viewport; }
 	void setViewport(VALUE nviewport);
-	VALUE getTileset() const { return tileset; }
-	void setTileset(VALUE ntileset) { tileset = ntileset; }
 	VALUE getMapData() const { return map_data; }
 	void setMapData(VALUE nmap_data);
 	VALUE getFlashData() const { return flash_data; }
 	void setFlashData(VALUE nflash_data) { flash_data = nflash_data; }
+/*
+	VALUE getTileset() const { return tileset; }
+	void setTileset(VALUE ntileset) { tileset = ntileset; }
 	VALUE getPriorities() const { return priorities; }
 	void setPriorities(VALUE npriorities);
+ */
 	bool getVisible() const { return visible; }
 	void setVisible(bool nvisible) { visible = nvisible; }
 	int getOx() const { return ox_; }
 	int getOy() const { return oy_; }
 	void setOx(int nox) { ox_ = nox; }
 	void setOy(int noy) { oy_ = noy; }
+
+	VALUE getBitmaps() const { return bitmaps_; }
+	void setBitmaps(VALUE nbitmaps) { bitmaps_ = nbitmaps; }
+	VALUE getPassages() const { return passages_; }
+	void setPassages(VALUE npassages) { passages_ = npassages; }
 private:
 	VALUE id;
 	VALUE viewport;
-	VALUE tileset;
-	VALUE autotiles;
+	// VALUE tileset;
+	// VALUE autotiles;
 	VALUE map_data;
 	VALUE flash_data;
-	VALUE priorities;
+	// VALUE priorities;
 	bool visible;
 	int ox_;
 	int oy_;
 	int autotile_frame;
 	int autotile_time;
+	VALUE bitmaps_;
+	VALUE passages_;
 
 	std::map< VALUE, std::map< int, std::map< int, boost::shared_ptr< Bitmap > > > > autotiles_cache;
 	static int autotiles_id[6][8][4];

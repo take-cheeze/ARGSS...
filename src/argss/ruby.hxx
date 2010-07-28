@@ -30,6 +30,7 @@
 ////////////////////////////////////////////////////////////
 #include <rubybind/rubybind.hxx>
 #include <cassert>
+#include <string>
 
 ////////////////////////////////////////////////////////////
 /// ARGSS::ARuby namespace
@@ -64,6 +65,7 @@ namespace ARGSS
 	inline VALUE BOOL2NUM(bool val) { return val ? Qtrue : Qfalse; }
 	inline VALUE INT2BOOL(int x) { return (x != 0) ? Qtrue : Qfalse; } // (x == 0 ? (VALUE)0 : (VALUE)2)
 	inline bool NUM2BOOL(VALUE x) { return (x == Qtrue); } // (x == (VALUE)2)
+	inline std::string VAL2STR(VALUE val) { return std::string( RSTRING_PTR(val), RSTRING_LEN(val) ); }
 	#define raise_argn(a, n) (rb_raise(rb_eArgError, "wrong number of arguments(%i for %i)", a, n))
 
 	namespace ARuby

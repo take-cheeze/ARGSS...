@@ -34,6 +34,8 @@
 	#include "XP/window.hxx"
 #elif RPGMAKER == RPGVX
 	#include "VX/window.hxx"
+#else
+	#error unknown RGSS version
 #endif
 
 #endif

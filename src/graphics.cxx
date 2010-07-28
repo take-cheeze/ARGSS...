@@ -47,6 +47,7 @@
 #include "graphics.hxx"
 #include "system.hxx"
 #include "player.hxx"
+#include "options.hxx"
 #include "output.hxx"
 #include "sprite.hxx"
 #include "tilemap.hxx"
@@ -112,7 +113,7 @@ namespace Graphics
 	void Init()
 	{
 		fps = 0;
-		setFrameRate(40);
+		setFrameRate(DEFAULT_FPS);
 		frameCount_ = 0;
 		backcolor = Color(0, 0, 0, 0);
 		brightness_ = 255;
@@ -260,7 +261,6 @@ namespace Graphics
 		}
 
 		if (brightness_ < 255) {
-			std::cout << brightness_ << std::endl;
 			glDisable(GL_TEXTURE_2D);
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
@@ -353,18 +353,16 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	VALUE SnapToBitmap() // RGSS2
 	{
-		VALUE argv[2];
-		argv[0] = INT2NUM( getWidth () );
-		argv[1] = INT2NUM( getHeight() );
+		VALUE argv[] = { INT2NUM( getWidth () ), INT2NUM( getHeight() ), };
 		VALUE ret = rb_class_new_instance(2, argv, ARGSS::ABitmap::getID() );
-
-		Uint32* dst = Bitmap::get(ret).getPixels();
-		std::vector< Uint32 > src( getWidth() * getHeight() );
-		std::size_t cpySize = sizeof(Uint32) * getHeight();
 
 		if( isFreezing() ) {
 			// TODO
 		} else {
+			Uint32* dst = Bitmap::get(ret).getPixels();
+			std::vector< Uint32 > src( getWidth() * getHeight() );
+			std::size_t cpySize = sizeof(Uint32) * getHeight();
+
 			// glReadPixels() isn't available in GL ES
 			glReadPixels( 0, 0, getWidth(), getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, &(src[0]) );
 			for(int y = 0; y < getHeight(); y++) {

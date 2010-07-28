@@ -32,7 +32,9 @@
 ////////////////////////////////////////////////////////////
 #define RPGXP 1
 #define RPGVX 2
+/*
 #define RPGMAKER RPGXP
+ */
 
 ////////////////////////////////////////////////////////////
 /// GAME_TITLE
@@ -67,12 +69,20 @@
 #define RTP1 ""
 #define RTP2 ""
 #define RTP3 ""
-#define SCREEN_WIDTH 640
-#define SCREEN_HEIGHT 480
 #define ALLOW_FULLSCREEN_TOGGLE true
 #define RUN_FULLSCREEN false
 #define PAUSE_GAME_WHEN_FOCUS_LOST true
 #define PAUSE_AUDIO_WHEN_FOCUS_LOST false
+
+#if (RPGMAKER == RPGXP)
+	#define DEFAULT_SCREEN_WIDTH 640
+	#define DEFAULT_SCREEN_HEIGHT 480
+#elif (RPGMAKER == RPGVX)
+	#define DEFAULT_SCREEN_WIDTH 544
+	#define DEFAULT_SCREEN_HEIGHT 416
+#else
+	#error unknown RGSS version
+#endif
 
 ////////////////////////////////////////////////////////////
 /// INI_NAME
@@ -110,7 +120,14 @@
 /// UPDATE_ALL_KEYS
 ///   Update all keys or just the Input default buttons.
 ////////////////////////////////////////////////////////////
-#define DEFAULT_FPS 60
+#if (RPGMAKER == RPGXP)
+	#define DEFAULT_FPS 40
+#elif (RPGMAKER == RPGVX)
+	#define DEFAULT_FPS 60
+#else
+	#error unknown RGSS version
+#endif
+
 #define DEFAULT_BACKCOLOR 0x00000000
 #define UPDATE_ALL_KEYS true
 #define JOYSTICK_SUPPORT true

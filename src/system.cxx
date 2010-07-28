@@ -64,8 +64,8 @@ namespace System
 		RTPS[0] = RTP1;
 		RTPS[1] = RTP2;
 		RTPS[2] = RTP3;
-		Width = SCREEN_WIDTH;
-		Height = SCREEN_HEIGHT;
+		Width  = DEFAULT_SCREEN_WIDTH;
+		Height = DEFAULT_SCREEN_HEIGHT;
 		if (READ_INI_GAME_TITLE || READ_INI_SCRIPTS_PATH || READ_INI_SCREEN_SIZE || READ_INI_RTPS) {
 			CSimpleIniA ini(true, false, false);
 			SI_Error rc = ini.LoadFile(INI_NAME);

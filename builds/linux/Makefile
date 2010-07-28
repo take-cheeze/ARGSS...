@@ -1,13 +1,13 @@
-TARGET = ARGSS
-
 BIN_DIR = ../../bin
 
-PLATFORM = SDL
-# PLATFORM = Qt
-# PLATFORM = WIN32
+PLATFORM := SDL
+# PLATFORM := Qt
+# PLATFORM := WIN32
 
-# RGSS_TYPE = XP
-RGSS_TYPE = VX
+RGSS_TYPE := XP
+# RGSS_TYPE := VX
+
+TARGET = ARGSS_$(RGSS_TYPE)
 
 SRC_DIR = ../../src
 SRC_CXX = $(wildcard $(SRC_DIR)/*.cxx)
@@ -40,6 +40,12 @@ CFLAGS = \
 
 CXXFLAGS = $(CFLAGS)
 LDFLAGS = --enable-gold
+
+ifeq ($(RGSS_TYPE),XP)
+CFLAGS += -DRPGMAKER=1
+else ifeq ($(RGSS_TYPE),VX)
+CFLAGS += -DRPGMAKER=2
+endif
 
 LD = $(CXX)
 

@@ -120,6 +120,7 @@ namespace Text
 	////////////////////////////////////////////////////////////
 	FT_Face getFont(std::string const& name)
 	{
+		std::cout << "Required font: " << name << std::endl;
 		std::vector< uint8_t > const& data = FileIO::get("ipag.ttf"); // FileFinder::FindFont(name);
 
 		if ( fonts_.find(name) == fonts_.end() ) {

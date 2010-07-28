@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _WINDOW_XP_HXX_
-#define _WINDOW_XP_HXX_
+#ifndef _WINDOW_VX_HXX_
+#define _WINDOW_VX_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -39,6 +39,8 @@
 class Window : public Drawable
 {
 public:
+	static int const WINDOW_FULL_OPEN = 255;
+
 	Window(VALUE iid);
 	~Window();
 
@@ -79,8 +81,8 @@ public:
 	int getZ() const { return z_; }
 	void setZ(int nz);
 	int getOx() const { return ox_; }
-	void setOx(int nox) { ox_ = nox; }
 	int getOy() const { return oy_; }
+	void setOx(int nox) { ox_ = nox; }
 	void setOy(int noy) { oy_ = noy; }
 	int getOpacity() const { return opacity_; }
 	void setOpacity(int nopacity) { opacity_ = nopacity; }
@@ -88,9 +90,13 @@ public:
 	void setBackOpacity(int nback_opacity) { back_opacity_ = nback_opacity; }
 	int getContentsOpacity() const { return contents_opacity_; }
 	void setContentsOpacity(int ncontents_opacity) { contents_opacity_ = ncontents_opacity; }
+	int getOpenness() const { return openness_; }
+	void setOpenness(int nopenness) { openness_ = nopenness; }
+
+	bool isFullOpen() const { return openness_ == WINDOW_FULL_OPEN; }
 private:
 	VALUE id_;
-	VALUE viewport_;
+	VALUE viewport_; // RGSS2
 	VALUE windowskin_;
 	VALUE contents_;
 	bool stretch_;
@@ -108,6 +114,7 @@ private:
 	int opacity_;
 	int back_opacity_;
 	int contents_opacity_;
+	int openness_; // RGSS2
 
 	int cursor_frame_;
 	int pause_frame_;

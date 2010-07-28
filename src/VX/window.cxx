@@ -27,13 +27,13 @@
 ////////////////////////////////////////////////////////////
 #include <string>
 #include <cmath>
-#include "window.hxx"
 #include <argss/ruby.hxx>
 #include <argss/window.hxx>
-#include "graphics.hxx"
-#include "viewport.hxx"
-#include "player.hxx"
-#include "rect.hxx"
+#include "../graphics.hxx"
+#include "../player.hxx"
+#include "../rect.hxx"
+#include "../viewport.hxx"
+#include "window.hxx"
 
 
 ////////////////////////////////////////////////////////////
@@ -41,7 +41,7 @@
 ////////////////////////////////////////////////////////////
 Window::Window(VALUE iid)
 : id_(iid)
-, viewport_(rb_iv_get(id_, "@viewport"))
+, viewport_(rb_iv_get(id_, "@viewport")) // RGSS2
 , windowskin_(Qnil)
 , contents_(Qnil)
 , stretch_(true)
@@ -59,6 +59,7 @@ Window::Window(VALUE iid)
 , opacity_(255)
 , back_opacity_(255)
 , contents_opacity_(255)
+, openness_(WINDOW_FULL_OPEN) // RGSS2
 , cursor_frame_(0)
 , pause_frame_(0)
 , pause_id_(0)
@@ -412,7 +413,7 @@ void Window::draw(long z)
 		}
 	}
 
-	if ( ! NIL_P(contents_) ) {
+	if ( ! NIL_P(contents_) && isFullOpen() ) {
 		if (width_ > 32 && height_ > 32 && -ox_ < width_ - 32 && -oy_ < height_ - 32 && contents_opacity_ > 0) {
 			Bitmap& bmp = Bitmap::get(contents_);
 

@@ -153,7 +153,7 @@ namespace ARGSS
 						if (!NIL_P(ruby_errinfo)) {
 							VALUE ary = rb_funcall(ruby_errinfo, rb_intern("backtrace"), 0);
 							for (int i = 0; i < RARRAY_LEN(ary); i++) {
-								std::string errMsg( RSTRING_PTR(RARRAY_PTR(ary)[i]), RSTRING_LEN(RARRAY_PTR(ary)[i]) );
+								std::string errMsg = VAL2STR( RARRAY_PTR(ary)[i] );
 
 								report += "\n\tfrom " + errMsg + ":";
 

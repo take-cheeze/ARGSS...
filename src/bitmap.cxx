@@ -91,12 +91,12 @@ Bitmap::Bitmap(VALUE iid, std::string const& filename)
 	glBitmap_ = 0;
 }
 Bitmap::Bitmap(VALUE iid, int iwidth, int iheight)
+: pixels_(iwidth * iheight, 0)
 {
 	if (iwidth <= 0 && iheight <= 0) {
 		rb_raise(ARGSS::AError::getID(), "cant't create %dx%d image.\nWidth and height_ must be bigger than 0.\n", iwidth, iheight);
 	}
 	id = iid;
-	pixels_.resize(iwidth * iheight, 0);
 	width_ = (long)iwidth;
 	height_ = (long)iheight;
 	glBitmap_ = 0;

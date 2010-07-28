@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_WINDOW_XP_HXX_
-#define _ARGSS_WINDOW_XP_HXX_
+#ifndef _ARGSS_WINDOW_VX_HXX_
+#define _ARGSS_WINDOW_VX_HXX_
 
 ////////////////////////////////////////////////////////////
 /// Headers
@@ -82,6 +82,8 @@ namespace ARGSS
 		VALUE rback_opacityE(VALUE self, VALUE back_opacity);
 		VALUE rcontents_opacity(VALUE self);
 		VALUE rcontents_opacityE(VALUE self, VALUE contents_opacity);
+		VALUE ropenness(VALUE self);
+		VALUE ropennessE(VALUE self, VALUE openness);
 	} // namespace AWindow
 } // namespace ARGSS
 

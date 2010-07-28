@@ -59,7 +59,7 @@ namespace ARGSS
 			switch(argc) {
 				case 0: raise_argn(argc, 1);
 					break;
-				case 1: Bitmap::New(self, RSTRING_PTR(argv[0]));
+				case 1: Bitmap::New(self, VAL2STR(argv[0]));
 					break;
 				case 2: Bitmap::New(self, NUM2INT(argv[0]), NUM2INT(argv[1]));
 					break;
@@ -105,8 +105,7 @@ namespace ARGSS
 			CheckDisposed(argv[2]);
 			if (argc == 5) {
 				Bitmap::get(self).Blit(NUM2INT(argv[0]), NUM2INT(argv[1]), Bitmap::get(argv[2]), Rect(argv[3]), NUM2INT(argv[4]));
-			}
-			else {
+			} else {
 				Bitmap::get(self).Blit(NUM2INT(argv[0]), NUM2INT(argv[1]), Bitmap::get(argv[2]), Rect(argv[3]), 255);
 			}
 			return self;
@@ -119,8 +118,7 @@ namespace ARGSS
 			CheckDisposed(argv[1]);
 			if (argc == 4) {
 				Bitmap::get(self).StretchBlit(Rect(argv[0]), Bitmap::get(argv[1]), Rect(argv[2]), NUM2INT(argv[3]));
-			}
-			else {
+			} else {
 				Bitmap::get(self).StretchBlit(Rect(argv[0]), Bitmap::get(argv[1]), Rect(argv[2]), 255);
 			}
 			return self;
@@ -192,20 +190,22 @@ namespace ARGSS
 		VALUE rdraw_text(int argc, VALUE *argv, VALUE self)
 		{
 			CheckDisposed(self);
-			int align = 0;
-			if (argc < 2) raise_argn(argc, 2);
-			else if (argc < 4) {
-				if (argc == 3) align = NUM2INT(argv[2]);
-
-				Bitmap::get(self).TextDraw(Rect(argv[0]), StringValueCStr(argv[1]), align);
+			Rect dstRect; std::string text; int align = Align::LEFT;
+			switch(argc) {
+				default: raise_argn(argc, 0); // TODO: correct 2nd arg
+					break;
+				case 3: align = NUM2INT(argv[argc-1]); /* FallThrough */
+				case 2:
+					dstRect = Rect(argv[0]);
+					text = VAL2STR(argv[1]);
+					break;
+				case 6: align = NUM2INT(argv[argc-1]); /* FallThrough */
+				case 5:
+					dstRect = Rect(NUM2INT(argv[0]), NUM2INT(argv[1]), NUM2INT(argv[2]), NUM2INT(argv[3]));
+					text = VAL2STR(argv[4]);
+					break;
 			}
-			else if (argc == 4) raise_argn(argc, 3);
-			else if (argc < 7) {
-				if (argc == 6) align = NUM2INT(argv[5]);
-
-				Bitmap::get(self).TextDraw(Rect(NUM2INT(argv[0]), NUM2INT(argv[1]), NUM2INT(argv[2]), NUM2INT(argv[3])), StringValueCStr(argv[4]), align);
-			}
-			else raise_argn(argc, 6);
+			Bitmap::get(self).TextDraw(dstRect, text, align);
 			return self;
 		}
 		VALUE rtext_size(VALUE self, VALUE str)
@@ -216,9 +216,7 @@ namespace ARGSS
 		VALUE rgradient_fill_rect(int argc, VALUE *argv, VALUE self) // RGSS2
 		{
 			CheckDisposed(self);
-			Rect dstRect;
-			Color color[2];
-			bool vertical = false;
+			Rect dstRect; Color color[2]; bool vertical = false;
 			switch(argc) {
 				default: raise_argn(argc, 0); // TODO: correct 2nd arg
 					break;

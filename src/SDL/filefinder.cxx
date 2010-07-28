@@ -57,6 +57,8 @@ namespace FileFinder
 		#elif (RPGMAKER == RPGVX)
 			char const* RTP_BASE_PATH = ".wine/drive_c/Program Files/Common Files/Enterbrain/RGSS2";
 			char const* REGISTRY_NAME = "SOFTWARE\\Enterbrain\\RGSS2\\RTP";
+		#else
+			#error unknown RGSS version
 		#endif
 
 		typedef boost::array< char const*, 5 > ImageSuffix;

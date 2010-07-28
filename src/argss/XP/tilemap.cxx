@@ -32,10 +32,10 @@
 #include <argss/error.hxx>
 #include <argss/table.hxx>
 #include <argss/tilemap.hxx>
-#include <argss/tilemapautotiles.hxx>
 #include <argss/viewport.hxx>
 
 #include <tilemap.hxx>
+#include "tilemapautotiles.hxx"
 
 
 namespace ARGSS

@@ -22,13 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef _ARGSS_TILEMAP_XP_HXX_
-#define _ARGSS_TILEMAP_XP_HXX_
-
-////////////////////////////////////////////////////////////
-/// Headers
-////////////////////////////////////////////////////////////
-#include <argss/tilemapautotiles.hxx>
+#ifndef _ARGSS_TILEMAP_VX_HXX_
+#define _ARGSS_TILEMAP_VX_HXX_
 
 ////////////////////////////////////////////////////////////
 /// ARGSS Tilemap namespace
@@ -44,23 +39,30 @@ namespace ARGSS
 		VALUE rdispose(VALUE self);
 		VALUE rdisposeQ(VALUE self);
 		VALUE rupdate(VALUE self);
-		VALUE rviewport(VALUE self);
-		VALUE rviewportE(VALUE self, VALUE viewport);
-		VALUE rtileset(VALUE self);
-		VALUE rtilesetE(VALUE self, VALUE tileset);
-		VALUE rautotiles(VALUE self);
+		VALUE rviewport(VALUE self); // RGSS2
+		VALUE rviewportE(VALUE self, VALUE viewport); // RGSS2
 		VALUE rmap_data(VALUE self);
 		VALUE rmap_dataE(VALUE self, VALUE map_data);
 		VALUE rflash_data(VALUE self);
 		VALUE rflash_dataE(VALUE self, VALUE flash_data);
-		VALUE rpriorities(VALUE self);
-		VALUE rprioritiesE(VALUE self, VALUE priorities);
 		VALUE rvisible(VALUE self);
 		VALUE rvisibleE(VALUE self, VALUE visible);
 		VALUE rox(VALUE self);
 		VALUE roxE(VALUE self, VALUE ox);
 		VALUE roy(VALUE self);
 		VALUE royE(VALUE self, VALUE oy);
+		VALUE rbitmaps(VALUE self); // RGSS2
+		VALUE rbitmapsE(VALUE self, VALUE bitmaps); // RGSS2
+		VALUE rpassages(VALUE self); // RGSS2
+		VALUE rpassagesE(VALUE self, VALUE passages); // RGSS2
+
+/*
+		VALUE rtileset(VALUE self);
+		VALUE rtilesetE(VALUE self, VALUE tileset);
+		VALUE rautotiles(VALUE self);
+		VALUE rpriorities(VALUE self);
+		VALUE rprioritiesE(VALUE self, VALUE priorities);
+ */
 	} // namespace ATilemap
 } // namespace ARGSS
 

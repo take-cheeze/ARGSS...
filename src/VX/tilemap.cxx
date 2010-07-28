@@ -97,16 +97,18 @@ void Tilemap::Init()
 Tilemap::Tilemap(VALUE iid)
 : id(iid)
 , viewport(rb_iv_get(id, "@viewport"))
-, tileset(Qnil)
-, autotiles(rb_iv_get(id, "@autotiles"))
+// , tileset(Qnil)
+// , autotiles(rb_iv_get(id, "@autotiles"))
 , map_data(Qnil)
 , flash_data(Qnil)
-, priorities(Qnil)
+// , priorities(Qnil)
 , visible(true)
 , ox_(0)
 , oy_(0)
 , autotile_frame(0)
 , autotile_time(0)
+, bitmaps_(Qnil)
+, passages_(Qnil)
 {
 }
 
@@ -187,6 +189,7 @@ void Tilemap::RefreshBitmaps()
 ////////////////////////////////////////////////////////////
 void Tilemap::draw(long z_level)
 {
+/*
 	if (!visible) return;
 	if ( NIL_P(tileset) || NIL_P(map_data) || NIL_P(priorities) ) return;
 
@@ -305,6 +308,7 @@ void Tilemap::draw(long z_level)
 	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 	glDisable(GL_SCISSOR_TEST);
+ */
 }
 void Tilemap::draw(long z, Bitmap const& dst_bitmap)
 {
@@ -315,6 +319,7 @@ void Tilemap::draw(long z, Bitmap const& dst_bitmap)
 ////////////////////////////////////////////////////////////
 void Tilemap::RefreshData()
 {
+/*
 	bool update = false;
 	if (rb_iv_get(map_data, "@modified") == Qtrue) {
 		rb_iv_set(map_data, "@modified", Qfalse);
@@ -347,6 +352,7 @@ void Tilemap::RefreshData()
 			}
 		}
 	}
+ */
 }
 
 ////////////////////////////////////////////////////////////
@@ -396,8 +402,10 @@ void Tilemap::setMapData(VALUE nmap_data)
 	}
 	map_data = nmap_data;
 }
+/*
 void Tilemap::setPriorities(VALUE npriorities)
 {
 	if (priorities != npriorities) rb_iv_set(npriorities, "@modified", Qtrue);
 	priorities = npriorities;
 }
+ */
