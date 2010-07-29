@@ -38,4 +38,4 @@
 	#error unknown RGSS version
 #endif
 
-#endif
+#endif // _TILEMAP_HXX_

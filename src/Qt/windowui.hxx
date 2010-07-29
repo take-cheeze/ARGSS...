@@ -59,4 +59,4 @@ protected:
 	virtual void resizeGL(int width, int height);
 }; // class WindowUi
 
-#endif
+#endif // _WINDOWUI_QT_HXX_

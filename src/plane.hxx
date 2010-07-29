@@ -100,4 +100,4 @@ private:
 	VALUE tone;
 }; // class Plane
 
-#endif
+#endif // _PLANE_HXX_

@@ -85,4 +85,4 @@ namespace ARGSS
 	} // namespace AWindow
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_WINDOW_XP_HXX_

@@ -32,4 +32,4 @@
 
 Color RGBAdjustHSL(Color const& col, double h, double s, double l);
 
-#endif
+#endif // _HSLRGB_HXX_

@@ -104,4 +104,4 @@ private:
 	Rect dstRect_;
 }; // class Viewport
 
-#endif
+#endif // _VIEWPORT_HXX_

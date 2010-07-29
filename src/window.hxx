@@ -38,4 +38,4 @@
 	#error unknown RGSS version
 #endif
 
-#endif
+#endif // _WINDOW_HXX_

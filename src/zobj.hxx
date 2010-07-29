@@ -47,4 +47,4 @@ public:
 	VALUE getId() const { return id_; }
 }; // class ZObj
 
-#endif
+#endif // _ZOBJ_HXX_

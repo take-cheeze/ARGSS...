@@ -184,4 +184,4 @@ namespace Input
 	VALUE KEY2NUM(int key);
 } // namespace Input
 
-#endif
+#endif // _INPUT_KEYS_HXX_

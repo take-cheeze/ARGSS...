@@ -45,4 +45,4 @@ namespace Text
 	Rect RectSize(std::string const& text, std::string const& font, int size);
 } // namespace Text
 
-#endif
+#endif // _TEXT_HXX_

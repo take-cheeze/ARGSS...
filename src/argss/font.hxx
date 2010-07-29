@@ -71,4 +71,4 @@ namespace ARGSS
 	} // namespace AFont
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_FONT_HXX_

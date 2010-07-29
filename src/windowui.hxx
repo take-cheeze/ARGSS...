@@ -36,4 +36,4 @@
 	#include "SDL/windowui.hxx"
 #endif
 
-#endif
+#endif // _WINDOWUI_HXX_

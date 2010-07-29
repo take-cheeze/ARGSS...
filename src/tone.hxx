@@ -46,4 +46,4 @@ public:
 	double gray;
 }; // class Tone
 
-#endif
+#endif // _TONE_HXX_

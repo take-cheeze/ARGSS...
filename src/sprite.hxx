@@ -145,4 +145,4 @@ private:
 	void RefreshFlash();
 }; // class Sprite
 
-#endif
+#endif // _SPRITE_HXX_

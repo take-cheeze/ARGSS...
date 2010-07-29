@@ -64,4 +64,4 @@ namespace ARGSS
 	} // namespace AViewport
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_VIEWPORT_HXX_

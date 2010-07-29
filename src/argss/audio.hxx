@@ -55,4 +55,4 @@ namespace ARGSS
 	} // namespace AAudio
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_AUDIO_HXX_

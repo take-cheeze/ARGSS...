@@ -54,4 +54,4 @@ namespace Output
 	std::string getChar();
 } // namespace Output
 
-#endif
+#endif // _OUTPUT_HXX_

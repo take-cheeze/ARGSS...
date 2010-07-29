@@ -43,4 +43,4 @@ namespace ARGSS
 	} // namespace AError
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_ERROR_HXX_

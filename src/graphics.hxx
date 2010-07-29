@@ -89,4 +89,4 @@ namespace Graphics
 	int getHeight();
 } // namespace Graphics
 
-#endif
+#endif // _GRAPHICS_HXX_

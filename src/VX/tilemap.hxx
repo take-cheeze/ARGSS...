@@ -107,4 +107,4 @@ private:
 	std::vector< std::vector< std::vector< TileData > > > data_cache;
 }; // class Tilemap
 
-#endif
+#endif // _TILEMAP_VX_HXX_

@@ -46,4 +46,4 @@ namespace ARGSS
 	} // namespace ATilemapAutotiles
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_TILEMAPAUTOTILES_XP_HXX_

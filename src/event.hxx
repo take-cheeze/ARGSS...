@@ -56,4 +56,4 @@ public:
 	long param2;
 }; // class Event
 
-#endif
+#endif // _EVENT_HXX_

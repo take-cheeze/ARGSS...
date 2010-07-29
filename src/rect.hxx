@@ -57,4 +57,4 @@ public:
 extern bool operator!=(Rect const& lhs, Rect const& rhs);
 inline bool operator==(Rect const& lhs, Rect const& rhs) { return !( lhs != rhs ); }
 
-#endif
+#endif // _RECT_HXX_

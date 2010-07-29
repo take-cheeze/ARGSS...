@@ -59,4 +59,4 @@ namespace ARGSS
 	} // namespace ARect
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_RECT_HXX_

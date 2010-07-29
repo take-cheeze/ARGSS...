@@ -43,4 +43,4 @@ namespace Console
 	void Write(std::string const& msg);
 } // namespace Console
 
-#endif
+#endif // _CONSOLE_HXX_

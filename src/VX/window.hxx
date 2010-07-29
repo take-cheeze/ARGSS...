@@ -121,4 +121,4 @@ private:
 	int pause_id_;
 }; // class Window
 
-#endif
+#endif // _WINDOW_VX_HXX_

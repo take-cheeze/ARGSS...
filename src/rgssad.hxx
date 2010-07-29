@@ -63,4 +63,4 @@ public:
 	std::multimap< std::string, Entry >& entry() { return entries_; }
 };
 
-#endif
+#endif // _RGSSAD_EXTRACTER_

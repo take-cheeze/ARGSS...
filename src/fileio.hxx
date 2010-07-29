@@ -22,4 +22,4 @@ namespace FileIO
 	std::vector< std::string > getRgssAdList();
 } // namespace FileIO
 
-#endif
+#endif // _FILEIO_HXX_

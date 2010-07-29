@@ -35,4 +35,4 @@ namespace Input
 	std::map< int, std::vector<int> >& getButtons();
 } // namespace Input
 
-#endif
+#endif // _INPUTBUTTONS_HXX_

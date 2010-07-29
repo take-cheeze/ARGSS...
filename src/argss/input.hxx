@@ -53,4 +53,4 @@ namespace ARGSS
 	} // namespace AInput
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_INPUT_HXX_

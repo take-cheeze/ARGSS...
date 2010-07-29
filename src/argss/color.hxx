@@ -61,4 +61,4 @@ namespace ARGSS
 	} // namespace AColor
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_COLOR_HXX_

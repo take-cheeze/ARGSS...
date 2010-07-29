@@ -50,4 +50,4 @@ namespace ARGSS
 	} // namespace AOutput
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_OUTPUT_HXX_

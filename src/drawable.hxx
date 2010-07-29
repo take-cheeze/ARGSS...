@@ -45,4 +45,4 @@ protected:
 	static void setBlendFunc(Blend::Type type);
 }; // class Drawable
 
-#endif
+#endif // _DRAWABLE_HXX_

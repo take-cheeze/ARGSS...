@@ -94,4 +94,4 @@ namespace ARGSS
 	} // namespace ASprite
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_SPRITE_HXX_

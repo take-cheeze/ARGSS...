@@ -21,8 +21,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef NETWORK_H
-#define NETWORK_H
+#ifndef _NETWORK_HXX_
+#define _NETWORK_HXX_
 
 // #include "buffer.hxx"
 #ifdef ARGSS_WIN32
@@ -57,4 +57,4 @@ private:
 	int m_Socket;
 }; // class Socket
 
-#endif
+#endif // _NETWORK_HXX_

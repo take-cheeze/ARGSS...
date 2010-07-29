@@ -34,4 +34,4 @@ namespace ARGSS
 	void Exit();
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_HXX_

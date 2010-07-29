@@ -52,4 +52,4 @@ namespace Input
 	int& getDir8();
 } // namespace Input
 
-#endif
+#endif // _INPUT_HXX_

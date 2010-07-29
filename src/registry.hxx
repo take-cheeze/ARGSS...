@@ -46,4 +46,4 @@ namespace Registry
 	int ReadBinValue(HKEY hkey, std::string const& key, std::string const& val, uint8_t* bin);
 } // namespace Registry
 
-#endif
+#endif // _REGISTRY_HXX_

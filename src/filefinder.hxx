@@ -39,4 +39,4 @@ namespace FileFinder
 	std::vector< uint8_t > const& FindFile(std::string const& name);
 } // namespace FileFinder
 
-#endif
+#endif // _FILEFINDER_HXX_

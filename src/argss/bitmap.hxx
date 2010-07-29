@@ -70,4 +70,4 @@ namespace ARGSS
 	} // namespace ABitmap
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_BITMAP_HXX_

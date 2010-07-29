@@ -48,4 +48,4 @@ private:
 	bool isFullScreen_;
 }; // class WindowUi
 
-#endif
+#endif // _WINDOWUI_Qt_HXX_

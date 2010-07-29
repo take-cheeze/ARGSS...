@@ -76,4 +76,4 @@ namespace ARGSS
 	} // namespace ARPG
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_RPG_HXX_

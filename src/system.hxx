@@ -46,4 +46,4 @@ namespace System
 	std::string& getRTP(int index);
 } // namespace System
 
-#endif
+#endif // _SYS_HXX_

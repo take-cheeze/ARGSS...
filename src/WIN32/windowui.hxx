@@ -81,4 +81,4 @@ private:
 	bool fullscreen;
 }; // class WindowUi
 
-#endif
+#endif // _WINDOWUI_WIN32_HXX_

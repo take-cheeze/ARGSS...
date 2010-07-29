@@ -58,4 +58,4 @@ namespace ARGSS
 	} // namespace ATable
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_TABLE_HXX_

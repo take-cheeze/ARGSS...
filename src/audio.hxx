@@ -52,4 +52,4 @@ namespace Audio
 	void SE_Stop();
 } // namespace Audio
 
-#endif
+#endif // _AUDIO_HXX_

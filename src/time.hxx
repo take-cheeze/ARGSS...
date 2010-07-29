@@ -35,4 +35,4 @@ namespace Time
 	void sleepMs(long ms);
 } // namespace Time
 
-#endif
+#endif // _TIME_HXX_

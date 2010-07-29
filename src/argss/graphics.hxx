@@ -64,4 +64,4 @@ namespace ARGSS
 	} // namespace AGraphics
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_GRAPHICS_HXX_

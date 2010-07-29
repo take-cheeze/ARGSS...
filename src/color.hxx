@@ -84,4 +84,4 @@ PP_operator(/)
 
 #undef PP_operator
 
-#endif
+#endif // _COLOR_HXX_

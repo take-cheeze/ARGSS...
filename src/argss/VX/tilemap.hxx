@@ -66,4 +66,4 @@ namespace ARGSS
 	} // namespace ATilemap
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_TILEMAP_VX_HXX_

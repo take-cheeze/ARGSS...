@@ -59,4 +59,4 @@ namespace ARGSS
 	} // namespace ATone
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_TONE_HXX_

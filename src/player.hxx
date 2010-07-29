@@ -49,4 +49,4 @@ namespace Player
 	WindowUi& getMainWindow();
 } // namespace Player
 
-#endif
+#endif // _PLAYER_HXX_

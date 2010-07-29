@@ -112,4 +112,4 @@ protected:
 	std::vector< Uint32 > pixels_;
 }; // class Bitmap
 
-#endif
+#endif // _BITMAP_HXX_

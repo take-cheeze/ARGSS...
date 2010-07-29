@@ -22,8 +22,8 @@
 /// SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //////////////////////////////////////////////////////////////////////////////////
 
-#ifndef BUFFER_H
-#define BUFFER_H
+#ifndef _BUFFER_HXX_
+#define _BUFFER_HXX_
 
 #include <string>
 
@@ -64,4 +64,4 @@ private:
 	int m_Position;
 }; // class Buffer
 
-#endif
+#endif // _BUFFER_HXX_

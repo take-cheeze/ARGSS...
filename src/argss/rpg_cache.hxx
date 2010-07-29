@@ -63,4 +63,4 @@ namespace ARGSS
 	} // namespace ARPG
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_RPG_CACHE_HXX_

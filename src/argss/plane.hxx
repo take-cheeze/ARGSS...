@@ -70,4 +70,4 @@ namespace ARGSS
 	} // namespace APlane
 } // namespace ARGSS
 
-#endif
+#endif // _ARGSS_PLANE_HXX_

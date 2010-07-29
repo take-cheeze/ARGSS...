@@ -90,4 +90,4 @@ void Check_Bool(VALUE x);
 void Check_Class(VALUE x, VALUE c);
 void Check_Classes_N(VALUE x, VALUE c);
 
-#endif
+#endif // _ARGSS_RUBY_HXX_

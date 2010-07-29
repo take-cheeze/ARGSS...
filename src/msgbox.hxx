@@ -34,4 +34,4 @@ namespace MsgBox
 	void Warning(std::string const& msg, std::string const& title);
 } // namespace MsgBox
 
-#endif
+#endif // _MSGBOX_HXX_
