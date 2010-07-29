@@ -118,9 +118,10 @@ WindowUi::WindowUi(long iwidth, long iheight, std::string const& title, bool cen
 , width_(iwidth), height_(iheight)
 , isFullScreen_(fs_flag)
 {
-	assert( SDL_InitSubSystem(SDL_INIT_VIDEO) == 0 );
-	assert( SDL_InitSubSystem(SDL_INIT_TIMER) == 0 );
-	assert( SDL_InitSubSystem(SDL_INIT_EVENTTHREAD) == 0 );
+	int res;
+	res = SDL_InitSubSystem(SDL_INIT_VIDEO); assert(res == 0);
+	res = SDL_InitSubSystem(SDL_INIT_TIMER); assert(res == 0);
+	res = SDL_InitSubSystem(SDL_INIT_EVENTTHREAD); assert(res == 0);
 	atexit( SDL_Quit );
 
 	int flagRet = 0;
@@ -128,7 +129,7 @@ WindowUi::WindowUi(long iwidth, long iheight, std::string const& title, bool cen
 	assert(flagRet == 0);
 	Uint32 flags = SDL_OPENGL;
 	if( isFullscreen() ) flags |= SDL_FULLSCREEN;
-	assert( SDL_SetVideoMode(width_, height_, 0, flags) );
+	SDL_Surface* surface = SDL_SetVideoMode(width_, height_, 0, flags); assert(surface);
 
 	mouseWheel_ = 0;
 	mouseX_ = mouseY_ = 0;
@@ -176,7 +177,7 @@ void WindowUi::resize(long width, long height)
 	assert(flagRet == 0);
 	Uint32 flags = SDL_OPENGL;
 	if( isFullscreen() ) flags |= SDL_FULLSCREEN;
-	assert( SDL_SetVideoMode(width, height, 0, flags) );
+	SDL_Surface* surface = SDL_SetVideoMode(width_, height_, 0, flags); assert(surface);
 
 	Graphics::ResizeScreen(width, height);
 }

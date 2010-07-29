@@ -28,6 +28,7 @@
 #include <boost/format.hpp>
 #include <boost/unordered_map.hpp>
 
+#include <cassert>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>

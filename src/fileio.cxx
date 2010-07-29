@@ -58,11 +58,12 @@ namespace FileIO
 		if( files_.find(slash) == files_.end() ) {
 			std::FILE* fp = std::fopen( slash.c_str(), "rb" );
 			assert(fp);
-			assert( std::fseek(fp, 0, SEEK_END) == 0 );
+			int res;
+			res = std::fseek(fp, 0, SEEK_END); assert(res == 0);
 			unsigned int size = ftell(fp);
-			assert( std::fseek(fp, 0, SEEK_SET) == 0 );
+			res = std::fseek(fp, 0, SEEK_SET); assert(res == 0);
 			files_[slash] = std::vector< uint8_t >(size);
-			assert( std::fread( &(files_[slash][0]), sizeof(uint8_t), size, fp ) == size );
+			size_t ret = std::fread( &(files_[slash][0]), sizeof(uint8_t), size, fp ); assert(ret == size);
 		}
 		return files_.find(slash)->second;
 	}

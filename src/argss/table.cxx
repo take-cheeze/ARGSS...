@@ -76,11 +76,11 @@ namespace ARGSS
 			if (argc < 1) raise_argn(argc, 1);
 			else if (argc > 3) raise_argn(argc, 3);
 
-			assert( tables_.insert(
+			bool res = tables_.insert(
 				boost::unordered_map< VALUE, boost::shared_ptr< Table > >::value_type(
 					self, boost::shared_ptr< Table >( new Table( val2arg(argc, argv) ) )
 				)
-			).second );
+			).second; assert(res);
 			ARGSS::ARuby::AddObject(self);
 
 			return self;

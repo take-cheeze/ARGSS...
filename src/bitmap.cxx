@@ -28,6 +28,7 @@
 #include <boost/unordered_map.hpp>
 
 #include <algorithm>
+#include <cassert>
 #include <cstring>
 
 #include <SOIL.h>

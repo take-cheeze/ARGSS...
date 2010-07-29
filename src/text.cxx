@@ -69,7 +69,10 @@ namespace Text
 
 				(void)(*this)("Convert test"); // skipping BOM
 			}
-			~Converter() { if(cd_) assert( ::iconv_close(cd_) != -1 ); }
+			~Converter()
+			{
+				if(cd_) { int res = ::iconv_close(cd_); assert(res == 0); }
+			}
 
 			InternText operator()(std::string const& src) const
 			{

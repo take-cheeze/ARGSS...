@@ -45,7 +45,7 @@
 
 int main() // int argc, char **argv)
 {
-	assert( SDL_Init(SDL_INIT_EVENTTHREAD) == 0 );
+	int res = SDL_Init(SDL_INIT_EVENTTHREAD); assert(res == 0);
 
 	Output::Init();
 	System::Init();

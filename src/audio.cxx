@@ -291,7 +291,7 @@ namespace Audio
 		if (channel == -1) {
 			rb_raise(ARGSS::AError::getID(), "couldn't play %s SE.\n%s\n", file.c_str(), Mix_GetError());
 		}
-		assert( sounds_.insert( std::map< int, boost::shared_ptr< Sound > >::value_type(channel, sound) ).second );
+		bool res = sounds_.insert( std::map< int, boost::shared_ptr< Sound > >::value_type(channel, sound) ).second; assert(res);
 	}
 
 	////////////////////////////////////////////////////////////
