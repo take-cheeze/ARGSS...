@@ -88,18 +88,16 @@ namespace Text
 			}
 		} conv_[] = {
 			Converter("UTF-32", "UTF-8"),
-			/*
-			Converter("UTF-32", "Windows-31J"),
-			Converter("UTF-32", "ISO-2022-JP"),
-			Converter("UTF-32", "EUC-JP"),
-			 */
+			// Converter("UTF-32", "Windows-31J"),
+			// Converter("UTF-32", "ISO-2022-JP"),
+			// Converter("UTF-32", "EUC-JP"),
 		};
 		typedef uint32_t InternChar;
 
 		InternText convertText(std::string const& text)
 		{
 			if( text.empty() ) return InternText( std::string() );
-			for(unsigned int i = 0; i < ( sizeof(conv_) / sizeof(Converter) ); i++) {
+			for(unsigned int i = 0; i < ( sizeof(conv_) / sizeof(conv_[0]) ); i++) {
 				InternText ret = conv_[i](text);
 				if(ret) return ret;
 			}
@@ -123,7 +121,6 @@ namespace Text
 	////////////////////////////////////////////////////////////
 	FT_Face getFont(std::string const& name)
 	{
-		std::cout << "Required font: " << name << std::endl;
 		std::vector< uint8_t > const& data = FileIO::get("ipag.ttf"); // FileFinder::FindFont(name);
 
 		if ( fonts_.find(name) == fonts_.end() ) {
@@ -143,6 +140,8 @@ namespace Text
 	////////////////////////////////////////////////////////////
 	std::auto_ptr< Bitmap > draw(std::string const& text, std::string const& font, Color const& color, int size, bool bold, bool italic, bool shadow)
 	{
+		std::cout << text << std::endl;
+
 		InternText converted = convertText(text);
 		assert(converted);
 		assert( ( converted->size() % sizeof(InternChar) ) == 0 );
@@ -222,7 +221,7 @@ namespace Text
 				for (int x = 0; x < glyphs[i]->bitmap.width; x++) {
 					if(top + y - min_y < 0 || left + x < 0) continue;
 					if(top + y - min_y > height || left + x > width) continue;
-					if((((left + x) + (top + y - min_y) * width) * 4) >= width * height * 4) continue;
+					if(((left + x) + (top + y - min_y) * width) >= width * height) continue;
 
 					long pixel = ((left + x) + (top + y - min_y) * width) * 4;
 					dst_pixels[pixel + 0] = (Uint8)color.red;

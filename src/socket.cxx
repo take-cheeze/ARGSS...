@@ -36,7 +36,7 @@
 
 Socket::Socket()
 {
-	m_Socket = socket(AF_INET, SOCK_STREAM, AF_INET);
+	m_Socket = ::socket(AF_INET, SOCK_STREAM, AF_INET);
 }
 
 void Socket::Connect(const std::string& host, uint16_t port)
@@ -46,7 +46,7 @@ void Socket::Connect(const std::string& host, uint16_t port)
 	hostAddr.sin_addr.s_addr = inet_addr(host.c_str());
 	hostAddr.sin_port = htons(port);
 
-	if (connect(m_Socket, (struct sockaddr*)&hostAddr, sizeof(hostAddr))) {
+	if ( ::connect(m_Socket, (struct sockaddr*)&hostAddr, sizeof(hostAddr)) ) {
 		rb_raise(ARGSS::AError::getID(), "Could not connect to the host, make sure the host address is valid and the port is correct.");
 	}
 }
@@ -133,9 +133,9 @@ void Socket::Shutdown()
 {
 	if (m_Socket) {
 	#ifdef ARGSS_WIN32
-		shutdown(m_Socket, SD_BOTH);
+		::shutdown(m_Socket, SD_BOTH);
 	#else
-		shutdown(m_Socket, SHUT_RDWR);
+		::shutdown(m_Socket, SHUT_RDWR);
 	#endif
 	}
 }

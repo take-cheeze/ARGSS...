@@ -194,15 +194,15 @@ namespace ARGSS
 			switch(argc) {
 				default: raise_argn(argc, 0); // TODO: correct 2nd arg
 					break;
+				case 6: align = NUM2INT(argv[argc-1]); /* FallThrough */
+				case 5:
+					dstRect.set(NUM2INT(argv[0]), NUM2INT(argv[1]), NUM2INT(argv[2]), NUM2INT(argv[3]));
+					text = VAL2STR(argv[4]);
+					break;
 				case 3: align = NUM2INT(argv[argc-1]); /* FallThrough */
 				case 2:
 					dstRect = Rect(argv[0]);
 					text = VAL2STR(argv[1]);
-					break;
-				case 6: align = NUM2INT(argv[argc-1]); /* FallThrough */
-				case 5:
-					dstRect = Rect(NUM2INT(argv[0]), NUM2INT(argv[1]), NUM2INT(argv[2]), NUM2INT(argv[3]));
-					text = VAL2STR(argv[4]);
 					break;
 			}
 			Bitmap::get(self).TextDraw(dstRect, text, align);

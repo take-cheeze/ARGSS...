@@ -37,6 +37,7 @@
 #include <argss/font.hxx>
 #include <argss/plane.hxx>
 #include <argss/rect.hxx>
+#include <argss/socket.hxx>
 #include <argss/sprite.hxx>
 #include <argss/table.hxx>
 #include <argss/tilemap.hxx>
@@ -62,6 +63,8 @@ void ARGSS::Init() {
 	 */
 	VALUE lastGcSatate = rb_gc_disable();
 
+	ARGSS::AError::Init();
+
 	ARGSS::AOutput::Init();
 	ARGSS::AAudio::Init();
 	ARGSS::AGraphics::Init();
@@ -73,13 +76,13 @@ void ARGSS::Init() {
 	ARGSS::AFont::Init();
 	ARGSS::APlane::Init();
 	ARGSS::ARect::Init();
+	ARGSS::ASocket::Init();
 	ARGSS::ASprite::Init();
 	ARGSS::ATable::Init();
 	ARGSS::ATilemap::Init();
 	ARGSS::ATone::Init();
 	ARGSS::AViewport::Init();
 	ARGSS::AWindow::Init();
-	ARGSS::AError::Init();
 
 	ARGSS::ARPG::Init();
 	ARGSS::ARPG::ACache::Init();
