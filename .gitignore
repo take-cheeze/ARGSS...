@@ -1,0 +1,2 @@
+*.o
+builds/linux/src/rgssad.cxx
