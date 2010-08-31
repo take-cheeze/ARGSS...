@@ -88,6 +88,6 @@ namespace rubybind
 	template<>
 	inline float from_value<float>(VALUE v)
 	{
-        return float(from_value<double>(v));
+		return float(from_value<double>(v));
 	}
 }

@@ -136,7 +136,7 @@ namespace FileFinder
 				path = rtp_path;
 				if (fexists(path)) return path;
 				for(ImageSuffix::const_iterator it = imageSuffix.begin(); it < imageSuffix.end(); ++it) {
-					path = rtp_path + target + *it;
+					path.assign(rtp_path).append(target).append(*it);
 					if (fexists(path)) return path;
 				}
 			}
@@ -164,7 +164,7 @@ namespace FileFinder
 				path = rtp_path;
 				if (fexists(path)) return path;
 				for(MusicSuffix::const_iterator it = musicSuffix.begin(); it < musicSuffix.end(); ++it) {
-					path = rtp_path + target + *it;
+					path.assign(rtp_path).append(target).append(*it);
 					if (fexists(path)) return path;
 				}
 			}
@@ -185,7 +185,7 @@ namespace FileFinder
 
 		path = fonts_path + target;
 		if (fexists(path)) return path;
-		path = fonts_path + target + ".ttf";
+		path.assign(fonts_path).append(target).append(".ttf");
 		if (fexists(path)) return path;
 		std::string real_target;
 		real_target = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts", target + " (TrueType)");

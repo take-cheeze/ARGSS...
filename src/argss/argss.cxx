@@ -58,10 +58,7 @@
 void ARGSS::Init() {
 	ARGSS::ARuby::Init();
 
-	/*
-	 * initialize ruby before disabling GC
-	 */
-	VALUE lastGcSatate = rb_gc_disable();
+	rb_gc_disable();
 
 	ARGSS::AError::Init();
 
@@ -89,10 +86,7 @@ void ARGSS::Init() {
 	ARGSS::ARPG::AWeather::Init();
 	ARGSS::ARPG::ASprite::Init();
 
-	if( lastGcSatate ) {
-		rb_gc();
-		rb_gc_enable();
-	}
+	rb_gc();
 
  	ARGSS::ARuby::Run();
 }

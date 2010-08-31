@@ -34,6 +34,7 @@
 
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "table.hxx"
@@ -76,11 +77,7 @@ namespace ARGSS
 			if (argc < 1) raise_argn(argc, 1);
 			else if (argc > 3) raise_argn(argc, 3);
 
-			bool res = tables_.insert(
-				boost::unordered_map< VALUE, boost::shared_ptr< Table > >::value_type(
-					self, boost::shared_ptr< Table >( new Table( val2arg(argc, argv) ) )
-				)
-			).second; assert(res);
+			bool res = tables_.insert( std::make_pair( self, new Table( val2arg(argc, argv) ) ) ).second; assert(res);
 			ARGSS::ARuby::AddObject(self);
 
 			return self;
@@ -91,7 +88,7 @@ namespace ARGSS
 			if( it != tables_.end() ) {
 				tables_.erase(it);
 				ARGSS::ARuby::RemoveObject(self);
-				rb_gc_start();
+				rb_gc();
 			}
 			return self;
 		}

@@ -39,7 +39,7 @@ class Color
 {
 public:
 	Color();
-	Color(VALUE color);
+	explicit Color(VALUE color);
 	Color(int ired, int igreen, int iblue, int ialpha = 255);
 	Color(Color const& src);
 	~Color();
@@ -57,6 +57,26 @@ public:
 }; // class Color
 
 #define PP_operator(op) \
+	template<typename T> \
+	inline Color operator op(Color const& lhs, T const& rhs) \
+	{ \
+		return Color( \
+			lhs.red   op rhs, \
+			lhs.green op rhs, \
+			lhs.blue  op rhs, \
+			lhs.alpha op rhs\
+		); \
+	} \
+	template<typename T> \
+	inline Color& operator op ## =(Color& lhs, T const& rhs) \
+	{ \
+		lhs.red   op ## = rhs; \
+		lhs.green op ## = rhs; \
+		lhs.blue  op ## = rhs; \
+		lhs.alpha op ## = rhs; \
+		return lhs; \
+	} \
+	template<> \
 	inline Color operator op(Color const& lhs, Color const& rhs) \
 	{ \
 		return Color( \
@@ -66,15 +86,14 @@ public:
 			lhs.alpha op rhs.alpha  \
 		); \
 	} \
-	template< typename T > \
-	inline Color operator op(Color const& lhs, T const& rhs) \
+	template<> \
+	inline Color& operator op ## =(Color& lhs, Color const& rhs) \
 	{ \
-		return Color( \
-			lhs.red   op rhs, \
-			lhs.green op rhs, \
-			lhs.blue  op rhs, \
-			lhs.alpha op rhs  \
-		); \
+		lhs.red   op ## = rhs.red  ; \
+		lhs.green op ## = rhs.green; \
+		lhs.blue  op ## = rhs.blue ; \
+		lhs.alpha op ## = rhs.alpha; \
+		return lhs; \
 	} \
 
 PP_operator(-)

@@ -92,7 +92,7 @@ VALUE Color::getARGSS()
 ////////////////////////////////////////////////////////////
 Uint32 Color::getUint32() const
 {
-	return ((Uint8)red) + (((Uint8)green) << 8) + (((Uint8)blue) << 16) + (((Uint8)alpha) << 24); 
+	return ((Uint8)red) | (((Uint8)green) << 8) | (((Uint8)blue) << 16) | (((Uint8)alpha) << 24); 
 }
 
 ////////////////////////////////////////////////////////////

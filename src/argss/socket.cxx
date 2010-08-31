@@ -61,7 +61,7 @@ namespace ARGSS
 			if ( socketExists(self) ) {
 				sockets_.erase(self);
 				ARGSS::ARuby::RemoveObject(self);
-				rb_gc_start();
+				rb_gc();
 			}
 			return self;
 		}

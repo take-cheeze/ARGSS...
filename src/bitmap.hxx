@@ -53,10 +53,11 @@ class Bitmap
 {
 public:
 	Bitmap();
+	Bitmap(Bitmap const& source);
 	Bitmap(int iwidth, int iheight);
 	Bitmap(VALUE iid, std::string const& filename);
 	Bitmap(VALUE iid, int iwidth, int iheight);
-	Bitmap(Bitmap& source, Rect const& srcRect);
+	Bitmap(Bitmap const& source, Rect const& srcRect);
 	~Bitmap();
 
 	static bool IsDisposed(VALUE id);
@@ -86,7 +87,7 @@ public:
 	Rect getTextSize(std::string const& text);
 	void GradientFillRect(Rect rect, Color const& color1, Color const& color2, bool vertical);
 	void ClearRect(Rect rect);
-	void Blur();
+	void Blur(int radius);
 	void RadialBlur(int angle, int division);
 
 	void ToneChange(Tone tone);
@@ -102,14 +103,14 @@ public:
 	void Refresh();
 	void BindBitmap();
 	Uint32* getPixels() { return &pixels_[0]; }
-protected:
+private:
 	VALUE id;
 
 	GLuint glBitmap_;
 	long width_;
 	long height_;
 
-	std::vector< Uint32 > pixels_;
+	std::vector<Uint32> pixels_;
 }; // class Bitmap
 
 #endif // _BITMAP_HXX_

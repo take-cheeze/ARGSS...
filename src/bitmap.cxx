@@ -28,6 +28,8 @@
 #include <boost/unordered_map.hpp>
 
 #include <algorithm>
+#include <iostream>
+
 #include <cassert>
 #include <cstring>
 
@@ -60,7 +62,7 @@ Bitmap::Bitmap(int iwidth, int iheight)
 	pixels_.resize(iwidth * iheight, 0);
 	width_ = (long)iwidth;
 	height_ = (long)iheight;
-	glBitmap_ = 0;
+	glBitmap_ = GL_INVALID_VALUE;
 }
 Bitmap::Bitmap(VALUE iid, std::string const& filename)
 {
@@ -82,14 +84,14 @@ Bitmap::Bitmap(VALUE iid, std::string const& filename)
 	}
 
 	pixels_.resize(rwidth * rheight);
-	std::memcpy(&pixels_[0], load_pixels, rwidth * rheight * 4);
+	std::memcpy(&pixels_[0], load_pixels, rwidth * rheight * sizeof(Uint32));
 
 	SOIL_free_image_data(load_pixels);
 
 	id = iid;
 	width_ = (long)rwidth;
 	height_ = (long)rheight;
-	glBitmap_ = 0;
+	glBitmap_ = GL_INVALID_VALUE;
 }
 Bitmap::Bitmap(VALUE iid, int iwidth, int iheight)
 : pixels_(iwidth * iheight, 0)
@@ -100,19 +102,25 @@ Bitmap::Bitmap(VALUE iid, int iwidth, int iheight)
 	id = iid;
 	width_ = (long)iwidth;
 	height_ = (long)iheight;
-	glBitmap_ = 0;
+	glBitmap_ = GL_INVALID_VALUE;
 }
-Bitmap::Bitmap(Bitmap& source, Rect const& srcRect)
+Bitmap::Bitmap(Bitmap const& source, Rect const& srcRect)
+: pixels_(srcRect.width * srcRect.height, 0)
 {
 	if (srcRect.width <= 0 && srcRect.height <= 0) {
 		rb_raise(ARGSS::AError::getID(), "cant't create %dx%d image.\nWidth and height_ must be bigger than 0.\n", srcRect.width, srcRect.height);
 	}
-	id = 0;
+	id = Qnil;
 	width_ = (long)srcRect.width;
 	height_ = (long)srcRect.height;
-	pixels_.resize(width_ * height_, 0);
-	glBitmap_ = 0;
+	glBitmap_ = GL_INVALID_VALUE;
 	Copy(0, 0, source, srcRect);
+}
+Bitmap::Bitmap(Bitmap const& src)
+: id(Qnil), glBitmap_(GL_INVALID_VALUE)
+, width_(src.width_), height_(src.height_)
+, pixels_(src.pixels_)
+{
 }
 
 ////////////////////////////////////////////////////////////
@@ -120,7 +128,7 @@ Bitmap::Bitmap(Bitmap& source, Rect const& srcRect)
 ////////////////////////////////////////////////////////////
 Bitmap::~Bitmap()
 {
-	if (glBitmap_ > 0)  glDeleteTextures(1, &glBitmap_);
+	if (glBitmap_ != GL_INVALID_VALUE)  glDeleteTextures(1, &glBitmap_);
 }
 
 ////////////////////////////////////////////////////////////
@@ -136,11 +144,11 @@ bool Bitmap::IsDisposed(VALUE id)
 ////////////////////////////////////////////////////////////
 void Bitmap::New(VALUE id, std::string const& filename)
 {
-	bitmaps_[id] = boost::shared_ptr< Bitmap >( new Bitmap(id, filename) );
+	bitmaps_.insert( std::make_pair( id, new Bitmap(id, filename) ) );
 }
-void Bitmap::New(VALUE id, int width_, int height_)
+void Bitmap::New(VALUE id, int width, int height)
 {
-	bitmaps_[id] = boost::shared_ptr< Bitmap >( new Bitmap(id, width_, height_) );
+	bitmaps_.insert( std::make_pair( id, new Bitmap(id, width, height) ) );
 }
 
 ////////////////////////////////////////////////////////////
@@ -183,7 +191,7 @@ void Bitmap::DisposeBitmaps()
 ////////////////////////////////////////////////////////////
 void Bitmap::Changed()
 {
-	if (glBitmap_ > 0) {
+	if (glBitmap_ != GL_INVALID_VALUE) {
 		glEnable(GL_TEXTURE_2D);
 
 		glMatrixMode(GL_TEXTURE);
@@ -192,7 +200,7 @@ void Bitmap::Changed()
 		glBindTexture(GL_TEXTURE_2D, glBitmap_);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width_, height_, GL_RGBA, GL_UNSIGNED_BYTE, &pixels_[0]);
 		//glDeleteTextures(1, &glBitmap_);
-		//glBitmap_ = 0;
+		//glBitmap_ = GL_INVALID_VALUE;
 	}
 }
 
@@ -201,7 +209,7 @@ void Bitmap::Changed()
 ////////////////////////////////////////////////////////////
 void Bitmap::Refresh()
 {
-	if (glBitmap_ > 0) return;
+	if (glBitmap_ != GL_INVALID_VALUE) return;
 
 	glEnable(GL_TEXTURE_2D);
 
@@ -209,6 +217,7 @@ void Bitmap::Refresh()
 	glLoadIdentity();
 
 	glGenTextures(1, &glBitmap_);
+	assert(glBitmap_ != GL_INVALID_VALUE);
 	glBindTexture(GL_TEXTURE_2D, glBitmap_);
 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
@@ -334,6 +343,7 @@ void Bitmap::FillRect(Rect rect, Color const& color)
 	rect.Adjust(getWidth(), getHeight());
 	if (rect.IsOutOfBounds(getWidth(), getHeight())) return;
 
+	// TODO: alpha blending
 	long dst = rect.x + rect.y * width_;
 	Uint32 col = color.getUint32();
 	for (int i = 0; i < rect.height; i++) {
@@ -536,14 +546,39 @@ void Bitmap::GradientFillRect(Rect rect, Color const& color1, Color const& color
 			std::memcpy( &(pixels_[(rect.y + y) * rect.x]), &(srcPix[0]), sizeof(Uint32) * srcPix.size() );
 		}
 	}
+
+	Changed();
 }
 
 ////////////////////////////////////////////////////////////
 /// Blur
 ////////////////////////////////////////////////////////////
-void Bitmap::Blur()
+void Bitmap::Blur(int radius)
 {
-	// TODO
+	std::vector<Uint32> const src = this->pixels_;
+	std::vector<Uint32>& dst = this->pixels_;
+	int pixNum = ( (radius * 2 + 1) * (radius * 2 + 1) );
+	// TODO: filtering edges
+	for (int y = radius; y < (this->getHeight() - radius); y++) {
+		for (int x = radius; x < (this->getWidth() - radius); x++) {
+			Color total;
+			for (int ky = -radius; ky <= radius; ++ky)
+				for (int kx = -radius; kx <= radius; ++kx)
+					total += Color::NewUint32( src[ (this->getWidth() * (y + ky)) + (x + kx) ] );
+			dst[ (this->getWidth() * y) + x ] = (total / pixNum).getUint32();
+		}
+	}
+
+/*
+	std::cout << getPixel(getWidth()/2, getHeight()/2).red << std::endl;
+	std::cout << getPixel(getWidth()/2, getHeight()/2).green << std::endl;
+	std::cout << getPixel(getWidth()/2, getHeight()/2).blue << std::endl;
+	std::cout << getPixel(getWidth()/2, getHeight()/2).alpha << std::endl;
+ */
+
+	Refresh();
+	Changed();
+	assert(glBitmap_ != GL_INVALID_VALUE);
 }
 
 ////////////////////////////////////////////////////////////

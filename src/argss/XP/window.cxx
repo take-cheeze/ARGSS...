@@ -96,7 +96,7 @@ namespace ARGSS
 				CheckDisposed(self);
 				Window::Dispose(self);
 				ARGSS::ARuby::RemoveObject(self);
-				rb_gc_start();
+				rb_gc();
 			}
 			return self;
 		}

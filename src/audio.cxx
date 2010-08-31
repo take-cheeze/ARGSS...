@@ -31,6 +31,7 @@
 #include <cassert>
 
 #include <map>
+#include <utility>
 
 #include <SDL.h>
 #include <SDL_mixer.h>
@@ -291,7 +292,7 @@ namespace Audio
 		if (channel == -1) {
 			rb_raise(ARGSS::AError::getID(), "couldn't play %s SE.\n%s\n", file.c_str(), Mix_GetError());
 		}
-		bool res = sounds_.insert( std::map< int, boost::shared_ptr< Sound > >::value_type(channel, sound) ).second; assert(res);
+		bool res = sounds_.insert( std::make_pair(channel, sound) ).second; assert(res);
 	}
 
 	////////////////////////////////////////////////////////////

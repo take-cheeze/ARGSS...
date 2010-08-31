@@ -181,7 +181,7 @@ namespace ARGSS
 					}
 				}
 				rb_iv_set(id, "@cache", rb_hash_new());
-				return rb_gc_start();
+				rb_gc(); return self; // return rb_gc_start();
 			}
 
 			////////////////////////////////////////////////////////////

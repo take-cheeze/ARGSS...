@@ -39,6 +39,7 @@
 #include <map>
 #include <sstream>
 #include <string>
+#include <utility>
 
 #include "ruby.hxx"
 
@@ -53,7 +54,7 @@
 	#define ruby_errinfo rb_errinfo()
 #endif
 
-static int const BACK_TRACE_LINE_NUM = 20;
+static int const BACK_TRACE_LINE_NUM = 10;
 
 
 namespace ARGSS
@@ -148,14 +149,14 @@ namespace ARGSS
 					VALUE klass = rb_class_path(CLASS_OF(lasterr));
 					VALUE message = rb_obj_as_string(lasterr);
 					if (CLASS_OF(lasterr) != rb_eSystemExit) {
-						std::string report = std::string("RUBY ERROR\n")
-							+ RSTRING_PTR(klass) + " - " + RSTRING_PTR(message);
+						std::ostringstream report("RUBY ERROR\n");
+						report << VAL2STR(klass) << " - " << VAL2STR(message);
 						if (!NIL_P(ruby_errinfo)) {
 							VALUE ary = rb_funcall(ruby_errinfo, rb_intern("backtrace"), 0);
 							for (int i = 0; i < RARRAY_LEN(ary); i++) {
 								std::string errMsg = VAL2STR( RARRAY_PTR(ary)[i] );
 
-								report += "\n\tfrom " + errMsg + ":";
+								report << std::endl << "\tfrom " << errMsg << ":";
 
 								boost::xpressive::smatch what;
 								if( !boost::xpressive::regex_match( errMsg, what, rex ) ) continue;
@@ -171,12 +172,12 @@ namespace ARGSS
 
 								for(int j_len = lineNo + BACK_TRACE_LINE_NUM; j < j_len; j++) {
 									std::getline(iss, line);
-									report += ( ( (j + 1) == lineNo ) ? "\n>" : "\n" ) + ( boost::format("%5d:") % (j + 1) ).str() + line;
+									report << ( ( (j + 1) == lineNo ) ? "\n>" : "\n" ) << ( boost::format("%5d:") % (j + 1) ) << line;
 									if( iss.eof() ) break;
 								}
 							}
 						}
-						Output::ErrorStr(report);
+						Output::ErrorStr(report.str());
 						return;
 					}
 				}
@@ -240,7 +241,7 @@ namespace ARGSS
 					VALUE section = rb_str_new( dstStr.c_str(), dstStr.size() );
 
 					std::string scriptName = RSTRING_PTR( rb_ary_entry(section_arr, 1) );
-					scripts_.insert( std::multimap< std::string, std::string >::value_type( scriptName, dstStr ) );
+					scripts_.insert( std::make_pair( scriptName, dstStr ) );
 
 					result = 
 						// rb_eval_string_protect( RSTRING_PTR(section), &error );

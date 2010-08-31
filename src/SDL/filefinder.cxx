@@ -78,7 +78,7 @@ namespace FileFinder
 		char const* homePath = std::getenv("HOME");
 		if( homePath ) for(int i = 0; i < 3; i++) {
 			std::string const& rtp = System::getRTP(i);
-			if( !rtp.empty() ) searchPath_[i + 1] = std::string(homePath) + "/" + RTP_BASE_PATH + "/" + rtp + "/";
+			if( !rtp.empty() ) searchPath_[i + 1].assign(homePath).append("/").append(RTP_BASE_PATH).append("/").append(rtp).append("/");
 		} else for (int i = 0; i < 3; i++) {
 			std::string const& rtp = System::getRTP(i);
 			if (rtp.empty()) continue;
@@ -115,10 +115,10 @@ namespace FileFinder
 		for(unsigned int i = 0; i < searchPath_.size(); i++) {
 			if( i && searchPath_[i].empty() ) continue;
 
-			std::string base = searchPath_[i] + target;
+			std::string base(searchPath_[i]); base.append(target);
 			if( FileIO::exists(base) ) return FileIO::get(base);
 			for(ImageSuffix::const_iterator it = imageSuffix_.begin(); it < imageSuffix_.end(); ++it) {
-				std::string full = base + *it;
+				std::string full(base); full.append(*it);
 				if (FileIO::exists(full)) return FileIO::get(full);
 			}
 		}
@@ -137,10 +137,10 @@ namespace FileFinder
 		for(unsigned int i = 0; i < searchPath_.size(); i++) {
 			if( i && searchPath_[i].empty() ) continue;
 
-			std::string base = searchPath_[i] + target;
+			std::string base(searchPath_[i]); base.append(target);
 			if( FileIO::exists(base) ) return FileIO::get(base);
 			for(MusicSuffix::const_iterator it = musicSuffix_.begin(); it < musicSuffix_.end(); ++it) {
-				std::string full = base + *it;
+				std::string full(base); full.append(*it);
 				if (FileIO::exists(full)) return FileIO::get(full);
 			}
 		}
@@ -158,9 +158,9 @@ namespace FileFinder
 		path = target + fontSuffix_[0];
 		if (FileIO::exists(path)) return FileIO::get(path);
 
-		path = fonts_path + target;
+		path.assign(fonts_path).append(target);
 		if (FileIO::exists(path)) return FileIO::get(path);
-		path = fonts_path + target + fontSuffix_[0];
+		path.assign(fonts_path).append(target).append(fontSuffix_[0]);
 		if (FileIO::exists(path)) return FileIO::get(path);
 		std::string real_target;
 		real_target = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts", target + " (TrueType)");

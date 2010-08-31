@@ -36,6 +36,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include <GL/gl.h>
@@ -92,9 +93,7 @@ namespace Graphics
 	}
 	bool insertDrawable(VALUE id, boost::shared_ptr< Drawable > const& ptr)
 	{
-		return drawableMap_.insert(
-			boost::unordered_map< VALUE, boost::shared_ptr< Drawable > >::value_type(id, ptr)
-		).second;
+		return drawableMap_.insert( std::make_pair(id, ptr) ).second;
 	}
 	void eraseDrawable(VALUE id)
 	{
@@ -169,10 +168,12 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void RefreshAll()
 	{
+		/*
 		boost::unordered_map< VALUE, boost::shared_ptr< Drawable > >::iterator it;
 		for (it = drawableMap_.begin(); it != drawableMap_.end(); ++it) {
 			it->second->RefreshBitmaps();
 		}
+		 */
 		Bitmap::RefreshBitmaps();
 	}
 
@@ -198,7 +199,7 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void Update()
 	{
-		static long tics;
+		// static long tics;
 		// static long ticsFps = Time::getTime();
 		static long frames = 0;
 		// static double waitFrames = 0;
@@ -209,15 +210,18 @@ namespace Graphics
 //			waitFrames -= 1;
 //			return;
 //		}
-		tics = Time::getTime();
+		int tics = Time::getTime();
 
 		if ((tics - lastTics_) >= frameInterval_) {// || (frameInterval_ - tics + lastTics_) < 12) {
 			//cyclesLeftOver = waitFrames;
 			//waitFrames = (double)(tics - lastTics_) / frameInterval_ - cyclesleftover;
 			//lastTics_ += (tics - lastTics_);
-			lastTics_ = tics;
+			//lastTics_ = tics;
 
 			drawFrame();
+
+			// run GC if time is left
+			if( (Time::getTime() - lastTics_) < frameInterval_ ) rb_gc();
 
 			frameCount_++;
 			frames++;
@@ -229,7 +233,10 @@ namespace Graphics
 
 				Player::getMainWindow().setTitle( ( boost::format("%s - %d FPS") % System::getTitle() % fps ).str() );
 			}
-		} else Time::sleepMs((long)(frameInterval_) - (tics - lastTics_));
+		} else {
+			Time::sleepMs(frameInterval_ - (tics - lastTics_));
+		}
+		lastTics_ = Time::getTime();
 	}
 
 	////////////////////////////////////////////////////////////

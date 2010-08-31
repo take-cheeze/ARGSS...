@@ -74,7 +74,7 @@ namespace ARGSS
 			if (!Bitmap::IsDisposed(self)) {
 				Bitmap::Dispose(self);
 				ARGSS::ARuby::RemoveObject(self);
-				rb_gc_start();
+				rb_gc();
 			}
 			return self;
 		}
@@ -250,7 +250,7 @@ namespace ARGSS
 		VALUE rblur(VALUE self) // RGSS2
 		{
 			CheckDisposed(self);
-			Bitmap::get(self).Blur();
+			Bitmap::get(self).Blur(1);
 			return self;
 		}
 		VALUE rradial_blur(VALUE self, VALUE angle, VALUE division) // RGSS2
