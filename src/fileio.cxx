@@ -1,4 +1,5 @@
 #include <boost/smart_ptr.hpp>
+#include <boost/make_shared.hpp>
 
 #include <fstream>
 
@@ -22,7 +23,8 @@ namespace FileIO
 
 	namespace
 	{
-		std::vector< boost::shared_ptr< RgssAdExtracter > > archives_;
+		typedef std::vector< boost::shared_ptr< RgssAdExtracter > > ArchiveVector;
+		ArchiveVector archives_;
 		std::map< std::string, std::vector< uint8_t > > files_;
 
 		char const* DEFAULT_ARCHIVE = "./Game.rgssad";
@@ -31,7 +33,7 @@ namespace FileIO
 	bool exists(std::string const& filename)
 	{
 		std::string yen = toYen(filename); // in a "rgssad" the separator is YEN sign
-		for(std::vector< boost::shared_ptr< RgssAdExtracter > >::const_iterator it = archives_.begin(); it < archives_.end(); ++it) {
+		for(ArchiveVector::const_iterator it = archives_.begin(); it < archives_.end(); ++it) {
 			if( (*it)->exists(yen) ) return true;
 		}
 
@@ -51,7 +53,7 @@ namespace FileIO
 		assert( exists(slash) ); // the file mush exist
 
 		std::string yen = toYen(name); // in a "rgssad" the separator is YEN sign
-		for(std::vector< boost::shared_ptr< RgssAdExtracter > >::iterator it = archives_.begin(); it < archives_.end(); ++it) {
+		for(ArchiveVector::iterator it = archives_.begin(); it < archives_.end(); ++it) {
 			if( (*it)->exists(yen) ) return (*it)->get(yen);
 		}
 
@@ -70,16 +72,14 @@ namespace FileIO
 	void init()
 	{
 		if( exists(DEFAULT_ARCHIVE) ) {
-			archives_.push_back(
-				boost::shared_ptr< RgssAdExtracter >( new RgssAdExtracter(DEFAULT_ARCHIVE) )
-			);
+			archives_.push_back( boost::make_shared< RgssAdExtracter >(DEFAULT_ARCHIVE) );
 		}
 	}
 
 	std::vector< std::string > getRgssAdList()
 	{
 		std::vector< std::string > ret;
-		for(std::vector< boost::shared_ptr< RgssAdExtracter > >::iterator it = archives_.begin(); it < archives_.end(); ++it) {
+		for(ArchiveVector::iterator it = archives_.begin(); it < archives_.end(); ++it) {
 			for(std::multimap< std::string, RgssAdExtracter::Entry >::const_iterator it2 = (*it)->entry().begin(); it2 != (*it)->entry().end(); ++it2) {
 				ret.push_back(it2->first);
 			}

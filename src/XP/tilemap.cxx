@@ -40,6 +40,8 @@
 #include "tilemap.hxx"
 #include "viewport.hxx"
 
+#include <boost/make_shared.hpp>
+
 ////////////////////////////////////////////////////////////
 /// Static Variables
 ////////////////////////////////////////////////////////////
@@ -130,7 +132,7 @@ bool Tilemap::IsDisposed(VALUE id)
 ////////////////////////////////////////////////////////////
 void Tilemap::New(VALUE id)
 {
-	Graphics::insertDrawable( id, boost::shared_ptr< Drawable >( new Tilemap(id) ) );
+	Graphics::insertDrawable( id, boost::make_shared<Tilemap>(id) );
 }
 
 ////////////////////////////////////////////////////////////

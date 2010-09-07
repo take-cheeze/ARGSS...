@@ -168,12 +168,10 @@ namespace Graphics
 	////////////////////////////////////////////////////////////
 	void RefreshAll()
 	{
-		/*
 		boost::unordered_map< VALUE, boost::shared_ptr< Drawable > >::iterator it;
 		for (it = drawableMap_.begin(); it != drawableMap_.end(); ++it) {
 			it->second->RefreshBitmaps();
 		}
-		 */
 		Bitmap::RefreshBitmaps();
 	}
 
@@ -221,22 +219,22 @@ namespace Graphics
 			drawFrame();
 
 			// run GC if time is left
-			if( (Time::getTime() - lastTics_) < frameInterval_ ) rb_gc();
+			if( (Time::getTime() - tics) < frameInterval_ ) rb_gc();
 
 			frameCount_++;
 			frames++;
 
 			if (tics >= nextTicsFps_) {
-				nextTicsFps_ += 1000;
 				fps = frames;
 				frames = 0;
+
+				FrameReset();
 
 				Player::getMainWindow().setTitle( ( boost::format("%s - %d FPS") % System::getTitle() % fps ).str() );
 			}
 		} else {
 			Time::sleepMs(frameInterval_ - (tics - lastTics_));
 		}
-		lastTics_ = Time::getTime();
 	}
 
 	////////////////////////////////////////////////////////////

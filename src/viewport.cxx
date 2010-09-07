@@ -31,9 +31,12 @@
 #include "plane.hxx"
 #include "tilemap.hxx"
 #include "window.hxx"
-#include <argss/ruby.hxx>
 #include "graphics.hxx"
 #include "player.hxx"
+
+#include <argss/ruby.hxx>
+
+#include <boost/make_shared.hpp>
 
 ////////////////////////////////////////////////////////////
 /// Constructor
@@ -74,7 +77,7 @@ bool Viewport::IsDisposed(VALUE id)
 ////////////////////////////////////////////////////////////
 void Viewport::New(VALUE id)
 {
-	Graphics::insertDrawable( id, boost::shared_ptr< Drawable >( new Viewport(id) ) );
+	Graphics::insertDrawable( id, boost::make_shared<Viewport>(id) );
 }
 
 ////////////////////////////////////////////////////////////

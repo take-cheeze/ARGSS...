@@ -29,11 +29,14 @@
 #include <cmath>
 #include <argss/ruby.hxx>
 #include <argss/window.hxx>
+
 #include "../graphics.hxx"
 #include "../player.hxx"
 #include "../rect.hxx"
 #include "../viewport.hxx"
 #include "window.hxx"
+
+#include <boost/make_shared.hpp>
 
 
 ////////////////////////////////////////////////////////////
@@ -88,7 +91,7 @@ bool Window::IsDisposed(VALUE id)
 ////////////////////////////////////////////////////////////
 void Window::New(VALUE id)
 {
-	Graphics::insertDrawable(id, boost::shared_ptr< Drawable >( new Window(id) ) );
+	Graphics::insertDrawable(id, boost::make_shared<Window>(id) );
 }
 
 ////////////////////////////////////////////////////////////

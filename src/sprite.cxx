@@ -40,6 +40,8 @@
 #include "system.hxx"
 #include "viewport.hxx"
 
+#include <boost/make_shared.hpp>
+
 ////////////////////////////////////////////////////////////
 /// Constructor
 ////////////////////////////////////////////////////////////
@@ -86,7 +88,7 @@ bool Sprite::IsDisposed(VALUE id)
 ////////////////////////////////////////////////////////////
 void Sprite::New(VALUE id)
 {
-	Graphics::insertDrawable( id, boost::shared_ptr< Drawable >( new Sprite(id) ) );
+	Graphics::insertDrawable( id, boost::make_shared<Sprite>(id) );
 }
 
 ////////////////////////////////////////////////////////////

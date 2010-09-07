@@ -35,6 +35,7 @@
 #include "player.hxx"
 #include "rect.hxx"
 
+#include <boost/make_shared.hpp>
 
 ////////////////////////////////////////////////////////////
 /// Constructor
@@ -87,7 +88,7 @@ bool Window::IsDisposed(VALUE id)
 ////////////////////////////////////////////////////////////
 void Window::New(VALUE id)
 {
-	Graphics::insertDrawable(id, boost::shared_ptr< Drawable >( new Window(id) ) );
+	Graphics::insertDrawable(id, boost::make_shared<Window>(id) );
 }
 
 ////////////////////////////////////////////////////////////
