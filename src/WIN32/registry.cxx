@@ -57,7 +57,7 @@ namespace Registry
 	////////////////////////////////////////////////////////////
 	std::string ReadStrValue(HKEY hkey, std::string const& key, std::string const& val)
 	{
-/*
+	#ifdef ARGSS_WIN32
 		char value[1024]; 
 		DWORD size = 1024;
 		DWORD type = REG_SZ;
@@ -81,9 +81,10 @@ namespace Registry
 			}
 		}
 		return string_value;
- */
+	#else
 		key.empty(); val.empty();
 		return std::string();
+	#endif
 	}
 
 	////////////////////////////////////////////////////////////
@@ -91,7 +92,7 @@ namespace Registry
 	////////////////////////////////////////////////////////////
 	int ReadBinValue(HKEY hkey, std::string const& key, std::string const& val, uint8_t* bin)
 	{
-/*
+	#ifdef ARGSS_WIN32
 		DWORD size = 1024;
 		DWORD type = REG_BINARY;
 		HKEY key_handle;
@@ -108,8 +109,9 @@ namespace Registry
 		::RegCloseKey(key_handle);
 
 		return size;
- */
+	#else
 		key.empty(); val.empty(); bin = bin;
 		return 0;
+	#endif
 	}
 } // namespace Registry

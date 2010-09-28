@@ -25,7 +25,7 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#include <boost/unordered_map.hpp>
+#include <boost/ptr_container/ptr_unordered_map.hpp>
 
 #include <algorithm>
 #include <iostream>
@@ -50,12 +50,22 @@ namespace
 	////////////////////////////////////////////////////////////
 	/// Static Variables
 	////////////////////////////////////////////////////////////
-	boost::unordered_map< VALUE, boost::shared_ptr< Bitmap > > bitmaps_;
+	typedef boost::ptr_unordered_map<VALUE, Bitmap> BitmapTable;
+	BitmapTable bitmaps_;
 } // namespace
 
 ////////////////////////////////////////////////////////////
 /// Constructors
 ////////////////////////////////////////////////////////////
+Bitmap::Bitmap()
+{
+	int iwidth = 0, iheight = 0;
+	id = 0;
+	pixels_.resize(iwidth * iheight, 0);
+	width_ = (long)iwidth;
+	height_ = (long)iheight;
+	glBitmap_ = GL_INVALID_VALUE;
+}
 Bitmap::Bitmap(int iwidth, int iheight)
 {
 	id = 0;
@@ -128,7 +138,9 @@ Bitmap::Bitmap(Bitmap const& src)
 ////////////////////////////////////////////////////////////
 Bitmap::~Bitmap()
 {
-	if (glBitmap_ != GL_INVALID_VALUE)  glDeleteTextures(1, &glBitmap_);
+	if (glBitmap_ != GL_INVALID_VALUE) {
+		glDeleteTextures(1, &glBitmap_);
+	}
 }
 
 ////////////////////////////////////////////////////////////
@@ -144,11 +156,11 @@ bool Bitmap::IsDisposed(VALUE id)
 ////////////////////////////////////////////////////////////
 void Bitmap::New(VALUE id, std::string const& filename)
 {
-	bitmaps_.insert( std::make_pair( id, new Bitmap(id, filename) ) );
+	bitmaps_.insert( id, std::auto_ptr<Bitmap>( new Bitmap(id, filename) ) );
 }
 void Bitmap::New(VALUE id, int width, int height)
 {
-	bitmaps_.insert( std::make_pair( id, new Bitmap(id, width, height) ) );
+	bitmaps_.insert( id, std::auto_ptr<Bitmap>( new Bitmap(id, width, height) ) );
 }
 
 ////////////////////////////////////////////////////////////
@@ -174,8 +186,9 @@ void Bitmap::Dispose(VALUE id)
 ////////////////////////////////////////////////////////////
 void Bitmap::RefreshBitmaps()
 {
-	boost::unordered_map< VALUE, boost::shared_ptr< Bitmap > >::iterator it;
-	for (it = bitmaps_.begin(); it != bitmaps_.end(); it++) it->second->Changed();
+	for(BitmapTable::iterator it = bitmaps_.begin(); it != bitmaps_.end(); it++) {
+		it->second->Changed();
+	}
 }
 
 ////////////////////////////////////////////////////////////

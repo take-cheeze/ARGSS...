@@ -36,9 +36,8 @@
 
 #include "../filefinder.hxx"
 #include "../fileio.hxx"
-#include "../system.hxx"
-#include "../registry.hxx"
 #include "../options.hxx"
+#include "../system.hxx"
 
 
 namespace FileFinder
@@ -78,30 +77,12 @@ namespace FileFinder
 		char const* homePath = std::getenv("HOME");
 		if( homePath ) for(int i = 0; i < 3; i++) {
 			std::string const& rtp = System::getRTP(i);
-			if( !rtp.empty() ) searchPath_[i + 1].assign(homePath).append("/").append(RTP_BASE_PATH).append("/").append(rtp).append("/");
-		} else for (int i = 0; i < 3; i++) {
-			std::string const& rtp = System::getRTP(i);
-			if (rtp.empty()) continue;
-
-			searchPath_[i + 1] = Registry::ReadStrValue(HKEY_CURRENT_USER, REGISTRY_NAME, rtp);
-			if ( !searchPath_[i + 1].empty() ) {
-				searchPath_[i + 1] = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, REGISTRY_NAME, rtp);
+			if( !rtp.empty() ) {
+				searchPath_[i + 1].assign(homePath).append("/").append(RTP_BASE_PATH).append("/").append(rtp).append("/");
 			}
 		}
-		fonts_path.clear();
 
-		WCHAR dir[256];
-		int n = 0; // getWindowsDirectory(dir, 256);
-		if (n > 0) {
-			char* str = (char*)dir;
-			for(unsigned int i = 0; i < n * sizeof(dir[0]); i++) {
-				if (str[i] != '\0' ) {
-					fonts_path += str[i];
-				}
-			}
-			fonts_path += "\\Fonts\\";
-			std::string string_value = fonts_path;
-		}
+		fonts_path = ".";
 	}
 
 	////////////////////////////////////////////////////////////
@@ -162,22 +143,6 @@ namespace FileFinder
 		if (FileIO::exists(path)) return FileIO::get(path);
 		path.assign(fonts_path).append(target).append(fontSuffix_[0]);
 		if (FileIO::exists(path)) return FileIO::get(path);
-		std::string real_target;
-		real_target = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts", target + " (TrueType)");
-		if (real_target.length() > 0) {
-			path = real_target;
-			if (FileIO::exists(path)) return FileIO::get(path);
-			path = fonts_path; path += real_target;
-			if (FileIO::exists(path)) return FileIO::get(path);
-		}
-
-		real_target = Registry::ReadStrValue(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion\\Fonts", target + " (TrueType)");
-		if (real_target.length() > 0) {
-			path = real_target;
-			if (FileIO::exists(path)) return FileIO::get(path);
-			path = fonts_path; path += real_target;
-			if (FileIO::exists(path)) return FileIO::get(path);
-		}
 
 		throw std::runtime_error("file not found:" + name);
 	}

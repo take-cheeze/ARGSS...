@@ -40,8 +40,6 @@
 #include "tilemap.hxx"
 #include "viewport.hxx"
 
-#include <boost/make_shared.hpp>
-
 ////////////////////////////////////////////////////////////
 /// Static Variables
 ////////////////////////////////////////////////////////////
@@ -134,7 +132,7 @@ bool Tilemap::IsDisposed(VALUE id)
 ////////////////////////////////////////////////////////////
 void Tilemap::New(VALUE id)
 {
-	Graphics::insertDrawable( id, boost::make_shared<Tilemap>(id) );
+	Graphics::insertDrawable( id, std::auto_ptr<Drawable>( new Tilemap(id) ) );
 }
 
 ////////////////////////////////////////////////////////////
@@ -174,9 +172,9 @@ void Tilemap::Update()
 ////////////////////////////////////////////////////////////
 void Tilemap::RefreshBitmaps()
 {
-	std::map< VALUE, std::map< int, std::map< int, boost::shared_ptr< Bitmap > > > >::iterator it1;
-	std::map< int, std::map< int, boost::shared_ptr< Bitmap > > >::iterator it2;
-	std::map< int, boost::shared_ptr< Bitmap > >::iterator it3;
+	std::map< VALUE, std::map< int, boost::ptr_map<int, Bitmap> > >::iterator it1;
+	std::map< int, boost::ptr_map<int, Bitmap> >::iterator it2;
+	boost::ptr_map<int, Bitmap> >::iterator it3;
 	for (it1 = autotiles_cache.begin(); it1 != autotiles_cache.end(); it1++) {
 		for (it2 = it1->second.begin(); it2 != it1->second.end(); it2++) {
 			for (it3 = it2->second.begin(); it3 != it2->second.end(); it3++) {
@@ -266,7 +264,7 @@ void Tilemap::draw(long z_level)
 						if (autotiles_cache.count(bitmap_id) == 0 ||
 								autotiles_cache[bitmap_id].count(tile_id) == 0 ||
 								autotiles_cache[bitmap_id][tile_id].count(frame) == 0) {
-							autotiles_cache[bitmap_id][tile_id][frame] = boost::shared_ptr< Bitmap >( new Bitmap(TILE_SIZE, TILE_SIZE) );
+							autotiles_cache[bitmap_id][tile_id][frame] = boost::make_shared<Bitmap>(TILE_SIZE, TILE_SIZE);
 							int* tiles = autotiles_id[tile_id >> 3][tile_id & 7];
 							for (int i = 0; i < 4; i++) {
 								Rect rect(((tiles[i] % 6) << 4) + frame * 96, (tiles[i] / 6) << 4, 16, 16);

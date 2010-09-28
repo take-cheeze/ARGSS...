@@ -1,2 +1,6 @@
 *.o
 builds/linux/src/rgssad.cxx
+
+Makefile
+CMakeCache.txt
+CMakeFiles/

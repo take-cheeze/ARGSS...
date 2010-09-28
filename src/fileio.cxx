@@ -1,5 +1,4 @@
-#include <boost/smart_ptr.hpp>
-#include <boost/make_shared.hpp>
+#include <boost/ptr_container/ptr_vector.hpp>
 
 #include <fstream>
 
@@ -23,7 +22,7 @@ namespace FileIO
 
 	namespace
 	{
-		typedef std::vector< boost::shared_ptr< RgssAdExtracter > > ArchiveVector;
+		typedef boost::ptr_vector<RgssAdExtracter> ArchiveVector;
 		ArchiveVector archives_;
 		std::map< std::string, std::vector< uint8_t > > files_;
 
@@ -34,7 +33,7 @@ namespace FileIO
 	{
 		std::string yen = toYen(filename); // in a "rgssad" the separator is YEN sign
 		for(ArchiveVector::const_iterator it = archives_.begin(); it < archives_.end(); ++it) {
-			if( (*it)->exists(yen) ) return true;
+			if( it->exists(yen) ) return true;
 		}
 
 		/*
@@ -54,7 +53,7 @@ namespace FileIO
 
 		std::string yen = toYen(name); // in a "rgssad" the separator is YEN sign
 		for(ArchiveVector::iterator it = archives_.begin(); it < archives_.end(); ++it) {
-			if( (*it)->exists(yen) ) return (*it)->get(yen);
+			if( it->exists(yen) ) return it->get(yen);
 		}
 
 		if( files_.find(slash) == files_.end() ) {
@@ -72,15 +71,15 @@ namespace FileIO
 	void init()
 	{
 		if( exists(DEFAULT_ARCHIVE) ) {
-			archives_.push_back( boost::make_shared< RgssAdExtracter >(DEFAULT_ARCHIVE) );
+			archives_.push_back( std::auto_ptr<RgssAdExtracter>( new RgssAdExtracter(DEFAULT_ARCHIVE) ) );
 		}
 	}
 
-	std::vector< std::string > getRgssAdList()
+	std::vector<std::string> getRgssAdList()
 	{
 		std::vector< std::string > ret;
 		for(ArchiveVector::iterator it = archives_.begin(); it < archives_.end(); ++it) {
-			for(std::multimap< std::string, RgssAdExtracter::Entry >::const_iterator it2 = (*it)->entry().begin(); it2 != (*it)->entry().end(); ++it2) {
+			for(std::multimap< std::string, RgssAdExtracter::Entry >::const_iterator it2 = it->entry().begin(); it2 != it->entry().end(); ++it2) {
 				ret.push_back(it2->first);
 			}
 		}

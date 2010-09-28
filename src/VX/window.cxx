@@ -36,8 +36,6 @@
 #include "../viewport.hxx"
 #include "window.hxx"
 
-#include <boost/make_shared.hpp>
-
 
 ////////////////////////////////////////////////////////////
 /// Constructor
@@ -91,7 +89,7 @@ bool Window::IsDisposed(VALUE id)
 ////////////////////////////////////////////////////////////
 void Window::New(VALUE id)
 {
-	Graphics::insertDrawable(id, boost::make_shared<Window>(id) );
+	Graphics::insertDrawable(id, std::auto_ptr<Drawable>( new Window(id) ) );
 }
 
 ////////////////////////////////////////////////////////////

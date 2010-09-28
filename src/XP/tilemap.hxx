@@ -28,7 +28,7 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#include <boost/smart_ptr.hpp>
+#include <boost/ptr_container/ptr_map.hpp>
 
 #include <map>
 #include <string>
@@ -88,7 +88,7 @@ private:
 	int autotile_frame;
 	int autotile_time;
 
-	std::map< VALUE, std::map< int, std::map< int, boost::shared_ptr< Bitmap > > > > autotiles_cache;
+	std::map< VALUE, std::map< int, boost::ptr_map<int, Bitmap> > > autotiles_cache;
 	static int autotiles_id[6][8][4];
 
 	struct TileData {

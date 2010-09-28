@@ -25,9 +25,8 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#include <boost/make_shared.hpp>
 #include <boost/noncopyable.hpp>
-#include <boost/smart_ptr.hpp>
+#include <boost/ptr_container/ptr_unordered_map.hpp>
 
 #include <cassert>
 
@@ -100,7 +99,7 @@ namespace Audio
 		Sound bgs_; int bgs_channel;
 		Music  me_; bool me_playing;
 
-		typedef std::map< int, boost::shared_ptr< Sound > > SoundMap;
+		typedef boost::ptr_unordered_map<int, Sound> SoundMap;
 		SoundMap sounds_;
 	} // namespace
 
@@ -287,14 +286,14 @@ namespace Audio
 
 		if (sounds_.size() >= 7) return;
 
-		boost::shared_ptr<Sound> sound = boost::make_shared<Sound>(file);
+		std::auto_ptr<Sound> sound( new Sound(file) );
 
 		int channel = Mix_PlayChannel(-1, sound->get(), 0);
 		Mix_Volume(channel, volume * MIX_MAX_VOLUME / 100);
 		if (channel == -1) {
 			rb_raise(ARGSS::AError::getID(), "couldn't play %s SE.\n%s\n", file.c_str(), Mix_GetError());
 		}
-		bool res = sounds_.insert( std::make_pair(channel, sound) ).second; assert(res);
+		bool res = sounds_.insert(channel, sound).second; assert(res);
 	}
 
 	////////////////////////////////////////////////////////////

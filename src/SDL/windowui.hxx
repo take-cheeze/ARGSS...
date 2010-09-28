@@ -32,13 +32,13 @@ public:
 	int getMousePosX() const { return mouseX_; }
 	int getMousePosY() const { return mouseY_; }
 
-	std::vector< bool >& getKeyStates() { return keys_; }
-	std::vector< bool > const& getKeyStates() const { return keys_; }
+	std::vector<bool>& getKeyStates() { return keys_; }
+	std::vector<bool> const& getKeyStates() const { return keys_; }
 
 	bool event(SDL_Event const& event);
 private:
-	std::queue< Event > events_;
-	std::vector< bool > keys_;
+	std::queue<Event> events_;
+	std::vector<bool> keys_;
 	bool mouseFocus_;
 	int mouseWheel_;
 	int mouseX_;

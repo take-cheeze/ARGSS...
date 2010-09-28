@@ -30,8 +30,9 @@
 ////////////////////////////////////////////////////////////
 #include <boost/smart_ptr.hpp>
 
-#include <string>
 #include <list>
+#include <memory>
+#include <string>
 
 #include <argss/ruby.hxx>
 
@@ -78,7 +79,7 @@ namespace Graphics
 
 	Drawable& getDrawable(VALUE id);
 	unsigned int countDrawable(VALUE id);
-	bool insertDrawable(VALUE id, boost::shared_ptr< Drawable > const& ptr);
+	bool insertDrawable(VALUE id, std::auto_ptr<Drawable> ptr);
 	void eraseDrawable(VALUE id);
 
 	int getFPS();

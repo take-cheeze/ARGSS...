@@ -32,8 +32,6 @@
 #include <string>
 #include <vector>
 
-#include <boost/make_shared.hpp>
-
 #include "plane.hxx"
 #include <argss/ruby.hxx>
 #include <argss/plane.hxx>
@@ -75,7 +73,7 @@ bool Plane::IsDisposed(VALUE id)
 ////////////////////////////////////////////////////////////
 void Plane::New(VALUE id)
 {
-	Graphics::insertDrawable( id, boost::make_shared<Plane>(id) );
+	Graphics::insertDrawable( id, std::auto_ptr<Drawable>( new Plane(id) ) );
 }
 
 ////////////////////////////////////////////////////////////
