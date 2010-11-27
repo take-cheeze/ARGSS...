@@ -1,6 +1,5 @@
-*.o
-builds/linux/src/rgssad.cxx
+/dependencies/rgssad/rgssad_real.cxx
+/dependencies/SOIL/lib/
 
-Makefile
-CMakeCache.txt
-CMakeFiles/
+/ARGSS_XP
+/ARGSS_VX
