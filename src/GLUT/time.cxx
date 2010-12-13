@@ -2,19 +2,18 @@
 
 #include <iostream>
 
-#include <SDL.h>
+#include <boost/thread.hpp>
 
 
 namespace Time
 {
 	long getTime()
 	{
-		return SDL_GetTicks();
+		return boost::get_system_time().total_milliseconds();
 	}
 
 	void sleepMs(long ms)
 	{
-		// std::cout << "Sleeping (ms): " << ms << std::endl;
-		SDL_Delay(ms);
+		boost::this_thread::sleep( boost::posix_time::milliseconds(ms) );
 	}
 }

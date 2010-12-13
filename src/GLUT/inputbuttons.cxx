@@ -19,48 +19,6 @@ namespace Input
 		bool standard = true;
 
 		if (READ_BUTTON_ASSIGMENT) {
-	/*
-			unsigned char data[1024];
-			int n = Registry::ReadBinValue(HKEY_CURRENT_USER, READ_BUTTON_ASSIGMENT_KEY, READ_BUTTON_ASSIGMENT_VALUE, data);
-			if (n > 0) {
-				for (int i = 11; i < 19; i++) {
-					for (int j = 0; j < 15; j++) {
-						if (JOYSTICK_SUPPORT && j < 10) {
-							if (i == data[j]) {
-								if (j == 0) buttons[i].push_back(Keys::JOY_1);
-								if (j == 1) buttons[i].push_back(Keys::JOY_2);
-								if (j == 2) buttons[i].push_back(Keys::JOY_3);
-								if (j == 3) buttons[i].push_back(Keys::JOY_4);
-								if (j == 4) buttons[i].push_back(Keys::JOY_5);
-								if (j == 5) buttons[i].push_back(Keys::JOY_6);
-								if (j == 6) buttons[i].push_back(Keys::JOY_7);
-								if (j == 7) buttons[i].push_back(Keys::JOY_8);
-								if (j == 8) buttons[i].push_back(Keys::JOY_9);
-								if (j == 9) buttons[i].push_back(Keys::JOY_10);
-							}
-						}
-						if (i == data[10 + j]) {
-							if (j == 0) buttons[i].push_back(Keys::SPACE);
-							if (j == 1) buttons[i].push_back(Keys::RETURN);
-							if (j == 2) buttons[i].push_back(Keys::ESCAPE);
-							if (j == 3) buttons[i].push_back(Keys::KP0);
-							if (j == 4) buttons[i].push_back(Keys::SHIFT);
-							if (j == 5) buttons[i].push_back(Keys::Z);
-							if (j == 6) buttons[i].push_back(Keys::X);
-							if (j == 7) buttons[i].push_back(Keys::C);
-							if (j == 8) buttons[i].push_back(Keys::V);
-							if (j == 9) buttons[i].push_back(Keys::B);
-							if (j == 10) buttons[i].push_back(Keys::A);
-							if (j == 11) buttons[i].push_back(Keys::S);
-							if (j == 12) buttons[i].push_back(Keys::D);
-							if (j == 13) buttons[i].push_back(Keys::Q);
-							if (j == 14) buttons[i].push_back(Keys::W);
-						}
-					}
-				}
-				standard = false;
-			}
-	 */
 		}
 		if (standard) {
 			buttons[11].push_back(Keys::Z);

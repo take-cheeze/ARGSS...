@@ -154,7 +154,7 @@ WindowUi::~WindowUi()
 
 void WindowUi::toggleFullscreen()
 {
-	isFullScreen_ = isFullScreen_ ? false : true;
+	isFullScreen_ = !isFullScreen_;
 
 	resize(width_, height_);
 }
@@ -182,17 +182,19 @@ void WindowUi::resize(long width, long height)
 	Graphics::ResizeScreen(width, height);
 }
 
-bool WindowUi::getEvent(Event& ev)
+boost::optional<Event> WindowUi::popEvent()
 {
 	SDL_Event sdlEv;
-	while( SDL_PollEvent(&sdlEv) ) (void) this->event(sdlEv);
+	while( SDL_PollEvent(&sdlEv) ) {
+		(void) this->pushEvent(sdlEv);
+	}
 
 	if( !events_.empty() ) {
-		ev = events_.front();
+		Event ev = events_.front();
 		events_.pop();
 
-		return true;
-	} else return false;
+		return ev;
+	} else boost::none;
 }
 
 /*
@@ -201,7 +203,7 @@ void WindowUi::wheelEvent(QWheelEvent* event)
 	mouseWheel_ = event->delta();
 }
  */
-bool WindowUi::event(SDL_Event const& src)
+bool WindowUi::pushEvent(SDL_Event const& src)
 {
 	Event dst;
 	bool ret = true;

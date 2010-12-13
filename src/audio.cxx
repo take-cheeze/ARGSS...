@@ -33,8 +33,8 @@
 #include <map>
 #include <utility>
 
-#include <SDL.h>
-#include <SDL_mixer.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_mixer.h>
 
 #include <argss/error.hxx>
 #include <argss/ruby.hxx>
@@ -274,13 +274,7 @@ namespace Audio
 	{
 		for(SoundMap::iterator it = sounds_.begin(); it != sounds_.end(); ++it) {
 			if (!Mix_Playing(it->first)) {
-				SoundMap::iterator next = it; ++next;
-
-				if( next != sounds_.end() ) {
-					int nextKey = next->first;
-					sounds_.erase(it);
-					it = sounds_.find(nextKey);
-				} else { sounds_.erase(it); break; }
+				it = sounds_.erase(it);
 			}
 		}
 

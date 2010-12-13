@@ -95,7 +95,7 @@ private:
 		int id;
 		int priority;
 	};
-	std::vector< std::vector< std::vector< TileData > > > data_cache;
+	std::vector< std::vector< std::vector<TileData> > > data_cache;
 }; // class Tilemap
 
 #endif // _TILEMAP_XP_HXX_

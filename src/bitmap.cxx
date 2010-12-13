@@ -177,8 +177,7 @@ Bitmap& Bitmap::get(VALUE id)
 ////////////////////////////////////////////////////////////
 void Bitmap::Dispose(VALUE id)
 {
-	assert( bitmaps_.find(id) != bitmaps_.end() );
-	bitmaps_.erase( bitmaps_.find(id) );
+	bitmaps_.erase(id);
 }
 
 ////////////////////////////////////////////////////////////

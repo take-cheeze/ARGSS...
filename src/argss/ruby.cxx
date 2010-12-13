@@ -30,7 +30,7 @@
 #include <boost/iostreams/copy.hpp>
 #include <boost/iostreams/filter/zlib.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost/xpressive/xpressive.hpp>
+#include <boost/regex.hpp>
 
 #include <cassert>
 #include <cstdio>
@@ -142,7 +142,7 @@ namespace ARGSS
 		{
 			void checkError(int error)
 			{
-				boost::xpressive::sregex const rex = boost::xpressive::sregex::compile("([^:]+):(\\d+):in `(.+)'");
+				boost::regex const reg("([^:]+):(\\d+):in `(.+)'");
 
 				if (error) {
 					VALUE lasterr = rb_gv_get("$!");
@@ -158,10 +158,10 @@ namespace ARGSS
 
 								report << std::endl << "\tfrom " << errMsg << ":";
 
-								boost::xpressive::smatch what;
-								if( !boost::xpressive::regex_match( errMsg, what, rex ) ) continue;
+								boost::smatch what;
+								if( !boost::regex_match( errMsg, what, reg ) ) continue;
 								std::string scriptName = what[1];
-								unsigned int lineNo = boost::lexical_cast< unsigned int >( what[2] );
+								unsigned int lineNo = boost::lexical_cast<unsigned int>( what[2] );
 
 								std::istringstream iss( getScript(scriptName) );
 								// iss.exceptions( std::ios_base::failbit | std::ios_base::badbit );

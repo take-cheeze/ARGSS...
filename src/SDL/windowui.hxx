@@ -7,6 +7,8 @@
 #include <event.hxx>
 #include <inputkeys.hxx>
 
+#include <boost/optional.hpp>
+
 #include <SDL.h>
 
 
@@ -24,7 +26,7 @@ public:
 	long getWidth() const { return width_; }
 	long getHeight() const { return height_; }
 
-	bool getEvent(Event& evnt);
+	boost::optional<Event> popEvent();
 
 	bool isFullscreen() const { return isFullScreen_; }
 	bool getMouseFocus() const { return  mouseFocus_; }
@@ -35,7 +37,7 @@ public:
 	std::vector<bool>& getKeyStates() { return keys_; }
 	std::vector<bool> const& getKeyStates() const { return keys_; }
 
-	bool event(SDL_Event const& event);
+	bool pushEvent(SDL_Event const& event);
 private:
 	std::queue<Event> events_;
 	std::vector<bool> keys_;

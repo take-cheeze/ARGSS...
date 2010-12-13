@@ -23,8 +23,7 @@ public:
 	long getWidth() const { return width(); }
 	long getHeight() const { return height(); }
 
-	bool getEvent(Event& evnt);
-	// int ProccesEvents(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	bool popEvent(Event& evnt);
 
 	bool isFullscreen() const { return isFullScreen(); }
 	bool getMouseFocus() const { return  mouseFocus_; }
@@ -37,7 +36,7 @@ public:
 private:
 	Input::Keys::InputKey QtK2IK(QKeyEvent* event);
 
-	std::queue< Event > events_;
+	std::queue<Event> events_;
 	std::vector< bool > keys_;
 	bool mouseFocus_;
 	int mouseWheel_;

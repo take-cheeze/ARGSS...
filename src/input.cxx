@@ -34,6 +34,7 @@
 #include "inputbuttons.hxx"
 #include "output.hxx"
 #include "player.hxx"
+#include "windowui.hxx"
 
 namespace Input
 {

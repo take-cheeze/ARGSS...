@@ -321,7 +321,7 @@ long WindowUi::getHeight() {
 ////////////////////////////////////////////////////////////
 /// get Event
 ////////////////////////////////////////////////////////////
-bool WindowUi::getEvent(Event& evnt) {
+bool WindowUi::popEvent(Event& evnt) {
 	if (hwnd && events.empty()) {
 		MSG Message;
 		while (PeekMessage(&Message, hwnd, 0, 0, PM_REMOVE)) {

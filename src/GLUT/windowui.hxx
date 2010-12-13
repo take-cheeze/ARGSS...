@@ -7,7 +7,7 @@
 #include <event.hxx>
 #include <inputkeys.hxx>
 
-#include <SDL.h>
+#include <boost/optional.hpp>
 
 
 class WindowUi
@@ -24,7 +24,8 @@ public:
 	long getWidth() const { return width_; }
 	long getHeight() const { return height_; }
 
-	bool getEvent(Event& evnt);
+	boost::optional<Event> popEvent();
+	void pushEvent(Event const& ev);
 
 	bool isFullscreen() const { return isFullScreen_; }
 	bool getMouseFocus() const { return  mouseFocus_; }
@@ -35,7 +36,7 @@ public:
 	std::vector<bool>& getKeyStates() { return keys_; }
 	std::vector<bool> const& getKeyStates() const { return keys_; }
 
-	bool event(SDL_Event const& event);
+	int windowHandle() const { return windowHandle_; }
 private:
 	std::queue<Event> events_;
 	std::vector<bool> keys_;
@@ -46,6 +47,7 @@ private:
 	long width_, height_;
 
 	bool isFullScreen_;
+	int windowHandle_;
 }; // class WindowUi
 
 #endif // _WINDOWUI_Qt_HXX_

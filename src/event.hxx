@@ -39,7 +39,9 @@ public:
 		GainFocus,
 		KeyDown,
 		KeyUp
-	};
+	} type;
+	long param1;
+	long param2;
 
 	Event()
 	{
@@ -49,11 +51,6 @@ public:
 	};
 	Event(Event const& src) : type(src.type), param1(src.param1), param2(src.param2) {}
 	~Event() {};
-
-	EventType type; 
-
-	long param1;
-	long param2;
 }; // class Event
 
 #endif // _EVENT_HXX_

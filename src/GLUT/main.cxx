@@ -37,15 +37,16 @@
 #include <cassert>
 #include <cstdlib>
 
-#include <SDL.h>
+#include <GL/glut.h>
 
 ////////////////////////////////////////////////////////////
 /// Main
 ////////////////////////////////////////////////////////////
 
-int main() // int argc, char **argv)
+int main(int argc, char **argv)
 {
-	int res = SDL_Init(SDL_INIT_EVENTTHREAD); assert(res == 0);
+	glutInit(&argc, argv);
+	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_STENCIL | GLUT_DEPTH | GLUT_ALPHA);
 
 	Output::Init();
 	System::Init();

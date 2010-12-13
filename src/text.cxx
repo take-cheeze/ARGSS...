@@ -140,8 +140,6 @@ namespace Text
 	////////////////////////////////////////////////////////////
 	std::auto_ptr< Bitmap > draw(std::string const& text, std::string const& font, Color const& color, int size, bool bold, bool italic, bool shadow)
 	{
-		std::cout << text << std::endl;
-
 		InternText converted = convertText(text);
 		assert(converted);
 		assert( ( converted->size() % sizeof(InternChar) ) == 0 );

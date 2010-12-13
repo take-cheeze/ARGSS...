@@ -47,7 +47,7 @@ void WindowUi::swapBuffers()
 	if( !autoBufferSwap() ) QGLWidget::swapBuffers();
 }
 
-bool WindowUi::getEvent(Event& ev)
+bool WindowUi::popEvent(Event& ev)
 {
 	if( !events_.empty() ) {
 		ev = events_.front();

@@ -58,11 +58,9 @@ namespace ARGSS
 		}
 		VALUE rdispose(VALUE self)
 		{
-			if ( socketExists(self) ) {
-				sockets_.erase(self);
-				ARGSS::ARuby::RemoveObject(self);
-				rb_gc();
-			}
+			sockets_.erase(self);
+			ARGSS::ARuby::RemoveObject(self);
+			rb_gc();
 			return self;
 		}
 		VALUE rdisposedQ(VALUE self)

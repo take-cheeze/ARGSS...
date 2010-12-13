@@ -47,13 +47,14 @@
 
 #include "time.hxx"
 #include "graphics.hxx"
-#include "system.hxx"
-#include "player.hxx"
 #include "options.hxx"
 #include "output.hxx"
+#include "player.hxx"
 #include "sprite.hxx"
-#include "tilemap.hxx"
+#include "system.hxx"
 #include "text.hxx"
+#include "tilemap.hxx"
+#include "windowui.hxx"
 
 
 namespace Graphics
@@ -98,8 +99,7 @@ namespace Graphics
 	}
 	void eraseDrawable(VALUE id)
 	{
-		assert( drawableMap_.find(id) != drawableMap_.end() );
-		drawableMap_.erase( drawableMap_.find(id) );
+		drawableMap_.erase(id);
 	}
 	unsigned int countDrawable(VALUE id)
 	{

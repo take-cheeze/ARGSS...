@@ -174,7 +174,7 @@ void Tilemap::RefreshBitmaps()
 {
 	std::map< VALUE, std::map< int, boost::ptr_map<int, Bitmap> > >::iterator it1;
 	std::map< int, boost::ptr_map<int, Bitmap> >::iterator it2;
-	boost::ptr_map<int, Bitmap> >::iterator it3;
+	boost::ptr_map<int, Bitmap>::iterator it3;
 	for (it1 = autotiles_cache.begin(); it1 != autotiles_cache.end(); it1++) {
 		for (it2 = it1->second.begin(); it2 != it1->second.end(); it2++) {
 			for (it3 = it2->second.begin(); it3 != it2->second.end(); it3++) {

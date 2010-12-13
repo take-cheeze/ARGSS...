@@ -34,6 +34,8 @@
 	#include "Qt/windowui.hxx"
 #elif defined(ARGSS_SDL)
 	#include "SDL/windowui.hxx"
+#elif defined(ARGSS_GLUT)
+	#include "GLUT/windowui.hxx"
 #endif
 
 #endif // _WINDOWUI_HXX_

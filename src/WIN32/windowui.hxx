@@ -52,7 +52,7 @@ public:
 	long getWidth();
 	long getHeight();
 
-	bool getEvent(Event& evnt);
+	bool popEvent(Event& evnt);
 	int ProccesEvents(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 	bool isFullscreen();

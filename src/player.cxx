@@ -28,14 +28,18 @@
 #include <cassert>
 #include <memory>
 
-#include "player.hxx"
-#include "options.hxx"
-#include "system.hxx"
-#include "output.hxx"
-#include "input.hxx"
-#include "graphics.hxx"
-#include "audio.hxx"
 #include "argss/argss.hxx"
+
+#include "audio.hxx"
+#include "event.hxx"
+#include "graphics.hxx"
+#include "input.hxx"
+#include "options.hxx"
+#include "output.hxx"
+#include "player.hxx"
+#include "system.hxx"
+#include "windowui.hxx"
+
 
 namespace Player
 {
@@ -44,7 +48,7 @@ namespace Player
 		////////////////////////////////////////////////////////////
 		/// Global Variables
 		////////////////////////////////////////////////////////////
-		std::auto_ptr< WindowUi > mainWindow_;
+		std::auto_ptr<WindowUi> mainWindow_;
 		bool focus_;
 		bool altPressing_;
 	} // namespace
@@ -73,44 +77,44 @@ namespace Player
 	////////////////////////////////////////////////////////////
 	void Update()
 	{
-		Event evnt;
-
 		while (true) {
-			bool result = getMainWindow().getEvent(evnt);
-			if (evnt.type == Event::Quit) {
-				ARGSS::Exit();
-				break;
-			} else if (evnt.type == Event::KeyDown) {
-				if (evnt.param1 == Input::Keys::ALT) {
-					altPressing_ = true;
-				}
-				else if (evnt.param1 == Input::Keys::RETURN && altPressing_) {
-					ToggleFullscreen();
-					altPressing_ = false;
-				}
-			} else if (evnt.type == Event::KeyUp) {
-				if (evnt.param1 == Input::Keys::ALT) {
-					altPressing_ = false;
-				}
-			} else if (PAUSE_GAME_WHEN_FOCUS_LOST) {
-				if (evnt.type == Event::GainFocus && !focus_) {
-					focus_ = true;
-					Graphics::TimerContinue();
-					if (PAUSE_AUDIO_WHEN_FOCUS_LOST) {
-						Audio::Continue();
-					}
-				} else if (evnt.type == Event::LostFocus && focus_) {
-					focus_ = false;
-					Input::ClearKeys();
-					Graphics::TimerWait();
-					if (PAUSE_AUDIO_WHEN_FOCUS_LOST) {
-						Audio::Pause();
-					}
-				}
-			}
+			boost::optional<Event> evnt = getMainWindow().popEvent();
+			if(!evnt) break;
 
-			if (!result && !(PAUSE_GAME_WHEN_FOCUS_LOST && !focus_)) {
-				break;
+			switch(evnt->type) {
+				case Event::Quit:
+					ARGSS::Exit();
+					return;
+				case Event::KeyDown:
+					if (evnt->param1 == Input::Keys::ALT) {
+						altPressing_ = true;
+					}
+					else if (evnt->param1 == Input::Keys::RETURN && altPressing_) {
+						ToggleFullscreen();
+						altPressing_ = false;
+					}
+					break;
+				case Event::KeyUp:
+					if (evnt->param1 == Input::Keys::ALT) {
+						altPressing_ = false;
+					}
+					break;
+				default: if(PAUSE_GAME_WHEN_FOCUS_LOST) {
+					if (evnt->type == Event::GainFocus && !focus_) {
+						focus_ = true;
+						Graphics::TimerContinue();
+						if (PAUSE_AUDIO_WHEN_FOCUS_LOST) {
+							Audio::Continue();
+						}
+					} else if (evnt->type == Event::LostFocus && focus_) {
+						focus_ = false;
+						Input::ClearKeys();
+						Graphics::TimerWait();
+						if (PAUSE_AUDIO_WHEN_FOCUS_LOST) {
+							Audio::Pause();
+						}
+					}
+				} break;
 			}
 		}
 	}

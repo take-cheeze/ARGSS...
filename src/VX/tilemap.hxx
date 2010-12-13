@@ -28,7 +28,7 @@
 ////////////////////////////////////////////////////////////
 /// Headers
 ////////////////////////////////////////////////////////////
-#include <boost/smart_ptr.hpp>
+#include <boost/ptr_container/ptr_map.hpp>
 
 #include <map>
 #include <string>
@@ -97,14 +97,14 @@ private:
 	VALUE bitmaps_;
 	VALUE passages_;
 
-	std::map< VALUE, std::map< int, std::map< int, boost::shared_ptr< Bitmap > > > > autotiles_cache;
+	std::map< VALUE, std::map< int, boost::ptr_map<int, Bitmap> > > autotiles_cache;
 	static int autotiles_id[6][8][4];
 
 	struct TileData {
 		int id;
 		int priority;
 	};
-	std::vector< std::vector< std::vector< TileData > > > data_cache;
+	std::vector< std::vector< std::vector<TileData> > > data_cache;
 }; // class Tilemap
 
 #endif // _TILEMAP_VX_HXX_

@@ -84,12 +84,9 @@ namespace ARGSS
 		}
 		VALUE rdispose(VALUE self)
 		{
-			boost::unordered_map< VALUE, boost::shared_ptr< Table > >::iterator it = tables_.find(self);
-			if( it != tables_.end() ) {
-				tables_.erase(it);
-				ARGSS::ARuby::RemoveObject(self);
-				rb_gc();
-			}
+			tables_.erase(self);
+			ARGSS::ARuby::RemoveObject(self);
+			rb_gc();
 			return self;
 		}
 		VALUE rdisposedQ(VALUE self)
